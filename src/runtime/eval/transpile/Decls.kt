@@ -3,12 +3,7 @@ package runtime.eval.transpile
 import frontend.AfterDecl
 import frontend.FunctionDecl
 import frontend.IfDecl
-import org.objectweb.asm.ClassWriter
-import org.objectweb.asm.Label
-import org.objectweb.asm.MethodVisitor
-import org.objectweb.asm.Opcodes
 import runtime.*
-import java.util.*
 
 fun transpilePrefix(fn: FunctionValue, env: Environment): String {
     val res = StringBuilder("")

@@ -30,23 +30,11 @@ enum class TokenType {
 
     // Modifiers
     Private,
-<<<<<<< HEAD
-    Noinit,
-    Sync,
-    Promise,
-=======
-<<<<<<< HEAD
     Sync,
     Promise,
     Lambda,
     Mutating,
     Static,
-=======
-    Noinit,
-    Sync,
-    Promise,
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
 
     // Grouping & operators
     BinaryOperator,

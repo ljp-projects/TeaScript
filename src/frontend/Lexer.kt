@@ -1,9 +1,5 @@
 package frontend
 
-<<<<<<< HEAD
-import java.util.LinkedList
-=======
-<<<<<<< HEAD
 import java.util.*
 import kotlin.collections.ArrayDeque
 import kotlin.collections.HashMap
@@ -13,10 +9,6 @@ import kotlin.collections.getOrNull
 import kotlin.collections.hashMapOf
 import kotlin.collections.isNotEmpty
 import kotlin.collections.removeFirstOrNull
-=======
-import java.util.LinkedList
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
 
 val KEYWORDS: HashMap<String, TokenType> = hashMapOf(
     "mutable" to TokenType.Mutable,
@@ -38,23 +30,12 @@ val KEYWORDS: HashMap<String, TokenType> = hashMapOf(
     "import" to TokenType.Import,
     "from" to TokenType.From,
     "class" to TokenType.Class,
-    "private" to TokenType.Private,
-<<<<<<< HEAD
-    "noinit" to TokenType.Noinit,
-    "promise" to TokenType.Promise
-=======
-<<<<<<< HEAD
-    "promise" to TokenType.Promise,
     "lambda" to TokenType.Lambda,
-    // Also allow anonymous keyword to make a lambda
     "anonymous" to TokenType.Lambda,
+    "private" to TokenType.Private,
     "mutating" to TokenType.Mutating,
     "static" to TokenType.Static,
-=======
-    "noinit" to TokenType.Noinit,
     "promise" to TokenType.Promise
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
 )
 
 fun tokenise(sourceCode: String): MutableList<Token> {
@@ -104,9 +85,6 @@ fun tokenise(sourceCode: String): MutableList<Token> {
             ',' -> tokens.addLast(Token(TokenType.Comma, chars.removeFirst().toString()))
             '.' -> tokens.addLast(Token(TokenType.Dot, chars.removeFirst().toString()))
             '+', '/', '%', '^', '*', '>', '<', '|' -> tokens.addLast(Token(TokenType.BinaryOperator, chars.removeFirst().toString()))
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
             '\\' -> {
                 chars.removeFirst()
 
@@ -115,9 +93,6 @@ fun tokenise(sourceCode: String): MutableList<Token> {
                     tokens.addLast(Token(TokenType.BinaryOperator, "\\>"))
                 }
             }
-=======
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
             '-' -> {
                 if (chars.getOrNull(1)?.isDigit() == false) {
                     tokens.addLast(Token(TokenType.BinaryOperator, chars.removeFirst().toString()))

@@ -11,9 +11,86 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
-    <orderEntry type="library" name="squareup.okhttp3.okhttp" level="project" />
-    <orderEntry type="library" name="jetbrains.kotlinx.coroutines.core" level="project" />
-    <orderEntry type="library" name="google.code.gson" level="project" />
-    <orderEntry type="library" name="json" level="project" />
+    <orderEntry type="module-library">
+      <library name="json" type="repository">
+        <properties maven-id="org.json:json:20240303" />
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/json-20240303.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MODULE_DIR$/lib/json-20240303-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="google.code.gson" type="repository">
+        <properties maven-id="com.google.code.gson:gson:2.11.0" />
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/gson-2.11.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/error_prone_annotations-2.27.0.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MODULE_DIR$/lib/gson-2.11.0-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/error_prone_annotations-2.27.0-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="jetbrains.kotlinx.coroutines.core" type="repository">
+        <properties maven-id="org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1" />
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/kotlinx-coroutines-core-1.8.1.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/kotlinx-coroutines-core-jvm-1.8.1.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/annotations-23.0.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/kotlin-stdlib-1.9.21.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MODULE_DIR$/lib/kotlinx-coroutines-core-jvm-1.8.1-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/annotations-23.0.0-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/kotlin-stdlib-1.9.21-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="squareup.okhttp3.okhttp" type="repository">
+        <properties maven-id="com.squareup.okhttp3:okhttp:4.12.0" />
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/okhttp-4.12.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/okio-3.6.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/okio-jvm-3.6.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/kotlin-stdlib-common-1.9.10.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/kotlin-stdlib-jdk8-1.8.21.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/kotlin-stdlib-1.8.21.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/annotations-13.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/kotlin-stdlib-jdk7-1.8.21.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MODULE_DIR$/lib/okhttp-4.12.0-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/okio-3.6.0-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/okio-jvm-3.6.0-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/kotlin-stdlib-common-1.9.10-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/kotlin-stdlib-jdk8-1.8.21-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/kotlin-stdlib-1.8.21-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/annotations-13.0-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/kotlin-stdlib-jdk7-1.8.21-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="ow2.asm" type="repository">
+        <properties maven-id="org.ow2.asm:asm:9.7" />
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/asm-9.7.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MODULE_DIR$/lib/asm-9.7-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>

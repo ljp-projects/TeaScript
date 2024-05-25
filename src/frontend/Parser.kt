@@ -1,8 +1,5 @@
 package frontend
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
 import home
 import java.nio.file.Paths
 import java.util.*
@@ -14,21 +11,7 @@ class Parser {
     private var static = false
     private var promise = false
     private var mutating = true
-=======
->>>>>>> 0279ede (This is a nightmare)
-import java.nio.file.Paths
-import java.util.*
-import kotlin.collections.ArrayList
 
-class Parser {
-    private var sync = false
-    private var priv = false
-    private var init = true
-    private var promise = false
-<<<<<<< HEAD
-=======
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
     private var funcPrefix: String? = null
     private var funcSuffix: String? = null
 
@@ -81,38 +64,6 @@ class Parser {
             TokenType.Constant, TokenType.Mutable -> parseVarDeclaration()
             TokenType.ForEach -> parseForDeclaration()
             TokenType.Import -> parseImportDeclaration()
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
->>>>>>> 0279ede (This is a nightmare)
-            TokenType.Sync -> {
-                sync = true
-                this.eat()
-                parseStatement()
-            }
-            TokenType.Promise -> {
-                promise = true
-                this.eat()
-                parseStatement()
-            }
-            TokenType.Private -> {
-                priv = true
-                this.eat()
-                parseStatement()
-            }
-            TokenType.FuncPrefix -> {
-                funcPrefix = eat()?.value
-                parseStatement()
-            }
-            TokenType.FuncSuffix -> {
-                funcSuffix = eat()?.value
-                parseStatement()
-            }
-<<<<<<< HEAD
-=======
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
             else -> parseExpr()
         }
     }
@@ -133,15 +84,7 @@ class Parser {
             throw IllegalArgumentException("Argument to use must be a string containing the file name of the module.")
         }
 
-<<<<<<< HEAD
-        val url = (eat()?.value ?: throw IllegalArgumentException("Argument to use must be included.")).replace("@", Paths.get(System.getProperty("user.home"), ".tea/scripts/").toString() + "/")
-=======
-<<<<<<< HEAD
         val url = (eat()?.value ?: throw IllegalArgumentException("Argument to use must be included.")).replace("@", Paths.get(home, ".tea/scripts/").toString() + "/")
-=======
-        val url = (eat()?.value ?: throw IllegalArgumentException("Argument to use must be included.")).replace("@", Paths.get(System.getProperty("user.home"), ".tea/scripts/").toString() + "/")
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
 
         return object : ImportDecl(
             "use-decl",
@@ -383,9 +326,6 @@ class Parser {
     private fun parseFnDeclaration(): Expr {
         eat()
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
         val name = if (!anon) {
             object : Identifier(
                 "ident",
@@ -396,21 +336,6 @@ class Parser {
                 } else eat()?.secondary!!
             ) {}
         } else null
-=======
->>>>>>> 0279ede (This is a nightmare)
-        val name = object : Identifier(
-            "ident",
-            at().value,
-            if (at().secondary == "") {
-                eat()
-                "any"
-            } else eat()?.secondary!!,
-            true
-        ) {}
-<<<<<<< HEAD
-=======
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
 
         val args = parseArgs()
         val params = ArrayDeque<Pair<String, String>>()
@@ -448,31 +373,17 @@ class Parser {
             priv,
             params.size,
             promise,
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
             mutating,
             static,
-=======
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
             funcPrefix,
             funcSuffix
         ) {}.also {
             sync = false
             priv = false
-<<<<<<< HEAD
-            promise = false
-=======
-<<<<<<< HEAD
             anon = false
             static = false
-            promise = false
             mutating = true
-=======
             promise = false
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
             funcPrefix = null
             funcSuffix = null
         }
@@ -517,9 +428,6 @@ class Parser {
             TokenType.Await -> parseAwaitDeclaration()
             TokenType.Fn -> parseFnDeclaration()
             TokenType.Class -> parseClassDeclaration()
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
             TokenType.Sync -> {
                 sync = true
                 this.eat()
@@ -558,17 +466,6 @@ class Parser {
                 funcSuffix = eat()?.value
                 parseExpr()
             }
-=======
->>>>>>> 0279ede (This is a nightmare)
-            TokenType.Noinit -> {
-                init = false
-                this.eat()
-                parseExpr()
-            }
-<<<<<<< HEAD
-=======
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
             else -> parseAssignmentExpr()
         }
     }
@@ -598,49 +495,18 @@ class Parser {
             if (at().secondary == "") {
                 eat()
                 "any"
-<<<<<<< HEAD
             } else eat()?.secondary!!,
-            true
-=======
-<<<<<<< HEAD
-            } else eat()?.secondary!!
-=======
-            } else eat()?.secondary!!,
-            true
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
         ) {}
 
         val args = parseArgs()
         val params = ArrayDeque<Pair<String, String>>()
-<<<<<<< HEAD
-        val allParams = ArrayDeque<Pair<String, String>>()
-=======
-<<<<<<< HEAD
-=======
-        val allParams = ArrayDeque<Pair<String, String>>()
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
 
         args.forEach {
             if (it !is Identifier) {
                 throw Exception("Inside class declaration expected parameters to be an identifier.")
             }
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
             params.addLast(it.symbol to it.type)
-=======
->>>>>>> 0279ede (This is a nightmare)
-            allParams.addLast(it.symbol to it.type)
-
-            if (it.init)
-                params.addLast(it.symbol to it.type)
-<<<<<<< HEAD
-=======
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
         }
 
         expect(
@@ -661,15 +527,7 @@ class Parser {
 
         return object : ClassDecl(
             "class-decl",
-<<<<<<< HEAD
-            allParams,
-=======
-<<<<<<< HEAD
             params,
-=======
-            allParams,
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
             name,
             body,
             params.size,
@@ -688,16 +546,8 @@ class Parser {
             at().value == "and" ||
             at().value == "to" ||
             at().value == "<" ||
-<<<<<<< HEAD
-            at().value == ">"
-=======
-<<<<<<< HEAD
             at().value == ">" ||
             at().value == "\\>"
-=======
-            at().value == ">"
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
         ) {
             val operator = eat()?.value // advance past equals
             val right = parseObject()
@@ -714,15 +564,7 @@ class Parser {
 
     private fun parseObject(): Expr {
         if (at().type !== TokenType.OpenBrace) {
-<<<<<<< HEAD
-            return parseExponentiationExpr()
-=======
-<<<<<<< HEAD
             return parseAdditiveExpr()
-=======
-            return parseExponentiationExpr()
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
         }
 
         eat()
@@ -787,17 +629,12 @@ class Parser {
         ) {}
     }
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
->>>>>>> 0279ede (This is a nightmare)
     private fun parseExponentiationExpr(): Expr {
-        var left = parseAdditiveExpr()
+        var left = parseCallMemberExpr()
 
         while (this.at().value == "^") {
             val operator = this.eat()?.value
-            val right = parseAdditiveExpr()
+            val right = parseCallMemberExpr()
             left = object : BinaryExpr(
                 "binary-expr",
                 left,
@@ -809,10 +646,6 @@ class Parser {
         return left
     }
 
-<<<<<<< HEAD
-=======
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
     private fun parseAdditiveExpr(): Expr {
         var left = parseMultiplicativeExpr()
 
@@ -831,15 +664,7 @@ class Parser {
     }
 
     private fun parseMultiplicativeExpr(): Expr {
-<<<<<<< HEAD
-        var left = parseCallMemberExpr()
-=======
-<<<<<<< HEAD
         var left = parseExponentiationExpr()
-=======
-        var left = parseCallMemberExpr()
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
 
         while (
             this.at().value == "/" ||
@@ -847,30 +672,7 @@ class Parser {
             this.at().value == "%"
         ) {
             val operator = this.eat()?.value
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
             val right = parseExponentiationExpr()
-            left = object : BinaryExpr(
-                "binary-expr",
-                left,
-                right,
-                operator!!
-            ) {}
-        }
-
-        return left
-    }
-
-    private fun parseExponentiationExpr(): Expr {
-        var left = parseCallMemberExpr()
-
-        while (this.at().value == "^") {
-            val operator = this.eat()?.value
-=======
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
-            val right = parseCallMemberExpr()
             left = object : BinaryExpr(
                 "binary-expr",
                 left,
@@ -959,22 +761,8 @@ class Parser {
                     eat()
                     "infer"
                 }
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
                 else eat()?.secondary!!
             ) {}
-=======
->>>>>>> 0279ede (This is a nightmare)
-                else eat()?.secondary!!,
-                init
-            ) {}.also {
-                init = true
-            }
-<<<<<<< HEAD
-=======
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
             // Constants and Numeric Constants
             TokenType.Number -> object : NumberLiteral(
                 "num-lit",

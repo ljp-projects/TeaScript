@@ -111,7 +111,7 @@ fun compileIfDecl(decl: IfDecl, env: Environment, mv: MethodVisitor, cn: String)
 }
 fun compileFuncDecl(decl: FunctionDecl, env: Environment, cw: ClassWriter, cn: String): MethodVisitor {
     val fn = object : FunctionValue(
-        name = decl.name?.symbol to decl.name?.type,
+        name = (decl.name?.symbol ?: "_") to (decl.name?.type ?: "null"),
         declEnv = env,
         params = decl.parameters,
         value = decl.body,

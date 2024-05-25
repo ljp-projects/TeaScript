@@ -1,16 +1,6 @@
 package frontend
 
-<<<<<<< HEAD
-import java.util.ArrayDeque
-import java.util.Optional
-=======
-<<<<<<< HEAD
 import java.util.*
-=======
-import java.util.ArrayDeque
-import java.util.Optional
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
 
 /**
  * Statements don't result in runtime values.
@@ -54,28 +44,14 @@ abstract class FunctionDecl(
     final override val kind: String,
     // Parameters is an array deque of a pair representing name to type
     val parameters: ArrayDeque<Pair<String, String>>,
-<<<<<<< HEAD
-    val name: Identifier,
-=======
-<<<<<<< HEAD
     val name: Identifier?,
-=======
-    val name: Identifier,
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
     val body: List<Statement>,
     val coroutine: Boolean,
     val private: Boolean,
     val arity: Int,
     val promise: Boolean,
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
     val mutating: Boolean,
     val static: Boolean,
-=======
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
     val prefix: String?,
     val suffix: String?
 ) : Expr {
@@ -260,17 +236,7 @@ abstract class MemberExpr(
 abstract class Identifier(
     final override val kind: String,
     val symbol: String,
-<<<<<<< HEAD
     val type: String,
-    val init: Boolean
-=======
-<<<<<<< HEAD
-    val type: String
-=======
-    val type: String,
-    val init: Boolean
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
 ) : Expr {
     init {
         require(kind == "ident") { "Key can't be $kind." }

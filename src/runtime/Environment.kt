@@ -1,47 +1,14 @@
 package runtime
 
 import com.google.gson.Gson
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-=======
->>>>>>> 0279ede (This is a nightmare)
-import globalCoroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.*
-<<<<<<< HEAD
-=======
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
 import okhttp3.RequestBody.Companion.toRequestBody
-import windows
-import java.awt.Dimension
 import java.io.IOException
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-import java.util.*
 import java.util.concurrent.CompletableFuture
-import javax.swing.JFrame
-import javax.swing.JLabel
-=======
->>>>>>> 0279ede (This is a nightmare)
 import java.util.Date
-import java.util.concurrent.CompletableFuture
-import javax.swing.JFrame
-import javax.swing.JLabel
-import javax.swing.JTextArea
-import javax.swing.JTextPane
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
-<<<<<<< HEAD
-=======
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
 import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.sin
@@ -56,15 +23,7 @@ fun makeGlobalEnv(argv: Array<StringVal>): Environment {
     env.declareVar("null", makeNull(), false)
 
     val io: HashMap<String, RuntimeVal> = hashMapOf(
-<<<<<<< HEAD
-        "println" to makeNativeFn("console.log", -1) { args, _ ->
-=======
-<<<<<<< HEAD
         "println" to makeNativeFn("console.log", -1, "println") { args, _ ->
-=======
-        "println" to makeNativeFn("console.log", -1) { args, _ ->
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
             val msg = StringBuilder()
 
             args.forEachIndexed { index, arg ->
@@ -79,11 +38,6 @@ fun makeGlobalEnv(argv: Array<StringVal>): Environment {
 
             makeNull()
         },
-<<<<<<< HEAD
-        "print" to makeNativeFn("console.log") { args, _ ->
-            print(args[0].value)
-=======
-<<<<<<< HEAD
         "print" to makeNativeFn("console.log", -1, "print") { args, _ ->
             val msg = StringBuilder()
 
@@ -126,11 +80,6 @@ fun makeGlobalEnv(argv: Array<StringVal>): Environment {
             }
 
             System.err.print(msg.toString())
-=======
-        "print" to makeNativeFn("console.log") { args, _ ->
-            print(args[0].value)
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
 
             return@makeNativeFn makeNull()
         },
@@ -143,34 +92,6 @@ fun makeGlobalEnv(argv: Array<StringVal>): Environment {
             val code = (args[0] as NumberVal).value
 
             exitProcess(code.toInt())
-        }
-    )
-
-    val ui = hashMapOf(
-        "createWindow" to makeNativeFn("__std.not_supported_js") { args, _ ->
-            val windowId = (10..99).random() + Math.random()
-
-            val frame = JFrame(args[0].value.toString())
-
-            frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
-            frame.preferredSize = Dimension(800, 400)
-            frame.pack()
-            frame.setLocationRelativeTo(null)
-            frame.isVisible = true
-
-            windows[windowId] = frame
-
-            makeNumber(windowId)
-        },
-        "addText" to makeNativeFn("__std.not_supported_js", 2) { args, _ ->
-            val text = JLabel(args[0].value.toString())
-            val frame: JFrame = windows[(args[1] as NumberVal).value]!!
-
-            frame.add(text)
-
-            windows[(args[1] as NumberVal).value] = frame
-
-            makeNull()
         }
     )
 
@@ -278,7 +199,6 @@ fun makeGlobalEnv(argv: Array<StringVal>): Environment {
     env.declareVar("net", makeObject(net.keys.toMutableList() to net.values.toMutableList()), true)
     env.declareVar("data", makeObject(data.keys.toMutableList() to data.values.toMutableList()), true)
     env.declareVar("math", makeObject(math.keys.toMutableList() to data.values.toMutableList()), true)
-    env.declareVar("ui", makeObject(ui.keys.toMutableList() to ui.values.toMutableList()), true)
 
     env.declareVar("time", makeNativeFn("Date.now", 0) { _, _ ->
         return@makeNativeFn makeNumber(Date().time.toDouble())
@@ -296,9 +216,6 @@ fun makeGlobalEnv(argv: Array<StringVal>): Environment {
     return env
 }
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
 class Variable(
     var constant: Boolean = true,
     val name: String,
@@ -352,46 +269,15 @@ class Environment(
     val variables: HashSet<Variable> = hashSetOf()
 ) {
     fun declareVar(name: String, value: RuntimeVal, constant: Boolean, idx: Int = -1): RuntimeVal  {
-=======
->>>>>>> 0279ede (This is a nightmare)
-class Environment(
-    private val parent: Environment?,
-    val variables: HashMap<String, RuntimeVal> = hashMapOf(),
-    private val constants: HashSet<String> = hashSetOf(),
-    private val variableNames: HashSet<String> = hashSetOf()
-) {
-    fun declareVar(name: String, value: RuntimeVal, constant: Boolean): RuntimeVal  {
-<<<<<<< HEAD
-=======
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
         if (resolve(name) != null) {
             throw IllegalAccessException("Cannot redeclare variable $name.")
         }
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
         variables.add(Variable(constant, name, value, idx))
-=======
->>>>>>> 0279ede (This is a nightmare)
-        variables[name] = value
-        variableNames.add(name)
-
-        if (constant) {
-            constants.add(name)
-        }
-<<<<<<< HEAD
-=======
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
 
         return value
     }
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
     fun getVar(name: String): Variable {
         variables.forEach { if (it.name == name) return it }
 
@@ -420,26 +306,11 @@ class Environment(
         return null
     }
 
-    fun assignVar(name: String, value: RuntimeVal): RuntimeVal  {
+    fun assignVar(name: String, value: RuntimeVal): RuntimeVal {
         resolve(name)
             ?: throw IllegalAccessException("Variable $name cannot be reassigned as it was never declared.")
 
-        variables.forEach { if (it.name == name) it.mutate(value) }
-=======
->>>>>>> 0279ede (This is a nightmare)
-    fun assignVar(name: String, value: RuntimeVal): RuntimeVal  {
-        val env = resolve(name)
-            ?: throw IllegalAccessException("Variable $name cannot be reassigned as it was never declared.")
-
-        if (env.constants.contains(name)) {
-            throw RuntimeException("Variable $name is a constant, so therefore can't be reassigned. Import 'mutable' to declare a mutable variable.")
-        }
-
-        env.variables[name] = value
-<<<<<<< HEAD
-=======
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
+        getVar(name).mutate(value)
 
         return value
     }
@@ -447,30 +318,14 @@ class Environment(
     fun lookupVar(name: String): RuntimeVal  {
         val env = resolve(name) ?: throw IllegalAccessException("Variable '$name' cannot be accessed as it was never declared. Did you mean '${findClosestVar(name)}'?")
 
-<<<<<<< HEAD
-        return env.variables[name] ?: makeNull()
-=======
-<<<<<<< HEAD
         return env.getVarOrNull(name)?.value ?: makeNull()
-=======
-        return env.variables[name] ?: makeNull()
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
     }
 
     private fun findClosestVar(word: String): String? {
         var closestWord: String? = null
         var minDistance = Int.MAX_VALUE
 
-<<<<<<< HEAD
-        for (w in variableNames) {
-=======
-<<<<<<< HEAD
         for (w in variables.map { it.name }) {
-=======
-        for (w in variableNames) {
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
             val distance = calculateDistance(word, w)
             if (distance < minDistance) {
                 minDistance = distance
@@ -507,20 +362,8 @@ class Environment(
         return matrix[length1][length2]
     }
 
-<<<<<<< HEAD
-
-    fun resolve(name: String): Environment?  {
-        return if (variableNames.contains(name)) {
-=======
-<<<<<<< HEAD
     fun resolve(name: String): Environment?  {
         return if (getVarOrNull(name) != null) {
-=======
-
-    fun resolve(name: String): Environment?  {
-        return if (variableNames.contains(name)) {
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
             this
         } else if (this.parent != null) {
             parent.resolve(name)
@@ -528,9 +371,6 @@ class Environment(
             null
         }
     }
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
 
     fun toReadonly(): Environment = Environment(
         parent,
@@ -540,7 +380,4 @@ class Environment(
             c
         }.toHashSet()
     )
-=======
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
 }

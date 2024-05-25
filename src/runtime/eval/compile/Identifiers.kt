@@ -49,7 +49,7 @@ fun compileCallExpr(call: CallExpr, env: Environment, mv: MethodVisitor, cn: Str
             Opcodes.INVOKEVIRTUAL,
             "tea/NativeRunnable",
             "run",
-            "(Ljava/lang/Object;)${globalVarMethodToType(fn.jvmName)}",
+            "(${args.joinToString("") { typeToDescriptor(evaluate(it, env)) }})${globalVarMethodToType(fn.jvmName)}",
             false
         )
 

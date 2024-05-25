@@ -1,26 +1,11 @@
 package runtime
 
-<<<<<<< HEAD
-import frontend.Expr
-=======
-<<<<<<< HEAD
-=======
-import frontend.Expr
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
 import frontend.Identifier
 import frontend.OrDecl
 import frontend.Statement
 import java.util.*
 import java.util.concurrent.CompletableFuture
-<<<<<<< HEAD
 import kotlin.collections.HashSet
-=======
-<<<<<<< HEAD
-=======
-import kotlin.collections.HashSet
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
 
 interface RuntimeVal {
     val kind: String
@@ -48,26 +33,6 @@ abstract class NullVal(
 
 fun makeNull() = object : NullVal("null", "void 0") {}
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
->>>>>>> 0279ede (This is a nightmare)
-abstract class RefVal(
-    final override val kind: String = "null",
-    override val value: Expr
-) : RuntimeVal {
-    init {
-        require(kind == "null") { "Key can't be $kind." }
-    }
-}
-
-fun makeRef(variable: Identifier) = object : RefVal("null", variable) {}
-
-<<<<<<< HEAD
-=======
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
 abstract class BoolVal(
     final override val kind: String = "bool",
     override val value: Boolean
@@ -140,13 +105,7 @@ abstract class NativeFnValue (
     final override val kind: String = "native-func",
     val arity: Int,
     val name: String,
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
     val jvmName: String,
-=======
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
     override val value: FunctionCall
 ) : RuntimeVal {
     init {
@@ -154,25 +113,11 @@ abstract class NativeFnValue (
     }
 }
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
 fun makeNativeFn(name: String, arity: Int = 1, jvmName: String = "", f: FunctionCall) = object : NativeFnValue(arity = arity, value = f, name = name, jvmName = jvmName) {}
 
 abstract class FunctionValue(
     final override val kind: String = "func",
     val name: Pair<String?, String?>,
-=======
->>>>>>> 0279ede (This is a nightmare)
-fun makeNativeFn(name: String, arity: Int = 1, f: FunctionCall) = object : NativeFnValue(arity = arity, value = f, name = name) {}
-
-abstract class FunctionValue(
-    final override val kind: String = "func",
-    val name: Pair<String, String>,
-<<<<<<< HEAD
-=======
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
     val params: ArrayDeque<Pair<String, String>>,
     val declEnv: Environment,
     override val value: List<Statement>,
@@ -180,14 +125,8 @@ abstract class FunctionValue(
     val private: Boolean,
     val arity: Int,
     val promise: Boolean,
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
     val mutating: Boolean,
     val static: Boolean,
-=======
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
     val prefix: String?,
     val suffix: String?
 ) : RuntimeVal {
@@ -209,28 +148,6 @@ abstract class ClassValue(
     }
 }
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
->>>>>>> 0279ede (This is a nightmare)
-abstract class NativeClassValue(
-    final override val kind: String,
-    val name: Pair<String, String>,
-    val params: ArrayDeque<Pair<String, String>>,
-    val declEnv: Environment,
-    override val value: List<Pair<String, String>>,
-    val arity: Int,
-) : RuntimeVal {
-    init {
-        require(kind == name.first) { "Key can't be $kind, mut be ${name.first}." }
-    }
-}
-
-<<<<<<< HEAD
-=======
->>>>>>> 05fbf897830ed259e8d85ed4926f11c33f7eebe2
->>>>>>> 0279ede (This is a nightmare)
 abstract class ForValue(
     final override val kind: String = "for",
     val param: Identifier,
