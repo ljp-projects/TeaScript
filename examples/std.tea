@@ -1,0 +1,26 @@
+# Class that serves as a basic mutable reference for passing to a function
+class Container: object (type: str, val: type) {
+    mutable reads = 0
+
+    mutating promise func get: type () {
+        reads = reads + 1
+        val
+    }
+
+    mutating promise func mutate: type (new: type) {
+        val = new
+    }
+
+    mutating synchronised func getSync: type () {
+        reads = reads + 1
+        val
+    }
+
+    mutating synchronised func mutateSync: type (new: type) {
+        val = new
+    }
+
+    synchronised func getReads: number () {
+        reads
+    }
+}
