@@ -7,6 +7,7 @@ enum class TokenType {
     Identifier, // e.g. x
     FuncPrefix, // e.g. x~
     FuncSuffix, // e.g. ~x
+    Annotation, // e.g. @x
 
     // Keywords
     Mutable,

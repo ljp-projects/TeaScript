@@ -4,16 +4,22 @@ import home
 import java.nio.file.Paths
 import java.util.*
 
-class Parser {
-    private var sync = false
-    private var anon = false
-    private var priv = false
-    private var static = false
-    private var promise = false
-    private var mutating = true
+enum class ModifierType(val appliesTo: String) {
+    Synchronised("func"),
+    Anonymous("func"),
+    Private("func"),
+    Static("func,var-decl"),
+    Promise("func"),
+    Mutating("func"),
+    Annotation("func,class,var-decl"),
+    Prefix("func"),
+    Suffix("func")
+}
 
-    private var funcPrefix: String? = null
-    private var funcSuffix: String? = null
+data class Modifier(val type: ModifierType, val value: String)
+
+class Parser {
+    val modifiers: MutableSet<Modifier> = mutableSetOf()
 
     private var tokens: MutableList<Token> = ArrayList()
     private var originLen = 0
@@ -64,6 +70,66 @@ class Parser {
             TokenType.Constant, TokenType.Mutable -> parseVarDeclaration()
             TokenType.ForEach -> parseForDeclaration()
             TokenType.Import -> parseImportDeclaration()
+            TokenType.Sync -> {
+                modifiers.add(
+                    Modifier(ModifierType.Synchronised, "YES")
+                )
+                this.eat()
+                parseStatement()
+            }
+            TokenType.Lambda -> {
+                modifiers.add(
+                    Modifier(ModifierType.Anonymous, "YES")
+                )
+                this.eat()
+                parseStatement()
+            }
+            TokenType.Static -> {
+                modifiers.add(
+                    Modifier(ModifierType.Static, "YES")
+                )
+                this.eat()
+                parseStatement()
+            }
+            TokenType.Mutating -> {
+                modifiers.add(
+                    Modifier(ModifierType.Mutating, "YES")
+                )
+                this.eat()
+                parseStatement()
+            }
+            TokenType.Promise -> {
+                modifiers.add(
+                    Modifier(ModifierType.Promise, "YES")
+                )
+                this.eat()
+                parseStatement()
+            }
+            TokenType.Private -> {
+                modifiers.add(
+                    Modifier(ModifierType.Private, "YES")
+                )
+                this.eat()
+                parseStatement()
+            }
+            TokenType.FuncPrefix -> {
+                modifiers.add(
+                    Modifier(ModifierType.Prefix, this.eat()?.value ?: "")
+                )
+                parseStatement()
+            }
+            TokenType.FuncSuffix -> {
+                modifiers.add(
+                    Modifier(ModifierType.Suffix, this.eat()?.value ?: "")
+                )
+                parseStatement()
+            }
+            TokenType.Annotation -> {
+                modifiers.add(
+                    Modifier(ModifierType.Annotation, this.eat()?.value ?: "")
+                )
+                parseStatement()
+            }
             else -> parseExpr()
         }
     }
@@ -160,8 +226,8 @@ class Parser {
             param,
             promise,
             body,
-            !sync
-        ) {}.also { sync = false }
+            modifiers
+        ) {}.also { modifiers.clear() }
     }
 
     private fun parseForDeclaration(): Statement {
@@ -199,8 +265,8 @@ class Parser {
             params.first(),
             params[1],
             body,
-            !sync
-        ) {}.also { sync = false }
+            modifiers
+        ) {}.also { modifiers.clear() }
     }
 
     private fun parseAfterDeclaration(): Expr {
@@ -232,8 +298,8 @@ class Parser {
             "after-decl",
             cond,
             body,
-            !sync
-        ) {}.also { sync = false }
+            modifiers
+        ) {}.also { modifiers.clear() }
     }
 
     private fun parseIfDeclaration(): Expr {
@@ -317,16 +383,16 @@ class Parser {
             "if-decl",
             cond,
             body,
-            !sync,
+            modifiers,
             otherwiseBody,
             orBodies
-        ) {}.also { sync = false }
+        ) {}.also { modifiers.clear() }
     }
 
     private fun parseFnDeclaration(): Expr {
         eat()
 
-        val name = if (!anon) {
+        val name = if (modifiers.none { it.type == ModifierType.Anonymous }) {
             object : Identifier(
                 "ident",
                 at().value,
@@ -335,7 +401,10 @@ class Parser {
                     "any"
                 } else eat()?.secondary!!
             ) {}
-        } else null
+        } else {
+            eat()
+            null
+        }
 
         val args = parseArgs()
         val params = ArrayDeque<Pair<String, String>>()
@@ -369,23 +438,10 @@ class Parser {
             params,
             name,
             body,
-            !sync,
-            priv,
             params.size,
-            promise,
-            mutating,
-            static,
-            funcPrefix,
-            funcSuffix
+            modifiers,
         ) {}.also {
-            sync = false
-            priv = false
-            anon = false
-            static = false
-            mutating = true
-            promise = false
-            funcPrefix = null
-            funcSuffix = null
+            modifiers.clear()
         }
     }
 
@@ -428,42 +484,64 @@ class Parser {
             TokenType.Await -> parseAwaitDeclaration()
             TokenType.Fn -> parseFnDeclaration()
             TokenType.Class -> parseClassDeclaration()
+            TokenType.Annotation -> {
+                modifiers.add(
+                    Modifier(ModifierType.Annotation, this.eat()?.value ?: "")
+                )
+                parseExpr()
+            }
             TokenType.Sync -> {
-                sync = true
+                modifiers.add(
+                    Modifier(ModifierType.Synchronised, "YES")
+                )
                 this.eat()
                 parseExpr()
             }
             TokenType.Lambda -> {
-                anon = true
+                modifiers.add(
+                    Modifier(ModifierType.Anonymous, "YES")
+                )
                 this.eat()
                 parseExpr()
             }
             TokenType.Static -> {
-                static = true
+                modifiers.add(
+                    Modifier(ModifierType.Static, "YES")
+                )
                 this.eat()
                 parseExpr()
             }
             TokenType.Mutating -> {
-                mutating = true
+                modifiers.add(
+                    Modifier(ModifierType.Mutating, "YES")
+                )
                 this.eat()
                 parseExpr()
             }
             TokenType.Promise -> {
-                promise = true
+                modifiers.add(
+                    Modifier(ModifierType.Promise, "YES")
+                )
                 this.eat()
                 parseExpr()
             }
             TokenType.Private -> {
-                priv = true
+                modifiers.add(
+                    Modifier(ModifierType.Private, "YES")
+                )
                 this.eat()
                 parseExpr()
             }
             TokenType.FuncPrefix -> {
-                funcPrefix = eat()?.value
+                modifiers.add(
+                    Modifier(ModifierType.Prefix, this.eat()?.value ?: "")
+                )
                 parseExpr()
             }
             TokenType.FuncSuffix -> {
-                funcSuffix = eat()?.value
+                modifiers.add(
+                    Modifier(ModifierType.Suffix, this.eat()?.value ?: "")
+                )
                 parseExpr()
             }
             else -> parseAssignmentExpr()
