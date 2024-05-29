@@ -27,7 +27,7 @@ fun evalNumericBinaryExpr(lhs: NumberVal, rhs: NumberVal, op: String, env: Envir
 
 fun evalComparisonBinaryExpr(lhs: RuntimeVal, rhs: RuntimeVal, op: String, env: Environment): BoolVal {
     return when (op) {
-        "is" -> makeBool(Gson().toJson(lhs) == Gson().toJson(rhs))
+        "is" -> makeBool(lhs.toCommon() == rhs.toCommon())
         "isnt" -> makeBool(Gson().toJson(lhs) != Gson().toJson(rhs))
         "or" -> makeBool((lhs as BoolVal).value || (rhs as BoolVal).value)
         "nor" -> makeBool(!((lhs as BoolVal).value || (rhs as BoolVal).value))
@@ -140,7 +140,7 @@ fun evalIdentifier(identifier: Identifier, env: Environment): RuntimeVal {
     return env.lookupVar(identifier.symbol)
 }
 
-fun evalAssignment(node: AssignmentExpr, env: Environment): RuntimeVal {
+fun evalAssignment(node: AssignmentExpr, env: Environment, file: String): RuntimeVal {
     if (node.assigned !is Identifier) {
         throw RuntimeException("Expected an identifier in an assignment expression.")
     }
@@ -152,10 +152,11 @@ fun evalAssignment(node: AssignmentExpr, env: Environment): RuntimeVal {
     } else null
 
     if ((type ?: variable.kind) != value.kind) {
-        throw IllegalArgumentException("Expected a value of type ${(type ?: variable.kind)}, instead got ${value.kind}")
+        Error("Attempted to assign a value of ${value.kind} (${value.toFancy()}) to ${node.assigned.symbol}, which is a ${type ?: variable.kind}.", file)
+            .raise()
     }
 
-    return env.assignVar(node.assigned.symbol, value)
+    return env.assignVar(node.assigned.symbol, value, file)
 }
 
 fun evalObjectExpr(expr: ObjectLiteral, env: Environment): RuntimeVal {
@@ -175,38 +176,30 @@ fun evalObjectExpr(expr: ObjectLiteral, env: Environment): RuntimeVal {
 }
 
 fun runPrefix(fn: FunctionValue, env: Environment) {
-    if (fn.prefix != null) {
-        val prefix = env.lookupVar(fn.prefix) as FunctionValue
+    fn.prefixes.forEach {
+        val prefix = env.lookupVar(it) as FunctionValue
 
-        if (prefix.prefix != null) {
-            runPrefix(prefix, env)
-        }
+        runPrefix(prefix, env)
 
         for (statement in prefix.value) {
             evaluate(statement, prefix.declEnv)
         }
 
-        if (prefix.suffix != null) {
-            runSuffix(prefix, env)
-        }
+        runSuffix(prefix, env)
     }
 }
 
 fun runSuffix(fn: FunctionValue, env: Environment) {
-    if (fn.suffix != null) {
-        val suffix = env.lookupVar(fn.suffix) as FunctionValue
+    fn.suffixes.forEach {
+        val suffix = env.lookupVar(it) as FunctionValue
 
-        if (suffix.prefix != null) {
-            runPrefix(suffix, env)
-        }
+        runPrefix(suffix, env)
 
         for (statement in suffix.value) {
             evaluate(statement, suffix.declEnv)
         }
 
-        if (suffix.suffix != null) {
-            runSuffix(suffix, env)
-        }
+        runSuffix(suffix, env)
     }
 }
 
@@ -306,7 +299,7 @@ fun evalAwaitDecl(decl: AwaitDecl, env: Environment): RuntimeVal {
         declEnv = env,
         obj = evaluate(decl.obj, env) as PromiseVal,
         value = decl.body,
-        async = decl.async
+        async = decl.modifiers.none { it.type == ModifierType.Synchronised }
     ) {}
 
     val scope = Environment(fn.declEnv)
@@ -338,7 +331,7 @@ fun evalAwaitDecl(decl: AwaitDecl, env: Environment): RuntimeVal {
 fun evalAfterDecl(decl: AfterDecl, env: Environment): RuntimeVal = runBlocking {
     val ms = evaluate(decl.ms, env)
 
-    val fn = makeAfter(ms, env, decl.body, !decl.async)
+    val fn = makeAfter(ms, env, decl.body, !decl.modifiers.none { it.type == ModifierType.Synchronised })
 
     var result: RuntimeVal = makeNull()
 
@@ -371,7 +364,7 @@ fun evalIfDecl(decl: IfDecl, env: Environment): RuntimeVal {
         cond = cond,
         declEnv = env,
         value = decl.body,
-        async = decl.async,
+        modifiers = decl.modifiers,
         otherwise = decl.otherwise,
         orStmts = decl.or
     ) {}
@@ -464,24 +457,17 @@ fun evalIfDecl(decl: IfDecl, env: Environment): RuntimeVal {
 
 fun evalFuncDecl(decl: FunctionDecl, env: Environment): RuntimeVal {
     val fn = object : FunctionValue(
-        name = (decl.name?.symbol ?: "_") to (decl.name?.type ?: "null"),
+        name = decl.name?.symbol to decl.name?.type,
         declEnv = env,
         params = decl.parameters,
         value = decl.body,
-        coroutine = decl.coroutine,
-        prefix = decl.prefix,
-        suffix = decl.suffix,
         arity = decl.arity,
-        private = decl.private,
-
-        promise = decl.promise,
-        mutating = decl.mutating,
-        static = decl.static
+        modifiers = decl.modifiers,
     ) {}
 
     // The function is not a lambda
-    if (decl.name != null) {
-        env.declareVar(decl.name.symbol, fn, true)
+    if (fn.name.first != null) {
+        env.declareVar(fn.name.first!!, fn, true)
     }
 
     return fn

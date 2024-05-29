@@ -94,7 +94,7 @@ fun evalForDecl(decl: ForDecl, env: Environment): RuntimeVal {
         declEnv = env,
         obj = env.lookupVar(decl.obj.symbol),
         value = decl.body,
-        async = decl.async
+        modifiers = decl.modifiers
     ) {}
 
     if (fn.async) {
