@@ -102,7 +102,7 @@ const __std = Object.freeze({
         throw `Program exited with code ${'$'}{code}`
     },
     not_supported_js: () => {
-        throw \"Some function wasn't able to be transpiled to JavaScript :(\"
+        throw "Some function wasn't able to be transpiled to JavaScript :("
     }
 });
 // End standard library for non-native js functions
