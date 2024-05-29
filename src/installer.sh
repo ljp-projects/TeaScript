@@ -1,4 +1,4 @@
-tea_version="v1.0.0-beta.1"
+tea_version="v1.0.0-beta.2"
 
 cd /tmp/ || exit
 git clone https://github.com/ljp-projects/TeaScript.git
