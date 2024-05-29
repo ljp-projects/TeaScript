@@ -52,7 +52,8 @@ fun run(argv: Array<String>) = runBlocking {
 
             evaluate(
                 ast,
-                env
+                env,
+                argv[1]
             )
         }
         "compile" -> {

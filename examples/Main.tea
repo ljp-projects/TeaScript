@@ -1,7 +1,3 @@
-static func no: null (x: number) {
-    io.println(2)
-}
+mutable x = 7 # Inferred type: number
 
-static func main: null () {
-    no(2)
-}
+x = "str" # Attempting to assign a str to a number

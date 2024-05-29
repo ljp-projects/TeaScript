@@ -8,18 +8,14 @@ import runtime.*
 fun transpilePrefix(fn: FunctionValue, env: Environment): String {
     val res = StringBuilder("")
 
-    if (fn.prefix != null) {
-        val prefix = env.lookupVar(fn.prefix) as FunctionValue
+    fn.prefixes.forEach {
+        val prefix = env.lookupVar(it) as FunctionValue
 
-        if (prefix.prefix != null) {
-            res.append(transpilePrefix(prefix, env))
-        }
+        res.append(transpilePrefix(prefix, env))
 
         res.append("${prefix.name.first}();")
 
-        if (prefix.suffix != null) {
-            res.append(transpileSuffix(prefix, env))
-        }
+        res.append(transpileSuffix(prefix, env))
     }
 
     return res.toString()
@@ -27,18 +23,14 @@ fun transpilePrefix(fn: FunctionValue, env: Environment): String {
 fun transpileSuffix(fn: FunctionValue, env: Environment): String {
     val res = StringBuilder("")
 
-    if (fn.suffix != null) {
-        val suffix = env.lookupVar(fn.suffix) as FunctionValue
+    fn.suffixes.forEach {
+        val suffix = env.lookupVar(it) as FunctionValue
 
-        if (suffix.prefix != null) {
-            res.append(transpilePrefix(suffix, env))
-        }
+        res.append(transpilePrefix(suffix, env))
 
         res.append("${suffix.name.first}();")
 
-        if (suffix.suffix != null) {
-            res.append(transpileSuffix(suffix, env))
-        }
+        res.append(transpileSuffix(suffix, env))
     }
 
     return res.toString()
@@ -51,7 +43,7 @@ fun transpileIfDecl(decl: IfDecl, env: Environment): String {
         cond = cond,
         declEnv = env,
         value = decl.body,
-        async = decl.async,
+        modifiers = decl.modifiers,
         otherwise = decl.otherwise,
         orStmts = decl.or
     ) {}
@@ -99,14 +91,8 @@ fun transpileFuncDecl(decl: FunctionDecl, env: Environment): String {
         declEnv = env,
         params = decl.parameters,
         value = decl.body,
-        coroutine = decl.coroutine,
-        prefix = decl.prefix,
-        suffix = decl.suffix,
         arity = decl.arity,
-        private = decl.private,
-        promise = decl.promise,
-        mutating = decl.mutating,
-        static = decl.static
+        modifiers = decl.modifiers
     ) {}
 
     if (decl.name?.symbol != null && env.resolve(decl.name.symbol) == null) {

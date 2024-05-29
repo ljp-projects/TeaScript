@@ -46,14 +46,8 @@ abstract class FunctionDecl(
     val parameters: ArrayDeque<Pair<String, String>>,
     val name: Identifier?,
     val body: List<Statement>,
-    val coroutine: Boolean,
-    val private: Boolean,
     val arity: Int,
-    val promise: Boolean,
-    val mutating: Boolean,
-    val static: Boolean,
-    val prefix: String?,
-    val suffix: String?
+    val modifiers: Set<Modifier>
 ) : Expr {
     init {
         require(kind == "fn-decl") { "Key can't be $kind." }
@@ -84,7 +78,7 @@ abstract class ForDecl(
     val parameter: Identifier,
     val obj: Identifier,
     val body: List<Statement>,
-    val async: Boolean,
+    val modifiers: Set<Modifier>,
 ) : Statement {
     init {
         require(kind == "for-decl") { "Key can't be $kind." }
@@ -113,7 +107,7 @@ abstract class AwaitDecl(
     val parameter: Identifier,
     val obj: Expr,
     val body: List<Statement>,
-    val async: Boolean,
+    val modifiers: Set<Modifier>
 ) : Expr {
     init {
         require(kind == "await-decl") { "Key can't be $kind." }
@@ -123,15 +117,20 @@ abstract class AwaitDecl(
 /**
  * An expression representing an after block declaration. Kind must be after-decl.
  */
-abstract class AfterDecl(
+open class AfterDecl(
     final override val kind: String,
     val ms: Expr,
     val body: ArrayDeque<Statement>,
-    val async: Boolean,
+    val modifiers: Set<Modifier>,
 ) : Expr {
     init {
         require(kind == "after-decl") { "Key can't be $kind." }
     }
+
+    val async: Boolean
+        get() {
+            return modifiers.none { it.type == ModifierType.Synchronised }
+        }
 }
 
 /**
@@ -141,7 +140,7 @@ abstract class IfDecl(
     final override val kind: String,
     val cond: Expr,
     val body: ArrayDeque<Statement>,
-    val async: Boolean,
+    val modifiers: Set<Modifier>,
     val otherwise: ArrayDeque<Statement>?,
     val or: ArrayDeque<OrDecl>,
 ) : Expr {

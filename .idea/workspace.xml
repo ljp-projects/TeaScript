@@ -1,88 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="TeaScript:jar" />
+    </artifacts-to-build>
+  </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="157f05c8-c06f-40a7-960c-0f5c4e09291a" name="Changes" comment="Uh oh">
-      <change afterPath="$PROJECT_DIR$/examples/Main.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/annotations-13.0-javadoc.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/annotations-23.0.0-javadoc.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/asm-9.7-javadoc.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/error_prone_annotations-2.27.0-javadoc.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/error_prone_annotations-2.27.0.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/gson-2.11.0-javadoc.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/gson-2.11.0.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/json-20240303-javadoc.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/json-20240303.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/kotlin-stdlib-1.8.21-javadoc.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/kotlin-stdlib-1.9.21-javadoc.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/kotlin-stdlib-common-1.9.10-javadoc.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/kotlin-stdlib-jdk7-1.8.21-javadoc.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/kotlin-stdlib-jdk8-1.8.21-javadoc.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/kotlinx-coroutines-core-1.8.1.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/kotlinx-coroutines-core-jvm-1.8.1-javadoc.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/kotlinx-coroutines-core-jvm-1.8.1.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/okhttp-4.12.0-javadoc.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/okio-3.6.0-javadoc.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/okio-jvm-3.6.0-javadoc.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/google_code_gson.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/jetbrains_kotlinx_coroutines_core.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/json.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/squareup_okhttp3_okhttp.xml" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/TeaScript.jar.zip" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/runtime/Error.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/tea/NativeRunnable$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/tea/NativeRunnable$2.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/tea/NativeRunnable$Func1Arg.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/std/String.tea" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/TeaScript_jar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/TeaScript_jar.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TeaScript.iml" beforeDir="false" afterPath="$PROJECT_DIR$/TeaScript.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/main.tea" beforeDir="false" afterPath="$PROJECT_DIR$/examples/Main.tea" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/annotations-13.0-sources.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/annotations-13.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/annotations-13.0.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/annotations-23.0.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/annotations-23.0.0.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/asm-9.7.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/asm-9.7.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/gson-2.10.1-sources.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/gson-2.10.1.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/json-20171018.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-compiler-embeddable-1.9.23-sources.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-compiler-embeddable-1.9.23.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-daemon-client-1.8.22.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-daemon-embeddable-1.9.23-sources.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-daemon-embeddable-1.9.23.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-js-1.0.0-pre.536.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-reflect-1.6.10-sources.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-reflect-1.6.10.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-reflect-1.9.23.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-script-runtime-1.7.0.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-script-runtime-1.8.22.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-script-runtime-1.9.23-sources.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-script-runtime-1.9.23.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-script-util-1.8.22.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-scripting-common-1.7.0.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-scripting-common-1.8.22.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-scripting-compiler-embeddable-1.7.0.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-scripting-compiler-impl-embeddable-1.7.0.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-scripting-jvm-1.7.0.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-scripting-jvm-1.8.22.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-stdlib-1.7.0.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-stdlib-1.8.21.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/kotlin-stdlib-1.8.21.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-stdlib-1.8.22.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-stdlib-1.9.21.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/kotlin-stdlib-1.9.21.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-stdlib-1.9.23-sources.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-stdlib-1.9.23.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-stdlib-common-1.7.0.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-stdlib-common-1.8.20.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-stdlib-common-1.8.22.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-stdlib-common-1.9.10.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/kotlin-stdlib-common-1.9.10.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-stdlib-jdk7-1.8.21.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/kotlin-stdlib-jdk7-1.8.21.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlin-stdlib-jdk8-1.8.21.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/kotlin-stdlib-jdk8-1.8.21.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlinx-coroutines-core-1.8.0.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlinx-coroutines-core-jvm-1.5.0.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/kotlinx-coroutines-core-jvm-1.8.0.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/okhttp-4.12.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/okhttp-4.12.0.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/okio-3.6.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/okio-3.6.0.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/okio-jvm-3.6.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/okio-jvm-3.6.0.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/trove4j-1.0.20200330-sources.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/trove4j-1.0.20200330.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/Main.jar" beforeDir="false" afterPath="$PROJECT_DIR$/examples/Main.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/Main.tea" beforeDir="false" afterPath="$PROJECT_DIR$/examples/Main.tea" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/META-INF/MANIFEST.MF" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/MainKt$run$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/MainKt$run$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/MainKt.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/MainKt.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/TeaScript.jar" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/AfterDecl.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/AfterDecl.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/AssignmentExpr.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/AssignmentExpr.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/AwaitDecl.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/AwaitDecl.class" afterDir="false" />
@@ -101,12 +45,19 @@
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/OrDecl.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/OrDecl.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$WhenMappings.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$WhenMappings.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseAdditiveExpr$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseAdditiveExpr$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseAfterDeclaration$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseAfterDeclaration$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseAssignmentExpr$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseAssignmentExpr$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseAwaitDeclaration$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseAwaitDeclaration$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseCallExpr$callExpr$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseCallExpr$callExpr$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseClassDeclaration$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseClassDeclaration$2.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseClassDeclaration$name$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseClassDeclaration$name$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseExponentiationExpr$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseExponentiationExpr$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseFnDeclaration$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseFnDeclaration$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseFnDeclaration$name$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseForDeclaration$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseForDeclaration$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseIfDeclaration$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseIfDeclaration$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseIfDeclaration$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseIfDeclaration$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseImportDeclaration$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseImportDeclaration$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseMemberExpr$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseMemberExpr$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseMultiplicativeExpr$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseMultiplicativeExpr$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseObject$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseObject$1.class" afterDir="false" />
@@ -117,6 +68,9 @@
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parsePrimaryExpr$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parsePrimaryExpr$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parsePrimaryExpr$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parsePrimaryExpr$2.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parsePrimaryExpr$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parsePrimaryExpr$3.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseVarDeclaration$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseVarDeclaration$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseVarDeclaration$declaration$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$parseVarDeclaration$declaration$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$produceAST$1$program$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser$produceAST$1$program$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/Parser.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/Program.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/Program.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/frontend/Property.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/frontend/Property.class" afterDir="false" />
@@ -149,21 +103,27 @@
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/EnvironmentKt$makeGlobalEnv$net$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/EnvironmentKt$makeGlobalEnv$net$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/EnvironmentKt$makeGlobalEnv$net$2$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/EnvironmentKt$makeGlobalEnv$net$2$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/EnvironmentKt$makeGlobalEnv$net$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/EnvironmentKt$makeGlobalEnv$net$2.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/EnvironmentKt$makeGlobalEnv$ui$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/EnvironmentKt$makeGlobalEnv$ui$2.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/EnvironmentKt.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/EnvironmentKt.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/ForValue.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/ForValue.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/FunctionValue.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/FunctionValue.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/IfValue.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/IfValue.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/ImportVal.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/ImportVal.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/NativeAnnotation.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/InterpreterKt.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/InterpreterKt.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/NativeFnValue.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/NativeFnValue.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/NullVal.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/NullVal.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/NumberVal.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/NumberVal.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/ObjectVal.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/ObjectVal.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/PromiseVal.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/PromiseVal.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/StringVal.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/StringVal.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/TranspileKt.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/TranspileKt.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/ValuesKt$makeAfter$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/ValuesKt$makeAfter$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/ValuesKt$makeAny$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/ValuesKt$makeAny$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/ValuesKt$makeBool$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/ValuesKt$makeBool$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/ValuesKt$makeNativeFn$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/ValuesKt$makeNativeFn$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/ValuesKt$makeNull$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/ValuesKt$makeNull$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/ValuesKt$makeNumber$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/ValuesKt$makeNumber$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/ValuesKt$makeObject$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/ValuesKt$makeObject$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/ValuesKt$makePromise$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/ValuesKt$makePromise$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/ValuesKt$makeString$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/ValuesKt$makeString$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/ValuesKt.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/ValuesKt.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/Variable$Companion.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/Variable$Companion.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/Variable.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/Variable.class" afterDir="false" />
@@ -180,35 +140,59 @@
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/ExpressionsKt$evalIfDecl$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/ExpressionsKt$evalIfDecl$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/ExpressionsKt$evalIfDecl$fn$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/ExpressionsKt$evalIfDecl$fn$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/ExpressionsKt.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/ExpressionsKt.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/StatementKt$evalForDecl$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/StatementKt$evalForDecl$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/StatementKt$evalForDecl$fn$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/StatementKt$evalForDecl$fn$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/StatementKt.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/StatementKt.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/compile/BinaryExpressionsKt.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/compile/BinaryExpressionsKt.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/compile/DeclsKt$compileFuncDecl$fn$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/compile/DeclsKt$compileFuncDecl$fn$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/compile/DeclsKt$compileFuncDecl$mw$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/compile/DeclsKt$compileFuncDecl$mw$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/compile/DeclsKt$compileFuncDecl$mw$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/compile/DeclsKt$compileIfDecl$fn$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/compile/DeclsKt$compileIfDecl$fn$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/compile/DeclsKt.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/compile/DeclsKt.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/compile/IdentifiersKt$compileCallExpr$3.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/compile/IdentifiersKt$compileCallExpr$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/compile/IdentifiersKt$compileCallExpr$2.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/compile/IdentifiersKt.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/compile/IdentifiersKt.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/compile/ObjectsKt.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/compile/ObjectsKt.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/compile/StatementsKt.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/compile/StatementsKt.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/transpile/BinaryExpressionsKt.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/transpile/BinaryExpressionsKt.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/transpile/DeclsKt$transpileFuncDecl$fn$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/transpile/DeclsKt$transpileFuncDecl$fn$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/transpile/DeclsKt$transpileFuncDecl$res$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/transpile/DeclsKt$transpileFuncDecl$res$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/transpile/DeclsKt$transpileIfDecl$fn$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/transpile/DeclsKt$transpileIfDecl$fn$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/transpile/DeclsKt.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/transpile/DeclsKt.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/transpile/IdentifiersKt.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/transpile/IdentifiersKt.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/transpile/ObjectsKt.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/transpile/ObjectsKt.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/transpile/StatementsKt$transpileForDecl$fn$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/transpile/StatementsKt$transpileForDecl$fn$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/transpile/StatementsKt.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/runtime/eval/transpile/StatementsKt.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TeaScript/tea/NativeRunnable.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TeaScript/tea/NativeRunnable.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/TeaScript.jar" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/frontend/AST.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/AST.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/frontend/Lexer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/Lexer.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/frontend/Parser.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/Parser.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/frontend/Token.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/Token.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/installer.sh" beforeDir="false" afterPath="$PROJECT_DIR$/src/installer.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/runtime/Environment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/Environment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/Transpile.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/Transpile.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/runtime/Interpreter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/Interpreter.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/runtime/Values.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/Values.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/runtime/eval/Expressions.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/eval/Expressions.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/runtime/eval/Statement.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/eval/Statement.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/runtime/eval/compile/Decls.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/eval/compile/Decls.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/eval/compile/Identifiers.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/eval/compile/Identifiers.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/runtime/eval/compile/Statements.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/eval/compile/Statements.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/runtime/eval/transpile/Decls.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/eval/transpile/Decls.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/runtime/eval/transpile/Statements.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/eval/transpile/Statements.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/tea/Func.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/tea/Func.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tea/NativeRunnable.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/tea/NativeRunnable.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/tea/NativeRunnable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/tea/NativeRunnable.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Kotlin Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -219,12 +203,12 @@
     &quot;assignee&quot;: &quot;ljp-projects&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "git@github.com:ljp-projects/TeaScript.git",
-    "accountId": "4f70c07d-8072-4241-9c78-d608ade19dff"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;git@github.com:ljp-projects/TeaScript.git&quot;,
+    &quot;accountId&quot;: &quot;4f70c07d-8072-4241-9c78-d608ade19dff&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 6
@@ -248,16 +232,17 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
-    "project.structure.last.edited": "Modules",
+    "project.structure.last.edited": "Artifacts",
     "project.structure.proportion": "0.33955225",
-    "project.structure.side.proportion": "0.5103448"
+    "project.structure.side.proportion": "0.5103448",
+    "settings.editor.selected.configurable": "project.propVCSSupport.Mappings"
   }
 }]]></component>
   <component name="RunManager">
     <configuration name="MainKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="MainKt" />
       <module name="TeaScript" />
-      <option name="PROGRAM_PARAMETERS" value="compile examples/Main.tea examples/Main.jar" />
+      <option name="PROGRAM_PARAMETERS" value="run examples/Main.tea examples/Main.jar" />
       <shortenClasspath name="NONE" />
       <method v="2">
         <option name="Make" enabled="true" />

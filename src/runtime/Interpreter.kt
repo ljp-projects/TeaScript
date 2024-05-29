@@ -3,14 +3,14 @@ package runtime
 import frontend.*
 import runtime.eval.*
 
-fun evaluate(astNode: Statement, env: Environment): RuntimeVal {
+fun evaluate(astNode: Statement, env: Environment, file: String = ""): RuntimeVal {
     return when (astNode) {
         is NumberLiteral -> makeNumber(astNode.value)
-        is StringLiteral -> makeString(astNode.value)
+        is StringLiteral -> makeString(astNode.value, env)
         is Identifier -> evalIdentifier(astNode, env)
         is ObjectLiteral -> evalObjectExpr(astNode, env)
         is CallExpr -> evalCallExpr(astNode, env)
-        is AssignmentExpr -> evalAssignment(astNode, env)
+        is AssignmentExpr -> evalAssignment(astNode, env, file)
         is BinaryExpr -> evalBinaryExpr(astNode, env)
         is Program -> evalProgram(astNode, env)
         is MemberExpr -> evalMemberExpr(astNode, env)

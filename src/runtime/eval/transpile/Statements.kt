@@ -93,7 +93,7 @@ fun transpileForDecl(decl: ForDecl, env: Environment): String {
         declEnv = env,
         obj = env.lookupVar(decl.obj.symbol),
         value = decl.body,
-        async = decl.async
+        modifiers = decl.modifiers
     ) {}
 
     var res = "for (const ${fn.param} in ${decl.obj}) {\n"
