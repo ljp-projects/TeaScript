@@ -73,11 +73,10 @@ fun compileVarDecl(decl: VarDecl, env: Environment, cw: ClassWriter) {
 }
 fun compileVarDecl(decl: VarDecl, env: Environment, mw: MethodVisitor, cn: String) {
     val g = decl.value.get()
-    val v = evaluate(g, env)
 
     compile(g, env, mw, cn)
 
     env.declareVar(decl.identifier.symbol, makeAny(decl.identifier.type), decl.constant, env.getSize() + 2)
 
-    mw.visitVarInsn(typeToStore(v.kind, decl.identifier.type), env.getSize() + 1)
+    mw.visitVarInsn(typeToStore(decl.identifier.type, decl.identifier.type), env.getSize() + 1)
 }

@@ -1,8 +1,6 @@
 package runtime
 
-import frontend.Identifier
-import frontend.OrDecl
-import frontend.Statement
+import frontend.*
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import kotlin.collections.HashSet
@@ -10,6 +8,22 @@ import kotlin.collections.HashSet
 interface RuntimeVal {
     val kind: String
     val value: Any
+}
+
+fun RuntimeVal.toCommon(): String {
+    return if (this is StringVal && this.value.toIntOrNull() != null) {
+        this.value + ".0"
+    } else {
+        "${this.value}"
+    }
+}
+
+fun RuntimeVal.toFancy(): String {
+    return if (this is StringVal) {
+        "\"${this.toCommon()}\""
+    } else {
+        this.toCommon()
+    }
 }
 
 fun makeAny(kind: String) = object : RuntimeVal {
@@ -75,11 +89,34 @@ abstract class StringVal(
     }
 }
 
-fun makeString(s: String) =
-    object : StringVal(
+fun makeString(s: String, env: Environment = Environment(null)): StringVal {
+    val str = s.replace("\\n", "\n").replace("\\t", "\t").split("").toMutableList()
+    var final = ""
+
+    while (str.isNotEmpty()) {
+        when (val c = str.removeFirst()) {
+            "\\" -> {
+                if (str.removeFirstOrNull() == "{") {
+                    var expr = ""
+
+                    while (str.isNotEmpty() && str.firstOrNull() != "}") {
+                        expr += str.removeFirst()
+                    }
+
+                    str.removeFirstOrNull()
+
+                    final += evaluate(Parser().produceAST(expr), env).value
+                }
+            }
+            else -> final += c
+        }
+    }
+
+    return object : StringVal(
         "str",
-        s.replace("\\n", "\n").replace("\\t", "\t")
+        final
     ) {}
+}
 
 abstract class ObjectVal(
     final override val kind: String = "object",
@@ -115,23 +152,68 @@ abstract class NativeFnValue (
 
 fun makeNativeFn(name: String, arity: Int = 1, jvmName: String = "", f: FunctionCall) = object : NativeFnValue(arity = arity, value = f, name = name, jvmName = jvmName) {}
 
-abstract class FunctionValue(
+open class FunctionValue(
     final override val kind: String = "func",
     val name: Pair<String?, String?>,
     val params: ArrayDeque<Pair<String, String>>,
     val declEnv: Environment,
     override val value: List<Statement>,
-    val coroutine: Boolean,
-    val private: Boolean,
     val arity: Int,
-    val promise: Boolean,
-    val mutating: Boolean,
-    val static: Boolean,
-    val prefix: String?,
-    val suffix: String?
+    val modifiers: Set<Modifier>
 ) : RuntimeVal {
     init {
         require(kind == "func") { "Key can't be $kind." }
+    }
+
+    val mutating
+            get() = mutating()
+
+    val private
+        get() = private()
+
+    val coroutine
+        get() = coroutine()
+
+    val promise
+        get() = promise()
+
+    val suffixes
+        get() = suffixes()
+
+    val prefixes
+        get() = prefixes()
+
+    val static
+        get() = static()
+
+    private fun private(): Boolean {
+        return this.modifiers.any { it.type == ModifierType.Private }
+    }
+
+    private fun coroutine(): Boolean {
+        println(modifiers)
+
+        return this.modifiers.none { it.type == ModifierType.Synchronised }
+    }
+
+    private fun promise(): Boolean {
+        return this.modifiers.any { it.type == ModifierType.Promise }
+    }
+
+    private fun mutating(): Boolean {
+        return this.modifiers.any { it.type == ModifierType.Mutating }
+    }
+
+    private fun suffixes(): Set<String> {
+        return this.modifiers.filter { it.type == ModifierType.Suffix }.map { it.value }.toSet()
+    }
+
+    private fun prefixes(): Set<String> {
+        return this.modifiers.filter { it.type == ModifierType.Prefix }.map { it.value }.toSet()
+    }
+
+    private fun static(): Boolean {
+        return this.modifiers.any { it.type == ModifierType.Static }
     }
 }
 
@@ -148,17 +230,22 @@ abstract class ClassValue(
     }
 }
 
-abstract class ForValue(
+open class ForValue(
     final override val kind: String = "for",
     val param: Identifier,
     val obj: RuntimeVal,
     val declEnv: Environment,
     override val value: List<Statement>,
-    val async: Boolean,
+    val modifiers: Set<Modifier>,
 ) : RuntimeVal {
     init {
         require(kind == "for") { "Key can't be $kind." }
     }
+
+    val async: Boolean
+        get() {
+            return modifiers.any { it.type == ModifierType.Synchronised }
+        }
 }
 
 abstract class AwaitValue(
@@ -198,11 +285,16 @@ abstract class IfValue(
     val cond: RuntimeVal,
     val declEnv: Environment,
     override val value: ArrayDeque<Statement>,
-    val async: Boolean,
+    val modifiers: Set<Modifier>,
     val otherwise: ArrayDeque<Statement>?,
     val orStmts: ArrayDeque<OrDecl>,
 ) : RuntimeVal {
     init {
         require(kind == "if") { "Key can't be $kind." }
     }
+
+    val async: Boolean
+        get() {
+            return modifiers.any { it.type == ModifierType.Synchronised }
+        }
 }

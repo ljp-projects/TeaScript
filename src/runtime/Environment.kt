@@ -4,11 +4,15 @@ import com.google.gson.Gson
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 import java.io.IOException
+import java.nio.file.Paths
 import java.util.concurrent.CompletableFuture
 import java.util.Date
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
+import kotlin.io.path.Path
+import kotlin.io.path.absolutePathString
 import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.sin
@@ -83,12 +87,12 @@ fun makeGlobalEnv(argv: Array<StringVal>): Environment {
 
             return@makeNativeFn makeNull()
         },
-        "readln" to makeNativeFn("__std.not_supported_js") { args, _ ->
-            val promise = args[0] as PromiseVal
-
-            promise.value.get()
+        "readln" to makeNativeFn("__std.not_supported_js", 0, "readln") { args, _ ->
+            makeString(
+                readln()
+            )
         },
-        "exit" to makeNativeFn("__std.exit") { args, _ ->
+        "exit" to makeNativeFn("__std.exit", 1, "exit") { args, _ ->
             val code = (args[0] as NumberVal).value
 
             exitProcess(code.toInt())
@@ -134,6 +138,29 @@ fun makeGlobalEnv(argv: Array<StringVal>): Environment {
             obj.value.second[idx.value.toInt()] = new
 
             return@makeNativeFn obj.value.second.removeLastOrNull() ?: makeNull()
+        },
+        "File" to makeNativeFn("__std.not_supported_js", 1) { args, env ->
+            val absPath = Paths.get(args[0].value.toString())
+            val f = File(absPath.toUri())
+
+            fun readString(args: List<RuntimeVal>, env: Environment): PromiseVal {
+                val future = CompletableFuture<RuntimeVal>()
+
+                f.reader().use {
+                    future.complete(
+                        makeString(it.readText())
+                    )
+                }
+
+                return makePromise(future)
+            }
+
+            val obj = hashMapOf(
+                "readString" to makeNativeFn("__std.not_supported_js", f = ::readString),
+                "absolutePath" to makeString(absPath.absolutePathString())
+            )
+            
+            return@makeNativeFn makeObject(obj.keys.toMutableList() to obj.values.toMutableList())
         }
     )
 
@@ -189,8 +216,9 @@ fun makeGlobalEnv(argv: Array<StringVal>): Environment {
         "rand" to makeNativeFn("Math.random", 2) { args, _ ->
             val min = (args[0] as NumberVal).value
             val max = (args[1] as NumberVal).value
+            val r = floor(Math.random() * (max - min + 1) + min)
 
-            return@makeNativeFn makeNumber(floor(Math.random() * (max - min + 1) + min))
+            return@makeNativeFn makeNumber(r)
         },
         "pi" to makeNumber(Math.PI)
     )
@@ -198,7 +226,7 @@ fun makeGlobalEnv(argv: Array<StringVal>): Environment {
     env.declareVar("io", makeObject(io.keys.toMutableList() to io.values.toMutableList()), true)
     env.declareVar("net", makeObject(net.keys.toMutableList() to net.values.toMutableList()), true)
     env.declareVar("data", makeObject(data.keys.toMutableList() to data.values.toMutableList()), true)
-    env.declareVar("math", makeObject(math.keys.toMutableList() to data.values.toMutableList()), true)
+    env.declareVar("math", makeObject(math.keys.toMutableList() to math.values.toMutableList()), true)
 
     env.declareVar("time", makeNativeFn("Date.now", 0) { _, _ ->
         return@makeNativeFn makeNumber(Date().time.toDouble())
@@ -251,15 +279,16 @@ class Variable(
 
     /**
     * THIS FUNCTION DOES NOT GUARANTEE TYPE SAFETY OF THE OLD AND ASSIGNED VALUE */
-    fun mutate(new: RuntimeVal) {
+    fun mutate(new: RuntimeVal, file: String) {
         if (constant) {
-            throw IllegalStateException("Cannot mutate $name since it is constant. Try declaring it with the 'mutable' keyword instead.")
+            Error("Cannot mutate $name since it is constant. Try declaring it with the 'mutable' keyword instead.", file)
+                .raise()
         }
 
         value = new
 
         bindings.forEach {
-            if (!it.constant) it.mutate(new)
+            if (!it.constant) it.mutate(new, file)
         }
     }
 }
@@ -306,11 +335,11 @@ class Environment(
         return null
     }
 
-    fun assignVar(name: String, value: RuntimeVal): RuntimeVal {
+    fun assignVar(name: String, value: RuntimeVal, file: String): RuntimeVal {
         resolve(name)
             ?: throw IllegalAccessException("Variable $name cannot be reassigned as it was never declared.")
 
-        getVar(name).mutate(value)
+        getVar(name).mutate(value, file)
 
         return value
     }

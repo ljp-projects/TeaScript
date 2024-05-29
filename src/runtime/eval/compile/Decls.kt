@@ -2,6 +2,7 @@ package runtime.eval.compile
 
 import frontend.FunctionDecl
 import frontend.IfDecl
+import frontend.ModifierType
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Label
 import org.objectweb.asm.MethodVisitor
@@ -10,37 +11,29 @@ import runtime.*
 import java.util.*
 
 fun compilePrefix(fn: FunctionValue, env: Environment, mv: MethodVisitor, cn: String) {
-    if (fn.prefix != null) {
-        val prefix = env.lookupVar(fn.prefix) as FunctionValue
+    fn.prefixes.forEach {
+        val prefix = env.lookupVar(it) as FunctionValue
 
-        if (prefix.prefix != null) {
-            compilePrefix(prefix, env, mv, cn)
-        }
+        compilePrefix(prefix, env, mv, cn)
 
         for (statement in prefix.value) {
             compile(statement, prefix.declEnv, mv, cn)
         }
 
-        if (prefix.suffix != null) {
-            compileSuffix(prefix, env, mv, cn)
-        }
+        compileSuffix(prefix, env, mv, cn)
     }
 }
 fun compileSuffix(fn: FunctionValue, env: Environment, mv: MethodVisitor, cn: String) {
-    if (fn.suffix != null) {
-        val suffix = env.lookupVar(fn.suffix) as FunctionValue
+    fn.suffixes.forEach {
+        val suffix = env.lookupVar(it) as FunctionValue
 
-        if (suffix.prefix != null) {
-            compilePrefix(suffix, env, mv, cn)
-        }
+        compilePrefix(suffix, env, mv, cn)
 
         for (statement in suffix.value) {
             compile(statement, suffix.declEnv, mv, cn)
         }
 
-        if (suffix.suffix != null) {
-            compileSuffix(suffix, env, mv, cn)
-        }
+        compileSuffix(suffix, env, mv, cn)
     }
 }
 fun compileIfDecl(decl: IfDecl, env: Environment, mv: MethodVisitor, cn: String): MethodVisitor {
@@ -48,7 +41,7 @@ fun compileIfDecl(decl: IfDecl, env: Environment, mv: MethodVisitor, cn: String)
         cond = makeBool(),
         declEnv = env,
         value = decl.body,
-        async = decl.async,
+        modifiers = decl.modifiers,
         otherwise = decl.otherwise,
         orStmts = decl.or
     ) {}
@@ -115,14 +108,8 @@ fun compileFuncDecl(decl: FunctionDecl, env: Environment, cw: ClassWriter, cn: S
         declEnv = env,
         params = decl.parameters,
         value = decl.body,
-        coroutine = decl.coroutine,
-        prefix = decl.prefix,
-        suffix = decl.suffix,
+        modifiers = decl.modifiers,
         arity = decl.arity,
-        private = decl.private,
-        promise = decl.promise,
-        mutating = decl.mutating,
-        static = decl.static
     ) {}
 
     // The function is not a lambda
@@ -133,7 +120,7 @@ fun compileFuncDecl(decl: FunctionDecl, env: Environment, cw: ClassWriter, cn: S
     val fnScope = Environment(fn.declEnv)
 
     fn.params.forEach {
-        fnScope.declareVar(it.first, makeAny(it.second), true, fnScope.getSize() + 1)
+        fnScope.declareVar(it.first, makeAny(it.second), true, if (fn.static) fnScope.variables.size else 1 + fnScope.variables.size)
     }
 
     var acc = Opcodes.ACC_PUBLIC
@@ -142,6 +129,8 @@ fun compileFuncDecl(decl: FunctionDecl, env: Environment, cw: ClassWriter, cn: S
 
     val mw = if (fn.name.first == "main" && fn.static) {
         cw.visitMethod(acc, fn.name.first, "([Ljava/lang/String;)V", null, null)
+    } else if (fn.modifiers.any { it.type == ModifierType.Annotation && it.value == "Main" }) {
+        cw.visitMethod(acc, "main", "([Ljava/lang/String;)V", null, null)
     } else cw.visitMethod(acc, fn.name.first, "(${fn.params.joinToString("") { typeToDescriptor(it.second) }})${typeToDescriptor(fn.name.second ?: "null")}", null, null)
 
     mw.visitCode()

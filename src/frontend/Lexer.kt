@@ -63,17 +63,25 @@ fun tokenise(sourceCode: String): MutableList<Token> {
                 chars.removeFirstOrNull()
 
                 while (chars.isNotEmpty() && chars.firstOrNull() != '@') {
-                    chars.removeFirst()
+                    buf.append(chars.removeFirst())
                 }
 
-                chars.removeFirst()
+                val id = buf.toString()
+
+                if (id in KEYWORDS) {
+                    throw Error("Cannot annotate with keywords.")
+                }
+
+                tokens.addLast(
+                    Token(TokenType.Annotation, id)
+                )
+
+                buf.clear()
             }
             '#' -> {
                 while (chars.isNotEmpty() && chars.firstOrNull() != '\n') {
                     chars.removeFirst()
                 }
-
-                chars.removeFirst()
             }
             '(' -> tokens.addLast(Token(TokenType.OpenParen, chars.removeFirst().toString()))
             ')' -> tokens.addLast(Token(TokenType.CloseParen, chars.removeFirst().toString()))
