@@ -11,7 +11,6 @@ import java.util.concurrent.CompletableFuture
 import java.util.Date
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
-import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 import kotlin.math.cos
 import kotlin.math.floor
@@ -19,12 +18,12 @@ import kotlin.math.sin
 import kotlin.system.exitProcess
 
 fun makeGlobalEnv(argv: Array<StringVal>): Environment {
-    val env = Environment(null)
+    val envP = Environment(null)
 
-    env.declareVar("true", makeBool(true), true)
-    env.declareVar("false", makeBool(false), true)
+    envP.declareVar("true", makeBool(true), true)
+    envP.declareVar("false", makeBool(false), true)
 
-    env.declareVar("null", makeNull(), false)
+    envP.declareVar("null", makeNull(), false)
 
     val io: HashMap<String, RuntimeVal> = hashMapOf(
         "println" to makeNativeFn("console.log", -1, "println") { args, _ ->
@@ -139,11 +138,11 @@ fun makeGlobalEnv(argv: Array<StringVal>): Environment {
 
             return@makeNativeFn obj.value.second.removeLastOrNull() ?: makeNull()
         },
-        "File" to makeNativeFn("__std.not_supported_js", 1) { args, env ->
+        "File" to makeNativeFn("__std.not_supported_js", 1) { args, _ ->
             val absPath = Paths.get(args[0].value.toString())
             val f = File(absPath.toUri())
 
-            fun readString(args: List<RuntimeVal>, env: Environment): PromiseVal {
+            fun readString(argsF: List<RuntimeVal>, env: Environment): PromiseVal {
                 val future = CompletableFuture<RuntimeVal>()
 
                 f.reader().use {
@@ -161,6 +160,11 @@ fun makeGlobalEnv(argv: Array<StringVal>): Environment {
             )
             
             return@makeNativeFn makeObject(obj.keys.toMutableList() to obj.values.toMutableList())
+        },
+        "join" to makeNativeFn("__std.join_obj", 2) { args, _ ->
+            makeString(
+                (args[0] as ObjectVal).value.second.joinToString((args[1] as StringVal).value)
+            )
         }
     )
 
@@ -223,12 +227,12 @@ fun makeGlobalEnv(argv: Array<StringVal>): Environment {
         "pi" to makeNumber(Math.PI)
     )
 
-    env.declareVar("io", makeObject(io.keys.toMutableList() to io.values.toMutableList()), true)
-    env.declareVar("net", makeObject(net.keys.toMutableList() to net.values.toMutableList()), true)
-    env.declareVar("data", makeObject(data.keys.toMutableList() to data.values.toMutableList()), true)
-    env.declareVar("math", makeObject(math.keys.toMutableList() to math.values.toMutableList()), true)
+    envP.declareVar("io", makeObject(io.keys.toMutableList() to io.values.toMutableList()), true)
+    envP.declareVar("net", makeObject(net.keys.toMutableList() to net.values.toMutableList()), true)
+    envP.declareVar("data", makeObject(data.keys.toMutableList() to data.values.toMutableList()), true)
+    envP.declareVar("math", makeObject(math.keys.toMutableList() to math.values.toMutableList()), true)
 
-    env.declareVar("time", makeNativeFn("Date.now", 0) { _, _ ->
+    envP.declareVar("time", makeNativeFn("Date.now", 0) { _, _ ->
         return@makeNativeFn makeNumber(Date().time.toDouble())
     }, true)
 
@@ -239,9 +243,9 @@ fun makeGlobalEnv(argv: Array<StringVal>): Environment {
         args.second.addLast(str)
     }
 
-    env.declareVar("argv", makeObject(args), true)
+    envP.declareVar("argv", makeObject(args), true)
 
-    return env
+    return envP
 }
 
 class Variable(
