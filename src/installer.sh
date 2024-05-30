@@ -5,7 +5,7 @@ git clone https://github.com/ljp-projects/TeaScript.git
 
 cd TeaScript || exit
 
-unzip src/TeaScript.jar.zip src/TeaScript.jar
+xz -d -T8 src/TeaScript.jar.xz
 cp src/TeaScript.jar /usr/local/bin/TeaScript.jar
 
 touch tea

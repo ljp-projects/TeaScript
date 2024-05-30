@@ -5,6 +5,7 @@
       <element id="module-output" name="TeaScript" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/annotations-13.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/annotations-23.0.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/args4j-2.37.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/asm-9.7.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/error_prone_annotations-2.27.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/gson-2.11.0.jar" path-in-jar="/" />
@@ -19,7 +20,6 @@
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/okhttp-4.12.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/okio-3.6.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/okio-jvm-3.6.0.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/lib/args4j-2.37.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
