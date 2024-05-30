@@ -1,5 +1,6 @@
 package runtime.eval.transpile
 
+import argsParsed
 import frontend.AfterDecl
 import frontend.FunctionDecl
 import frontend.IfDecl
@@ -105,7 +106,7 @@ fun transpileFuncDecl(decl: FunctionDecl, env: Environment): String {
         fnScope.declareVar(it.first, makeAny(it.second), true)
     }
 
-    val res = StringBuilder("${if (fn.name.first == null) "(" else ""}function ${fn.name.first ?: ""}(${fn.params.joinToString { it.first }}) {\n")
+    val res = StringBuilder("${if (argsParsed.exportAll) "export " else ""}${if (fn.name.first == null) "(" else ""}function ${fn.name.first ?: ""}(${fn.params.joinToString { it.first }}) {\n")
 
     fn.value.forEachIndexed { index, statement ->
         res.append("\t")
