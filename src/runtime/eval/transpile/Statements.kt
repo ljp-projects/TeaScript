@@ -26,25 +26,9 @@ fun transpileProgram(program: Program, env: Environment): String {
     return result
 }
 fun transpileVarDecl(decl: VarDecl, env: Environment): String {
-    val value: RuntimeVal = decl.value.getOrNull().let {
-        return@let if (it != null) evaluate(it, env) else null
-    } ?: makeNull()
-
     val actValue: String = decl.value.getOrNull().let {
         return@let if (it != null) transpile(it, env) else null
     } ?: ""
-
-    val type: String = if (env.resolve(decl.identifier.type) != null) {
-        env.lookupVar(decl.identifier.type).value.toString()
-    } else if (decl.identifier.type == "infer") {
-        value.kind
-    } else decl.identifier.type
-
-    if (decl.value.isPresent && value.kind != type && type != "any") {
-        throw IllegalArgumentException("Expected a value of type ${decl.identifier.type}, instead got ${value.kind}")
-    }
-
-    env.declareVar(decl.identifier.symbol, value, decl.constant)
 
     return """
         ${if (decl.constant) "const" else "let"} ${decl.identifier.symbol} = $actValue;

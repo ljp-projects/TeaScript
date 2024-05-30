@@ -24,13 +24,12 @@ fun transpileIdentifier(identifier: Identifier, env: Environment): String {
     return identifier.symbol
 }
 fun transpileCallExpr(call: CallExpr, env: Environment): String {
-    val args = call.args.map { evaluate(it, env) }
     val actArgs = call.args.map { transpile(it, env) }
     val fn = evaluate(call.caller, env)
 
     if (fn is NativeFnValue) {
-        if (fn.arity > -1 && fn.arity != args.size) {
-            throw RuntimeException("Native Function ${(call.caller as Identifier).symbol} expected ${fn.arity} arguments, instead got ${args.size}.")
+        if (fn.arity > -1 && fn.arity != actArgs.size) {
+            throw RuntimeException("Native Function ${(call.caller as Identifier).symbol} expected ${fn.arity} arguments, instead got ${actArgs.size}.")
         }
 
         return "${fn.name}(${actArgs.joinToString()})"
@@ -38,19 +37,11 @@ fun transpileCallExpr(call: CallExpr, env: Environment): String {
 
     if (fn is FunctionValue) {
         // An arity of -1 means any number of arguments are allowed
-        if (fn.arity > -1 && fn.arity != args.size) {
-            throw RuntimeException("${fn.name} expected ${fn.arity} arguments, instead got ${args.size}.")
+        if (fn.arity > -1 && fn.arity != actArgs.size) {
+            throw RuntimeException("${fn.name} expected ${fn.arity} arguments, instead got ${actArgs.size}.")
         }
 
         val scope = Environment(fn.declEnv)
-
-        fn.params.forEachIndexed { index, pair ->
-            if (pair.second != "any" && pair.second != args[index].kind) {
-                throw IllegalArgumentException("Cannot pass argument of type ${args[index].kind} to an expected type of ${pair.second}.")
-            }
-
-            scope.declareVar(pair.first, args[index], true)
-        }
 
         val result = StringBuilder("")
         var fr: RuntimeVal = makeNull()
