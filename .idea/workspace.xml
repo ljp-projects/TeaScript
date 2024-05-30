@@ -9,12 +9,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="157f05c8-c06f-40a7-960c-0f5c4e09291a" name="Changes" comment="Parse args differently">
-      <change afterPath="$PROJECT_DIR$/.gitattributes" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/TeaScript.jar.xz" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/artifacts/TeaScript_jar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/TeaScript_jar.xml" afterDir="false" />
+    <list default="true" id="157f05c8-c06f-40a7-960c-0f5c4e09291a" name="Changes" comment="Use xz to compress/decompress jar file">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TeaScript.jar.zip" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -224,7 +220,15 @@
       <option name="project" value="LOCAL" />
       <updated>1717052987561</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Use xz to compress/decompress jar file">
+      <option name="closed" value="true" />
+      <created>1717054972611</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1717054972611</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -235,6 +239,7 @@
     <MESSAGE value="New release" />
     <MESSAGE value="New release (fixed transpilation bug)" />
     <MESSAGE value="Parse args differently" />
-    <option name="LAST_COMMIT_MESSAGE" value="Parse args differently" />
+    <MESSAGE value="Use xz to compress/decompress jar file" />
+    <option name="LAST_COMMIT_MESSAGE" value="Use xz to compress/decompress jar file" />
   </component>
 </project>
