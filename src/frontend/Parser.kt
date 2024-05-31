@@ -41,7 +41,7 @@ class Parser {
      * @throws Error Throws when the expected TokenType isn't found.
      */
     private fun expect(type: TokenType, error: Exception): Token {
-        val prev = tokens.removeFirstOrNull()
+        val prev = eat()
         if (prev?.type != type) {
             throw error
         } else {
@@ -58,7 +58,7 @@ class Parser {
 
         val program: Program = object : Program("program", mutableListOf()) {}
 
-        while(notEOF()) {
+        while (notEOF()) {
             program.body.addLast(parseStatement())
         }
 

@@ -108,7 +108,10 @@ const __std = Object.freeze({
     },
     not_supported_js: () => {
         throw "Some function wasn't able to be transpiled to JavaScript :("
-    }
+    },
+    join_obj: (obj, sep) => {
+		return obj.join(sep);
+	},
 });
 // End standard library for non-native js functions
                
