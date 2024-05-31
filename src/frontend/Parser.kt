@@ -1,6 +1,7 @@
 package frontend
 
 import home
+import runtime.Error
 import java.nio.file.Paths
 import java.util.*
 
@@ -40,10 +41,11 @@ class Parser {
     /**
      * @throws Error Throws when the expected TokenType isn't found.
      */
-    private fun expect(type: TokenType, error: Exception): Token {
+    private fun expect(type: TokenType, error: String): Token {
         val prev = eat()
         if (prev?.type != type) {
-            throw error
+            Error(error, "")
+                .raise()
         } else {
             return prev
         }
@@ -143,14 +145,14 @@ class Parser {
 
         expect(
             TokenType.From,
-            Exception("Expected from keyword in an import statement.")
+            "Expected from keyword in an import statement."
         )
 
         if (at().type != TokenType.Str) {
-            throw IllegalArgumentException("Argument to use must be a string containing the file name of the module.")
+            Error("Argument to use must be a string containing the file name of the module.", "").raise()
         }
 
-        val url = (eat()?.value ?: throw IllegalArgumentException("Argument to use must be included.")).replace("@", Paths.get(home, ".tea/scripts/").toString() + "/")
+        val url = (eat()?.value ?: Error("Argument to use must be included.", "").raise()).replace("@", Paths.get(home, ".tea/scripts/").toString() + "/")
 
         return object : ImportDecl(
             "use-decl",
@@ -167,7 +169,7 @@ class Parser {
 
         if (at().type != TokenType.Equals) {
             if (isConstant) {
-                throw Exception("Must assign value to constant expression. No value provided.")
+                Error("Must assign value to constant expression. No value provided.", "").raise()
             }
 
             return object : VarDecl(
@@ -180,7 +182,7 @@ class Parser {
 
         expect(
             TokenType.Equals,
-            Exception("Expected equals token following identifier in var declaration."),
+            "Expected equals token following identifier in var declaration.",
         )
 
         val declaration = object : VarDecl(
@@ -200,14 +202,14 @@ class Parser {
 
         expect(
             TokenType.From,
-            Exception("Expected from after identifier in await expression.")
+            "Expected from after identifier in await expression."
         )
 
         val promise = parseExpr()
 
         expect(
             TokenType.OpenBrace,
-            Exception("Expected function body following declaration.")
+            "Expected function body following declaration."
         )
 
         val body: ArrayList<Statement> = ArrayList()
@@ -218,7 +220,7 @@ class Parser {
 
         expect(
             TokenType.CloseBrace,
-            Exception("Closing brace expected inside function declaration"),
+            "Closing brace expected inside function declaration",
         )
 
         return object : AwaitDecl(
@@ -238,7 +240,7 @@ class Parser {
 
         args.forEach {
             if (it.kind != "ident") {
-                throw Exception("Inside function declaration expected parameters to be an identifier.")
+                Error("Inside function declaration expected parameters to be an identifier.", "").raise()
             }
 
             params.addLast((it as Identifier))
@@ -246,7 +248,7 @@ class Parser {
 
         expect(
             TokenType.OpenBrace,
-            Exception("Expected function body following declaration.")
+            "Expected function body following declaration."
         )
 
         val body: ArrayList<Statement> = ArrayList()
@@ -257,7 +259,7 @@ class Parser {
 
         expect(
             TokenType.CloseBrace,
-            Exception("Closing brace expected inside function declaration"),
+            "Closing brace expected inside function declaration",
         )
 
         return object : ForDecl(
@@ -280,7 +282,7 @@ class Parser {
 
         expect(
             TokenType.OpenBrace,
-            Exception("Expected function body following declaration.")
+            "Expected function body following declaration."
         )
 
         val body = ArrayDeque<Statement>()
@@ -291,7 +293,7 @@ class Parser {
 
         expect(
             TokenType.CloseBrace,
-            Exception("Closing brace expected inside function declaration"),
+            "Closing brace expected inside function declaration",
         )
 
         return object : AfterDecl(
@@ -313,7 +315,7 @@ class Parser {
 
         expect(
             TokenType.OpenBrace,
-            Exception("Expected function body following declaration.")
+            "Expected function body following declaration."
         )
 
         val body = ArrayDeque<Statement>()
@@ -324,7 +326,7 @@ class Parser {
 
         expect(
             TokenType.CloseBrace,
-            Exception("Closing brace expected inside function declaration"),
+            "Closing brace expected inside function declaration",
         )
 
         val orBodies: ArrayDeque<OrDecl> = ArrayDeque()
@@ -336,7 +338,7 @@ class Parser {
 
             expect(
                 TokenType.OpenBrace,
-                Exception("Expected function body following declaration.")
+                "Expected function body following declaration."
             )
 
             val orBodyBacking = ArrayDeque<Statement>()
@@ -347,7 +349,7 @@ class Parser {
 
             expect(
                 TokenType.CloseBrace,
-                Exception("Closing brace expected inside function declaration"),
+                "Closing brace expected inside function declaration",
             )
 
             orBodies.addLast(object : OrDecl(
@@ -362,7 +364,7 @@ class Parser {
 
             expect(
                 TokenType.OpenBrace,
-                Exception("Expected function body following declaration.")
+                "Expected function body following declaration."
             )
 
             val otherWiseBodyBacking = ArrayDeque<Statement>()
@@ -373,7 +375,7 @@ class Parser {
 
             expect(
                 TokenType.CloseBrace,
-                Exception("Closing brace expected inside function declaration"),
+                "Closing brace expected inside function declaration",
             )
 
             otherWiseBodyBacking
@@ -411,7 +413,7 @@ class Parser {
 
         args.forEach {
             if (it !is Identifier) {
-                throw Exception("Inside function declaration expected parameters to be an identifier.")
+                Error("Inside function declaration expected parameters to be an identifier.", "").raise()
             }
 
             params.addLast(it.symbol to it.type)
@@ -419,7 +421,7 @@ class Parser {
 
         expect(
             TokenType.OpenBrace,
-            Exception("Expected function body following declaration.")
+            "Expected function body following declaration."
         )
 
         val body: ArrayList<Statement> = ArrayList()
@@ -430,7 +432,7 @@ class Parser {
 
         expect(
             TokenType.CloseBrace,
-            Exception("Closing brace expected inside function declaration"),
+            "Closing brace expected inside function declaration",
         )
 
         return object : FunctionDecl(
@@ -448,7 +450,7 @@ class Parser {
     private fun parseArgs(): ArrayList<Expr> {
         expect(
             TokenType.OpenParen,
-            Exception("Expected an open parentheses in an argument list.")
+            "Expected an open parentheses in an argument list."
         )
 
         val args = if (at().type == TokenType.CloseParen) {
@@ -459,7 +461,7 @@ class Parser {
 
         expect(
             TokenType.CloseParen,
-            Exception("Expected a closed parenthesis in an argument list.")
+            "Expected a closed parenthesis in an argument list."
         )
 
         return args
@@ -581,7 +583,7 @@ class Parser {
 
         args.forEach {
             if (it !is Identifier) {
-                throw Exception("Inside class declaration expected parameters to be an identifier.")
+                Error("Inside class declaration expected parameters to be an identifier.", "").raise()
             }
 
             params.addLast(it.symbol to it.type)
@@ -589,7 +591,7 @@ class Parser {
 
         expect(
             TokenType.OpenBrace,
-            Exception("Expected class body following declaration.")
+            "Expected class body following declaration."
         )
 
         val body: ArrayList<Statement> = ArrayList()
@@ -600,7 +602,7 @@ class Parser {
 
         expect(
             TokenType.CloseBrace,
-            Exception("Closing brace expected inside function declaration"),
+            "Closing brace expected inside function declaration",
         )
 
         return object : ClassDecl(
@@ -650,10 +652,22 @@ class Parser {
         val properties: ArrayList<Property> = arrayListOf()
 
         while (notEOF() && at().type != TokenType.CloseBrace) {
-            val key = expect(
-                TokenType.Identifier,
-                Exception("Object literal key expected"),
-            ).value
+            val key = when (at().type) {
+                TokenType.Identifier -> expect(
+                    TokenType.Identifier,
+                    "Object literal key expected",
+                ).value
+                TokenType.Str -> expect(
+                    TokenType.Str,
+                    "Object literal key expected",
+                ).value
+                TokenType.Number -> expect(
+                    TokenType.Number,
+                    "Object literal key expected",
+                ).value
+                else -> Error("Expected string or identifier", "")
+                    .raise()
+            }
 
             // Allows shorthand key: pair -> { key, }
             if (at().type == TokenType.Comma) {
@@ -674,10 +688,10 @@ class Parser {
                 continue
             }
 
-            // { key: val }
+            // { key = val }
             expect(
                 TokenType.Equals,
-                Exception("Missing colon following identifier in ObjectExpr"),
+                "Missing equals following identifier in ObjectExpr",
             )
 
             val value = parseExpr()
@@ -691,14 +705,14 @@ class Parser {
             if (at().type != TokenType.CloseBrace) {
                 expect(
                     TokenType.Comma,
-                    Exception("Expected comma or closing bracket following property"),
+                    "Expected comma or closing bracket following property",
                 )
             }
         }
 
         expect(
             TokenType.CloseBrace,
-            Exception("Object literal missing closing brace."),
+            "Object literal missing closing brace.",
         )
 
         return object : ObjectLiteral(
@@ -803,7 +817,7 @@ class Parser {
                 // get identifier
                 property = parsePrimaryExpr()
                 if (property !is Identifier) {
-                    throw Exception("Cannot use dot operator without right hand side being a identifier")
+                    Error("Cannot use dot operator without right hand side being a identifier", "").raise()
                 }
             } else {
                 // this allows obj[computedValue]
@@ -811,7 +825,7 @@ class Parser {
                 property = parseExpr()
                 expect(
                     TokenType.CloseBracket,
-                    Exception("Missing closing bracket in computed value."),
+                    "Missing closing bracket in computed value.",
                 )
             }
 
@@ -857,7 +871,7 @@ class Parser {
                 val value = parseExpr()
                 this.expect(
                     TokenType.CloseParen,
-                    Exception("Unexpected token found inside parenthesised expression. Expected closing parenthesis."),
+                    "Unexpected token found inside parenthesised expression. Expected closing parenthesis.",
                 ) // closing paren
                 return value
             }
