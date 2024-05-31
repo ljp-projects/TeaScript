@@ -7,10 +7,14 @@ fun transpileObjectExpr(expr: ObjectLiteral, env: Environment): String {
     val res = StringBuilder("{")
 
     expr.properties.forEach {
+        val key = if ("-" in it.key) {
+            "\"${it.key}\""
+        } else it.key
+
         if (it.value.isEmpty) {
-            res.append("${it.key}: ${env.lookupVar(it.key)},")
+            res.append("$key: ${env.lookupVar(it.key)},")
         } else {
-            res.append("${it.key}: ${transpile(it.value.get(), env)},")
+            res.append("$key: ${transpile(it.value.get(), env)},")
         }
     }
 
