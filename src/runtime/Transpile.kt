@@ -18,7 +18,7 @@ fun transpile(astNode: Statement, env: Environment): String {
         is IfDecl -> transpileIfDecl(astNode, env)
         is AfterDecl -> transpileAfterDecl(astNode, env)
         is NumberLiteral -> astNode.value.toString()
-        is StringLiteral -> "'${astNode.value}'"
+        is StringLiteral -> "\"${astNode.value}\""
         is ImportDecl -> transpileImportDecl(astNode, env)
         is AssignmentExpr -> transpileAssignment(astNode, env)
         else -> throw NotImplementedError("This AST Node hasn't been setup for transpilation yet -- ${astNode.kind}.")

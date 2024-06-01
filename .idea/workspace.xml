@@ -9,10 +9,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="157f05c8-c06f-40a7-960c-0f5c4e09291a" name="Changes" comment="????">
+    <list default="true" id="157f05c8-c06f-40a7-960c-0f5c4e09291a" name="Changes" comment="???? idk">
+      <change afterPath="$PROJECT_DIR$/examples/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TeaScript.jar.xz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/eval/transpile/Objects.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/eval/transpile/Objects.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/TeaScript.jar.xz" beforeDir="false" afterPath="$PROJECT_DIR$/src/TeaScript.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/runtime/Environment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/Environment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/runtime/Transpile.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/Transpile.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/runtime/eval/transpile/BinaryExpressions.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/eval/transpile/BinaryExpressions.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -265,7 +268,15 @@
       <option name="project" value="LOCAL" />
       <updated>1717151342038</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="???? idk">
+      <option name="closed" value="true" />
+      <created>1717154152018</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1717154152018</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -293,6 +304,7 @@
     <MESSAGE value="Sacrifice type safety during traspilation for stuff actually working" />
     <MESSAGE value="idk" />
     <MESSAGE value="????" />
-    <option name="LAST_COMMIT_MESSAGE" value="????" />
+    <MESSAGE value="???? idk" />
+    <option name="LAST_COMMIT_MESSAGE" value="???? idk" />
   </component>
 </project>

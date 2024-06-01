@@ -57,46 +57,20 @@ fun transpileOtherBinaryExpr(lhs: RuntimeVal, rhs: RuntimeVal, op: String, env: 
         else -> throw RuntimeException("Undefined operator '$op'")
     }
 }
-fun transpileStringBinaryExpr(lhs: StringVal, rhs: RuntimeVal, op: String, env: Environment): String {
-    return when (op) {
-        "+" -> lhs.value + rhs.value
-        "-" -> {
-            val a = lhs.value
-            val b = (rhs as StringVal).value
-            val diff = StringBuilder(a.length)
 
-            if (b.length > a.length) {
-                b.forEachIndexed { idx, char ->
-                    if (a.getOrNull(idx) == char) {
-                        diff.append(char)
-                    }
-                }
-            } else {
-                a.forEachIndexed { idx, char ->
-                    if (b.getOrNull(idx) == char) {
-                        diff.append(char)
-                    }
-                }
-            }
-
-            diff.toString()
-        }
-        else -> throw RuntimeException("Undefined string operator '$op'")
-    }
-}
 fun transpileBinaryExpr(expr: BinaryExpr, env: Environment): String {
-    val (lhs, rhs) = arrayOf(evaluate(expr.left, env), evaluate(expr.right, env))
+    val (lhs, rhs) = if (expr.left !is Identifier && expr.right !is Identifier) {
+        arrayOf(evaluate(expr.left, env), evaluate(expr.right, env))
+    } else {
+        arrayOf(makeNull(), makeNull())
+    }
     val comparisonOps = hashSetOf("is", "isnt", "or", "nor", "and", "nand", ">", "<")
 
-    return if (expr.operator in comparisonOps) {
-        transpileComparisonBinaryExpr(lhs, rhs, expr.operator, env)
-    } else if (expr.left is Identifier && expr.right is Identifier) {
-        "${expr.left.symbol} ${if (expr.operator == "^") "**" else expr.operator} ${expr.right.symbol }"
-    } else if ((lhs is NumberVal && rhs is NumberVal) || (lhs.kind == "number" && rhs.kind == "number")) {
-        transpileNumericBinaryExpr(makeNumber(lhs.value as Double), makeNumber(rhs.value as Double), expr.operator, env)
-    } else if (lhs is StringVal) {
-        transpileStringBinaryExpr(lhs, rhs, expr.operator, env)
-    } else {
+    return if (expr.operator != "to" && expr.operator !in comparisonOps) {
+        "${transpile(expr.left, env)} ${if (expr.operator == "^") "**" else expr.operator} ${transpile(expr.right, env)}"
+    } else if (expr.operator == "to") {
         transpileOtherBinaryExpr(lhs, rhs, expr.operator, env)
+    } else {
+        transpileComparisonBinaryExpr(lhs, rhs, expr.operator, env)
     }
 }

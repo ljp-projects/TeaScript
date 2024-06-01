@@ -175,7 +175,7 @@ fun makeGlobalEnv(argv: Array<StringVal>): Environment {
 
             val future = CompletableFuture<RuntimeVal>()
             val client = OkHttpClient()
-            val req = Request.Builder().url((args[0] as StringVal).value).post(body).build()
+            val req = Request.Builder().url((args[0] as StringVal).value).build()
 
             client.newCall(req).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
