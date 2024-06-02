@@ -3,23 +3,9 @@ package runtime.eval.transpile
 import com.google.gson.Gson
 import frontend.BinaryExpr
 import frontend.Identifier
-import org.objectweb.asm.MethodVisitor
-import org.objectweb.asm.Opcodes
 import runtime.*
 
-fun transpileNumericBinaryExpr(lhs: NumberVal, rhs: NumberVal, op: String, env: Environment): String {
-    return when (op) {
-        "+" -> "${lhs.value} + ${rhs.value}"
-        "-" -> "${lhs.value} - ${rhs.value}"
-        "*" -> "${lhs.value} * ${rhs.value}"
-        "%" -> "${lhs.value} % ${rhs.value}"
-        "|" -> "${lhs.value} | ${rhs.value}"
-        "/" -> "${lhs.value} / ${rhs.value}"
-        "^" -> "${lhs.value} ** ${rhs.value}"
-        else -> transpileOtherBinaryExpr(lhs, rhs, op, env)
-    }
-}
-fun transpileComparisonBinaryExpr(lhs: RuntimeVal, rhs: RuntimeVal, op: String, env: Environment): String {
+fun transpileComparisonBinaryExpr(lhs: RuntimeVal, rhs: RuntimeVal, op: String): String {
     return when (op) {
         "is" -> "${Gson().toJson(lhs) == Gson().toJson(rhs)}"
         "isnt" -> "${Gson().toJson(lhs) != Gson().toJson(rhs)}"
@@ -32,7 +18,7 @@ fun transpileComparisonBinaryExpr(lhs: RuntimeVal, rhs: RuntimeVal, op: String, 
         else -> throw RuntimeException("Undefined comparison operator '$op'")
     }
 }
-fun transpileOtherBinaryExpr(lhs: RuntimeVal, rhs: RuntimeVal, op: String, env: Environment): String {
+fun transpileOtherBinaryExpr(lhs: RuntimeVal, rhs: RuntimeVal, op: String): String {
     return when (op) {
         "to" -> {
             val map = Pair<MutableList<String>, MutableList<RuntimeVal>>(mutableListOf(), mutableListOf())
@@ -59,7 +45,7 @@ fun transpileOtherBinaryExpr(lhs: RuntimeVal, rhs: RuntimeVal, op: String, env: 
 }
 
 fun transpileBinaryExpr(expr: BinaryExpr, env: Environment): String {
-    val (lhs, rhs) = if (expr.left !is Identifier && expr.right !is Identifier) {
+    val (lhs, rhs) = if (expr.left !is Identifier && expr.right !is Identifier && expr.operator == "to") {
         arrayOf(evaluate(expr.left, env), evaluate(expr.right, env))
     } else {
         arrayOf(makeNull(), makeNull())
@@ -69,8 +55,8 @@ fun transpileBinaryExpr(expr: BinaryExpr, env: Environment): String {
     return if (expr.operator != "to" && expr.operator !in comparisonOps) {
         "${transpile(expr.left, env)} ${if (expr.operator == "^") "**" else expr.operator} ${transpile(expr.right, env)}"
     } else if (expr.operator == "to") {
-        transpileOtherBinaryExpr(lhs, rhs, expr.operator, env)
+        transpileOtherBinaryExpr(lhs, rhs, expr.operator)
     } else {
-        transpileComparisonBinaryExpr(lhs, rhs, expr.operator, env)
+        transpileComparisonBinaryExpr(lhs, rhs, expr.operator)
     }
 }

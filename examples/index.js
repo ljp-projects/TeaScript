@@ -19,8 +19,12 @@ const __std = Object.freeze({
                
                 
 console.log("Maagun")
-function order(items) {
+let items = __std.arr();
+function order(items, desc) {
 	const itemsJoined = __std.join_obj(items, ",");
-	console.log(itemsJoined)
-	return fetch("http://localhost:3000/order?body=" + itemsJoined)
+	return fetch("http://localhost:3000/order?body=" + itemsJoined + "&desc=" + desc)
+}
+function addItemBacking(item) {
+	__std.pusharr(items, item)
+	return fetch("http://localhost:3000/cost?item=" + item)
 }
