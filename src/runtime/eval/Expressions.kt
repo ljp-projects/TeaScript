@@ -121,7 +121,7 @@ fun evalBinaryExpr(expr: BinaryExpr, env: Environment): RuntimeVal {
 fun evalMemberExpr(expr: MemberExpr, env: Environment): RuntimeVal {
     val obj = evaluate(expr.obj, env) as ObjectVal
     val prop = when (expr.prop) {
-        is Identifier -> expr.prop.symbol
+        is Identifier -> if (env.resolve(expr.prop.symbol) != null) environment.lookupVar(expr.prop.symbol) else expr.prop.symbol
         is NumberLiteral -> expr.prop.value.toInt().toString()
         is StringLiteral -> expr.prop.value
         else -> throw Exception("huh")
