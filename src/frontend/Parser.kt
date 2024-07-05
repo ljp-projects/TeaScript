@@ -1,42 +1,83 @@
 package frontend
 
 import home
-import runtime.Error
+import errors.Error
 import java.nio.file.Paths
 import java.util.*
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 
-enum class ModifierType(val appliesTo: String) {
-    Synchronised("func"),
+/**
+ * The different kinds of modifier.
+ * @param appliesTo The different types of expressions and statements the modifier applies to.
+ */
+enum class ModifierType(private val appliesTo: String) {
+
+    /**
+     *The synchronised modifier. Makes actions performed in parallel perform in the main thread.
+     * Applies to any block.
+     */
+    Synchronised("block"),
+
+    /**
+     * Makes a function anonymous. Applies to functions only.
+     */
     Anonymous("func"),
-    Private("func"),
+
+    /**
+     * Makes functions and variables not exposed in a class.
+     */
+    Private("func,var-decl"),
+
+    /**
+     * Makes functions and variables static when compiling to Java bytecode.
+     */
     Static("func,var-decl"),
+
+    /**
+     * Makes parallel functions return a promise that can be awaited with the return value.
+     */
     Promise("func"),
+
+    /**
+     * Makes a function able to mutate the class it is a member of.
+     */
     Mutating("func"),
-    Annotation("func,class,var-decl"),
-    Prefix("func"),
-    Suffix("func")
+
+    /**
+     * Predefined or user-defined options to enable custom behaviour repeatably.
+     */
+    Annotation("all"),
 }
 
+/**
+ * The actual modifier itself.
+ *
+ * @property type The kind of modifier.
+ * @property value The value of the modifier.
+ * @see ModifierType
+ */
 data class Modifier(val type: ModifierType, val value: String)
 
+/**
+ * The class used to parse TeaScript code.
+ * It generates expressions and statements to eb evaluated or compiled later.
+ * @see Expr
+ * @see Statement
+ * @property modifiers The current modifiers that have been parsed. Cleared when used.
+ */
 class Parser {
-    val modifiers: MutableSet<Modifier> = mutableSetOf()
+    val modifiers: HashSet<Modifier> = hashSetOf()
 
     private var tokens: MutableList<Token> = ArrayList()
     private var originLen = 0
     private var lines = 0
 
-    private fun notEOF(): Boolean {
-        return tokens.firstOrNull()?.type != TokenType.EOF
-    }
+    private fun notEOF(): Boolean = tokens.firstOrNull()?.type != TokenType.EOF
 
-    private fun at(): Token {
-        return tokens.first()
-    }
+    private fun at(): Token = tokens.first()
 
-    private fun eat(): Token? {
-        return tokens.removeFirstOrNull()
-    }
+    private fun eat(): Token? = tokens.removeFirstOrNull()
 
     /**
      * @throws Error Throws when the expected TokenType isn't found.
@@ -44,95 +85,92 @@ class Parser {
     private fun expect(type: TokenType, error: String): Token {
         val prev = eat()
         if (prev?.type != type) {
-            Error(error, "")
+            Error<Nothing>(error, "")
                 .raise()
         } else {
             return prev
         }
     }
 
-    fun produceAST(sourceCode: String): Program = run {
-        lines = sourceCode.lines().size
-
-        tokens = tokenise(sourceCode)
-
-        originLen = tokens.size
+    /**
+     * Produces the Abstract Syntax Tree from tokens.
+     * @see tokenise
+     */
+    fun produceAST(sourceCode: String): Program {
+        this.lines = sourceCode.lines().size
+        this.tokens = tokenise(sourceCode)
+        this.originLen = this.tokens.size
 
         val program: Program = object : Program("program", mutableListOf()) {}
 
-        while (notEOF()) {
-            program.body.addLast(parseStatement())
+        while (this.notEOF()) {
+            program.body.addLast(this.parseStatement())
         }
 
-        return@run program
+        return program
     }
 
-    private fun parseStatement(): Statement = run {
-        return when (at().type) {
-            TokenType.Constant, TokenType.Mutable -> parseVarDeclaration()
-            TokenType.ForEach -> parseForDeclaration()
-            TokenType.Import -> parseImportDeclaration()
+    private fun parseStatement(): Statement {
+        return when (this.at().type) {
+            TokenType.Constant, TokenType.Mutable -> this.parseVarDeclaration()
+            TokenType.ForEach -> this.parseForDeclaration()
+            TokenType.Import -> this.parseImportDeclaration()
             TokenType.Sync -> {
-                modifiers.add(
+                this.modifiers.add(
                     Modifier(ModifierType.Synchronised, "YES")
                 )
                 this.eat()
-                parseStatement()
+                this.parseStatement()
             }
+
             TokenType.Lambda -> {
-                modifiers.add(
+                this.modifiers.add(
                     Modifier(ModifierType.Anonymous, "YES")
                 )
                 this.eat()
-                parseStatement()
+                this.parseStatement()
             }
+
             TokenType.Static -> {
-                modifiers.add(
+                this.modifiers.add(
                     Modifier(ModifierType.Static, "YES")
                 )
                 this.eat()
-                parseStatement()
+                this.parseStatement()
             }
+
             TokenType.Mutating -> {
-                modifiers.add(
+                this.modifiers.add(
                     Modifier(ModifierType.Mutating, "YES")
                 )
                 this.eat()
-                parseStatement()
+                this.parseStatement()
             }
+
             TokenType.Promise -> {
-                modifiers.add(
+                this.modifiers.add(
                     Modifier(ModifierType.Promise, "YES")
                 )
                 this.eat()
-                parseStatement()
+                this.parseStatement()
             }
+
             TokenType.Private -> {
-                modifiers.add(
+                this.modifiers.add(
                     Modifier(ModifierType.Private, "YES")
                 )
                 this.eat()
-                parseStatement()
+                this.parseStatement()
             }
-            TokenType.FuncPrefix -> {
-                modifiers.add(
-                    Modifier(ModifierType.Prefix, this.eat()?.value ?: "")
-                )
-                parseStatement()
-            }
-            TokenType.FuncSuffix -> {
-                modifiers.add(
-                    Modifier(ModifierType.Suffix, this.eat()?.value ?: "")
-                )
-                parseStatement()
-            }
+
             TokenType.Annotation -> {
-                modifiers.add(
+                this.modifiers.add(
                     Modifier(ModifierType.Annotation, this.eat()?.value ?: "")
                 )
-                parseStatement()
+                this.parseStatement()
             }
-            else -> parseExpr()
+
+            else -> this.parseExpr()
         }
     }
 
@@ -149,10 +187,13 @@ class Parser {
         )
 
         if (at().type != TokenType.Str) {
-            Error("Argument to use must be a string containing the file name of the module.", "").raise()
+            Error<Nothing>("Argument to use must be a string containing the file name of the module.", "").raise()
         }
 
-        val url = (eat()?.value ?: Error("Argument to use must be included.", "").raise()).replace("@", Paths.get(home, ".tea/scripts/").toString() + "/")
+        val url = (eat()?.value ?: Error<Nothing>("Argument to use must be included.", "").raise()).replace(
+            "@",
+            Paths.get(home, ".tea/scripts/").toString() + "/"
+        )
 
         return object : ImportDecl(
             "use-decl",
@@ -169,7 +210,7 @@ class Parser {
 
         if (at().type != TokenType.Equals) {
             if (isConstant) {
-                Error("Must assign value to constant expression. No value provided.", "").raise()
+                Error<Nothing>("Must assign value to constant expression. No value provided.", "").raise()
             }
 
             return object : VarDecl(
@@ -228,22 +269,22 @@ class Parser {
             param,
             promise,
             body,
-            modifiers
-        ) {}.also { modifiers.clear() }
+            modifiers.toHashSet()
+        ) {}.apply { this@Parser.modifiers.clear() }
     }
 
     private fun parseForDeclaration(): Statement {
-        eat()
+        this.eat()
 
-        val args = parseArgs()
+        val args = this.parseArgs()
         val params = ArrayList<Identifier>()
 
-        args.forEach {
-            if (it.kind != "ident") {
-                Error("Inside function declaration expected parameters to be an identifier.", "").raise()
+        for (arg in args) {
+            if (arg.kind != "ident") {
+                Error<Nothing>("Inside function declaration expected parameters to be an identifier.", "").raise()
             }
 
-            params.addLast((it as Identifier))
+            params.addLast(arg as Identifier)
         }
 
         expect(
@@ -267,8 +308,8 @@ class Parser {
             params.first(),
             params[1],
             body,
-            modifiers
-        ) {}.also { modifiers.clear() }
+            modifiers.toHashSet()
+        ) {}.apply { this@Parser.modifiers.clear() }
     }
 
     private fun parseAfterDeclaration(): Expr {
@@ -300,8 +341,8 @@ class Parser {
             "after-decl",
             cond,
             body,
-            modifiers
-        ) {}.also { modifiers.clear() }
+            modifiers.toHashSet()
+        ) {}.apply { this@Parser.modifiers.clear() }
     }
 
     private fun parseIfDeclaration(): Expr {
@@ -385,38 +426,45 @@ class Parser {
             "if-decl",
             cond,
             body,
-            modifiers,
+            modifiers.toHashSet(),
             otherwiseBody,
             orBodies
-        ) {}.also { modifiers.clear() }
+        ) {}.apply { this@Parser.modifiers.clear() }
     }
 
     private fun parseFnDeclaration(): Expr {
         eat()
 
+        val fnMods = modifiers.toHashSet()
+
+        modifiers.clear()
+
         val name = if (modifiers.none { it.type == ModifierType.Anonymous }) {
-            object : Identifier(
-                "ident",
-                at().value,
-                if (at().secondary == "") {
-                    eat()
-                    "any"
-                } else eat()?.secondary!!
-            ) {}
+            parseIdentifier()
         } else {
             eat()
             null
         }
 
         val args = parseArgs()
-        val params = ArrayDeque<Pair<String, String>>()
+        val params = HashMap<Pair<String, Byte>, TypeExpr?>()
 
-        args.forEach {
-            if (it !is Identifier) {
-                Error("Inside function declaration expected parameters to be an identifier.", "").raise()
+        for (arg in args) {
+            if (arg !is Identifier) {
+                Error<Nothing>("Inside function declaration expected parameters to be an identifier.", "").raise()
             }
 
-            params.addLast(it.symbol to it.type)
+            params[arg.symbol to params.size.toByte()] = arg.type
+        }
+
+        if (at().type == TokenType.BinaryOperator && at().value == "-") {
+            eat()
+
+            require (at().type == TokenType.BinaryOperator && at().value == ">") { "Expected a '>' following a '-' when declaring a function." }
+
+            eat()
+
+            name?.type = parseExpr() as TypeExpr
         }
 
         expect(
@@ -440,11 +488,9 @@ class Parser {
             params,
             name,
             body,
-            params.size,
-            modifiers,
-        ) {}.also {
-            modifiers.clear()
-        }
+            params.size.toByte(),
+            fnMods,
+        ) {}
     }
 
     private fun parseArgs(): ArrayList<Expr> {
@@ -480,18 +526,18 @@ class Parser {
     }
 
     private fun parseExpr(): Expr {
-        return when(at().type) {
+        return when (at().type) {
             TokenType.If -> parseIfDeclaration()
             TokenType.After -> parseAfterDeclaration()
             TokenType.Await -> parseAwaitDeclaration()
-            TokenType.Fn -> parseFnDeclaration()
-            TokenType.Class -> parseClassDeclaration()
+            TokenType.Func -> parseFnDeclaration()
             TokenType.Annotation -> {
                 modifiers.add(
                     Modifier(ModifierType.Annotation, this.eat()?.value ?: "")
                 )
                 parseExpr()
             }
+
             TokenType.Sync -> {
                 modifiers.add(
                     Modifier(ModifierType.Synchronised, "YES")
@@ -499,6 +545,7 @@ class Parser {
                 this.eat()
                 parseExpr()
             }
+
             TokenType.Lambda -> {
                 modifiers.add(
                     Modifier(ModifierType.Anonymous, "YES")
@@ -506,6 +553,7 @@ class Parser {
                 this.eat()
                 parseExpr()
             }
+
             TokenType.Static -> {
                 modifiers.add(
                     Modifier(ModifierType.Static, "YES")
@@ -513,6 +561,7 @@ class Parser {
                 this.eat()
                 parseExpr()
             }
+
             TokenType.Mutating -> {
                 modifiers.add(
                     Modifier(ModifierType.Mutating, "YES")
@@ -520,6 +569,7 @@ class Parser {
                 this.eat()
                 parseExpr()
             }
+
             TokenType.Promise -> {
                 modifiers.add(
                     Modifier(ModifierType.Promise, "YES")
@@ -527,6 +577,7 @@ class Parser {
                 this.eat()
                 parseExpr()
             }
+
             TokenType.Private -> {
                 modifiers.add(
                     Modifier(ModifierType.Private, "YES")
@@ -534,18 +585,7 @@ class Parser {
                 this.eat()
                 parseExpr()
             }
-            TokenType.FuncPrefix -> {
-                modifiers.add(
-                    Modifier(ModifierType.Prefix, this.eat()?.value ?: "")
-                )
-                parseExpr()
-            }
-            TokenType.FuncSuffix -> {
-                modifiers.add(
-                    Modifier(ModifierType.Suffix, this.eat()?.value ?: "")
-                )
-                parseExpr()
-            }
+
             else -> parseAssignmentExpr()
         }
     }
@@ -564,54 +604,6 @@ class Parser {
         }
 
         return left
-    }
-
-    private fun parseClassDeclaration(): Expr {
-        eat()
-
-        val name = object : Identifier(
-            "ident",
-            at().value,
-            if (at().secondary == "") {
-                eat()
-                "any"
-            } else eat()?.secondary!!,
-        ) {}
-
-        val args = parseArgs()
-        val params = ArrayDeque<Pair<String, String>>()
-
-        args.forEach {
-            if (it !is Identifier) {
-                Error("Inside class declaration expected parameters to be an identifier.", "").raise()
-            }
-
-            params.addLast(it.symbol to it.type)
-        }
-
-        expect(
-            TokenType.OpenBrace,
-            "Expected class body following declaration."
-        )
-
-        val body: ArrayList<Statement> = ArrayList()
-
-        while (at().type != TokenType.CloseBrace && notEOF()) {
-            body.addLast(parseStatement())
-        }
-
-        expect(
-            TokenType.CloseBrace,
-            "Closing brace expected inside function declaration",
-        )
-
-        return object : ClassDecl(
-            "class-decl",
-            params,
-            name,
-            body,
-            params.size,
-        ) {}
     }
 
     private fun parseOtherOp(): Expr {
@@ -657,34 +649,39 @@ class Parser {
                     TokenType.Identifier,
                     "Object literal key expected",
                 ).value
+
                 TokenType.Str -> expect(
                     TokenType.Str,
                     "Object literal key expected",
                 ).value
+
                 TokenType.Number -> expect(
                     TokenType.Number,
                     "Object literal key expected",
                 ).value
-                else -> Error("Expected string or identifier", "")
+
+                else -> Error<Nothing>("Expected string or identifier", "")
                     .raise()
             }
+
+            val type: TypeExpr? = parseType()
 
             // Allows shorthand key: pair -> { key, }
             if (at().type == TokenType.Comma) {
                 eat() // advance past comma
-                properties.addLast(object : Property(
-                    "prop",
+                properties.addLast(makeProperty(
                     key,
-                    Optional.empty()
-                ) {})
+                    Optional.empty(),
+                    type
+                ))
                 continue
             } // Allows shorthand key: pair -> { key }
             else if (at().type == TokenType.CloseBrace) {
-                properties.addLast(object : Property(
-                    "prop",
+                properties.addLast(makeProperty(
                     key,
-                    Optional.empty()
-                ) {})
+                    Optional.empty(),
+                    type
+                ))
                 continue
             }
 
@@ -696,11 +693,11 @@ class Parser {
 
             val value = parseExpr()
 
-            properties.add(object : Property(
-                "prop",
+            properties.add(makeProperty(
                 key,
-                Optional.of(value)
-            ) {})
+                Optional.of(value),
+                type
+            ))
 
             if (at().type != TokenType.CloseBrace) {
                 expect(
@@ -787,15 +784,12 @@ class Parser {
     }
 
     private fun parseCallExpr(caller: Expr): Expr {
-        var callExpr: Expr = object : CallExpr(
+        val callExpr: Expr = object : CallExpr(
             "call-expr",
             parseArgs(),
-            caller
-        ) {}
-
-        if (at().type == TokenType.OpenParen) {
-            callExpr = parseCallExpr(callExpr)
-        }
+            caller,
+            modifiers.toHashSet()
+        ) {}.also { modifiers.clear() }
 
         return callExpr
     }
@@ -814,10 +808,12 @@ class Parser {
             // non-computed values aka obj.expr
             if (operator?.type == TokenType.Dot) {
                 computed = false
-                // get identifier
+                
+                // get prop
                 property = parsePrimaryExpr()
-                if (property !is Identifier) {
-                    Error("Cannot use dot operator without right hand side being a identifier", "").raise()
+
+                if (property !is Identifier && property !is NumberLiteral && property !is StringLiteral) {
+                    Error<Nothing>("Cannot use dot operator without right hand side being a identifier, number or string.", "").raise()
                 }
             } else {
                 // this allows obj[computedValue]
@@ -846,15 +842,7 @@ class Parser {
         // Determine which token we are currently at and return literal value
         return when (tk) {
             // User defined values.
-            TokenType.Identifier -> object : Identifier(
-                "ident",
-                at().value,
-                if (at().secondary == "") {
-                    eat()
-                    "infer"
-                }
-                else eat()?.secondary!!
-            ) {}
+            TokenType.Identifier -> parseIdentifier()
             // Constants and Numeric Constants
             TokenType.Number -> object : NumberLiteral(
                 "num-lit",
@@ -874,8 +862,8 @@ class Parser {
                     "Unexpected token found inside parenthesised expression. Expected closing parenthesis.",
                 ) // closing paren
                 return value
-            }
-
+            }            
+            
             // Unidentified Tokens and Invalid Code Reached
             else -> {
                 error(
@@ -883,5 +871,25 @@ class Parser {
                 )
             }
         }
+    }
+
+    private fun parseType(): TypeExpr? =
+        if (at().type == TokenType.Colon) {
+            eat()
+            parseObject() as? TypeExpr
+        } else null
+
+    private fun parseIdentifier(): Identifier {
+        val name = expect(TokenType.Identifier, "Expected an identifier.").value
+        val type = if (at().type == TokenType.Colon) {
+            eat()
+            parseObject()
+        } else null
+
+        return object : Identifier(
+            "ident",
+            name,
+            (type ?: object: Identifier("ident", "any", null) {}) as TypeExpr
+        ) {}
     }
 }

@@ -1,4 +1,4 @@
-tea_version="v1.0.0-beta.2"
+tea_version=$(curl  "https://api.github.com/repos/ljp-projects/teascript/tags" | jq -r '.[0].name')
 
 cd /tmp/ || exit
 git clone https://github.com/ljp-projects/TeaScript.git

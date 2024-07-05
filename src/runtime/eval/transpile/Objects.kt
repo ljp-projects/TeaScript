@@ -2,6 +2,8 @@ package runtime.eval.transpile
 
 import frontend.*
 import runtime.*
+import runtime.types.ObjectVal
+import kotlin.time.ExperimentalTime
 
 fun transpileObjectExpr(expr: ObjectLiteral, env: Environment): String {
     val res = StringBuilder("{")
@@ -20,8 +22,9 @@ fun transpileObjectExpr(expr: ObjectLiteral, env: Environment): String {
 
     res.append("}")
 
-    return res.toString()
+    return "$res"
 }
+@OptIn(ExperimentalTime::class)
 fun transpileMemberExpr(expr: MemberExpr, env: Environment): String {
     val obj = evaluate(expr.obj, env) as ObjectVal
     val prop = when (expr.prop) {
@@ -31,11 +34,5 @@ fun transpileMemberExpr(expr: MemberExpr, env: Environment): String {
         else -> throw Exception("Unsupported value given to member expression")
     }
 
-    val idx = obj.value.first.indexOf(prop)
-
-    if (idx == -1) {
-        throw IllegalAccessException("Cannot access member $prop as it is either private or doesn't exist.")
-    }
-
-    return "${obj.value.second[idx].value}"
+    return "${obj.value[prop]?.first?.value ?: throw IllegalAccessException("Cannot access member $prop as it is either private or doesn't exist.")}"
 }

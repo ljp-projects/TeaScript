@@ -7,7 +7,7 @@ import org.objectweb.asm.Opcodes
 import runtime.eval.compile.*
 import java.util.jar.JarOutputStream
 
-val cw = ClassWriter(ClassWriter.COMPUTE_MAXS or ClassWriter.COMPUTE_FRAMES)
+val cw = ClassWriter(ClassWriter.COMPUTE_MAXS + ClassWriter.COMPUTE_FRAMES)
 
 fun globalVarToDescriptor(gv: String): String {
     return when (gv) {
@@ -16,34 +16,10 @@ fun globalVarToDescriptor(gv: String): String {
     }
 }
 
-fun globalVarMethodToType(gv: String): String {
-    return when (gv) {
-        "println", "print", "eprintln", "eprint" -> "V"
-        "readln" -> "Ljava/lang/String;"
-        else -> "V"
-    }
-}
-
 fun globalVarToClass(gv: String): String {
     return when (gv) {
         "io" -> "tea/IO"
         else -> "java/lang/Object"
-    }
-}
-
-fun typeToLoad(t: String): Int {
-    return when(t) {
-        "number" -> Opcodes.DLOAD
-        "bool" -> Opcodes.ILOAD
-        else -> Opcodes.LLOAD
-    }
-}
-
-fun typeToLoad(t: RuntimeVal): Int {
-    return when(t) {
-        is NumberVal -> Opcodes.DLOAD
-        is BoolVal -> Opcodes.ILOAD
-        else -> typeToLoad(t.kind)
     }
 }
 
@@ -58,49 +34,11 @@ fun typeToStore(t: String): Int {
     }
 }
 
-fun typeToStore(t: String, v: Any): Int {
-    return when(t) {
-        "number" -> Opcodes.DSTORE
-        "bool" -> Opcodes.ISTORE
-        else ->  {
-            when (v) {
-                is String -> Opcodes.ASTORE
-                is Double -> Opcodes.DSTORE
-                is Boolean -> Opcodes.ISTORE
-                else -> Opcodes.ASTORE
-            }
-        }
-    }
-}
-
 fun typeToStore(t: String, default: String): Int {
     return when(t) {
         "number" -> Opcodes.DSTORE
         "bool" -> Opcodes.ISTORE
         else ->  typeToStore(default)
-    }
-}
-
-fun typeToStore(t: RuntimeVal): Int {
-    return when(t) {
-        is NumberVal -> Opcodes.DSTORE
-        is BoolVal -> Opcodes.ISTORE
-        else -> {
-            typeToStore(t.kind, t.value)
-        }
-    }
-}
-
-fun typeToDescriptor(v: RuntimeVal): String {
-    return when(v) {
-        is NumberVal -> "D"
-        is StringVal -> {
-            "Ljava/lang/String;"
-        }
-        is BoolVal -> {
-            "Z"
-        }
-        else -> typeToDescriptor(v.kind)
     }
 }
 
@@ -125,12 +63,14 @@ fun typeToDescriptor(t: String): String {
     }
 }
 
-fun compile(astNode: Statement, env: Environment, cw: ClassWriter, cn: String, jar: JarOutputStream): ClassWriter? {
+fun compile(
+    astNode: Statement,
+    env: CompilationEnvironment,
+    cw: ClassWriter,
+    cn: String,
+    jar: JarOutputStream
+): ClassWriter? {
     return when (astNode) {
-        is VarDecl -> {
-            compileVarDecl(astNode, env, cw)
-            null
-        }
         is Program -> {
             compileProgram(astNode, env, cw, cn, jar)
         }
@@ -142,7 +82,7 @@ fun compile(astNode: Statement, env: Environment, cw: ClassWriter, cn: String, j
     }
 }
 
-fun compile(astNode: Statement, env: Environment, mw: MethodVisitor, cn: String): MethodVisitor? {
+fun compile(astNode: Statement, env: CompilationEnvironment, mw: MethodVisitor, cn: String): MethodVisitor? {
     return when (astNode) {
         is BinaryExpr -> compileBinaryExpr(astNode, env, mw, cn)
         is NumberLiteral -> {
@@ -159,7 +99,7 @@ fun compile(astNode: Statement, env: Environment, mw: MethodVisitor, cn: String)
         }
         is AssignmentExpr -> compileAssignment(astNode, env, mw, cn)
         is VarDecl -> {
-            compileVarDecl(astNode, env, mw, cn)
+            compileVarDeclaration(astNode, env, mw, cn)
             null
         }
         is CallExpr -> compileCallExpr(astNode, env, mw, cn)

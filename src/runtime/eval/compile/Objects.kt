@@ -7,21 +7,16 @@ import frontend.StringLiteral
 import globalVars
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
-import runtime.*
+import runtime.CompilationEnvironment
+import runtime.compile
+import runtime.globalVarToClass
 
-fun compileMemberExpr(expr: MemberExpr, env: Environment, mv: MethodVisitor, cn: String): MethodVisitor {
-    val obj = evaluate(expr.obj, env) as ObjectVal
+fun compileMemberExpr(expr: MemberExpr, env: CompilationEnvironment, mv: MethodVisitor, cn: String): MethodVisitor {
     val prop = when (expr.prop) {
         is Identifier -> expr.prop.symbol
         is NumberLiteral -> expr.prop.value.toInt().toString()
         is StringLiteral -> expr.prop.value
         else -> throw Exception("huh")
-    }
-
-    val idx = obj.value.first.indexOf(prop)
-
-    if (idx == -1) {
-        throw IllegalAccessException("Cannot access member $prop as it is either private or doesn't exist.")
     }
 
     compile(expr.obj, env, mv, cn)
@@ -32,7 +27,12 @@ fun compileMemberExpr(expr: MemberExpr, env: Environment, mv: MethodVisitor, cn:
         }
 
         mv.visitFieldInsn(Opcodes.GETFIELD, globalVarToClass(expr.obj.symbol), prop, "Ltea/NativeRunnable;")
+
+        return mv
     }
+
+    compile(expr.prop, env, mv, cn)
+    mv.visitInsn(Opcodes.AALOAD)
 
     println(expr.obj.kind)
 

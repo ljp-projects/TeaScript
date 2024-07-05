@@ -8,7 +8,8 @@ assignees: ljp-projects
 ---
 
 **Important Notes**
-If your issue is not related to an actual bug in the source code of any Kotlin, Java or TeaScript code and it is deemed irrelevant (e.g. an issue with your code that is explicitly noted as a feature), it will not be worked on further.
+If your issue is not related to an actual bug in the source code of any Kotlin, Java or TeaScript code, and it is deemed
+irrelevant (e.g. an issue with your code that is explicitly noted as a feature), it will not be worked on further.
 
 **Describe the bug**
 A clear and concise description of what the bug is.

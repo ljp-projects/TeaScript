@@ -5,37 +5,10 @@ import frontend.AfterDecl
 import frontend.FunctionDecl
 import frontend.IfDecl
 import runtime.*
+import runtime.types.*
+import kotlin.time.ExperimentalTime
 
-fun transpilePrefix(fn: FunctionValue, env: Environment): String {
-    val res = StringBuilder("")
-
-    fn.prefixes.forEach {
-        val prefix = env.lookupVar(it) as FunctionValue
-
-        res.append(transpilePrefix(prefix, env))
-
-        res.append("${prefix.name.first}();")
-
-        res.append(transpileSuffix(prefix, env))
-    }
-
-    return res.toString()
-}
-fun transpileSuffix(fn: FunctionValue, env: Environment): String {
-    val res = StringBuilder("")
-
-    fn.suffixes.forEach {
-        val suffix = env.lookupVar(it) as FunctionValue
-
-        res.append(transpilePrefix(suffix, env))
-
-        res.append("${suffix.name.first}();")
-
-        res.append(transpileSuffix(suffix, env))
-    }
-
-    return res.toString()
-}
+@OptIn(ExperimentalTime::class)
 fun transpileIfDecl(decl: IfDecl, env: Environment): String {
     val actCond = transpile(decl.cond, env)
     val cond = evaluate(decl.cond, env)
@@ -84,13 +57,20 @@ fun transpileIfDecl(decl: IfDecl, env: Environment): String {
         result.append("}\n")
     }
 
-    return result.toString()
+    return "$result"
 }
+
 fun transpileFuncDecl(decl: FunctionDecl, env: Environment): String {
+    val params = HashMap<Pair<String, Byte>, Type>()
+
+    for ((name, type) in decl.parameters) {
+        params[name] = if (type != null) typeEval(type, env) else AnyType()
+    }
+
     val fn = object : FunctionValue(
-        name = decl.name?.symbol to decl.name?.type,
+        name = decl.name?.symbol to if (decl.name?.type == null) AnyType() else typeEval(decl.name.type!!, env),
         declEnv = env,
-        params = decl.parameters,
+        params = params,
         value = decl.body,
         arity = decl.arity,
         modifiers = decl.modifiers
@@ -103,10 +83,12 @@ fun transpileFuncDecl(decl: FunctionDecl, env: Environment): String {
     val fnScope = Environment(fn.declEnv)
 
     fn.params.forEach {
-        fnScope.declareVar(it.first, makeAny(it.second), true)
+        fnScope.declareVar(it.key.first, makeAny("any"), true)
     }
 
-    val res = StringBuilder("${if (argsParsed.exportAll) "export " else ""}${if (fn.name.first == null) "(" else ""}function ${fn.name.first ?: ""}(${fn.params.joinToString { it.first }}) {\n")
+    val res = StringBuilder("${if (argsParsed.exportAll) "export " else ""}${if (fn.name.first == null) "(" else ""}")
+
+    res.append("function ${fn.name.first ?: ""}(${fn.params.keys.sortedBy { it.second }.joinToString { it.first }}) {\\n")
 
     fn.value.forEachIndexed { index, statement ->
         res.append("\t")
@@ -121,8 +103,10 @@ fun transpileFuncDecl(decl: FunctionDecl, env: Environment): String {
 
     res.append("}${if (fn.name.first == null) ")" else ""}")
 
-    return res.toString()
+    return "$res"
 }
+
+@OptIn(ExperimentalTime::class)
 fun transpileAfterDecl(decl: AfterDecl, env: Environment): String {
     val actMs = transpile(decl.ms, env)
     val ms = evaluate(decl.ms, env)
@@ -141,5 +125,5 @@ fun transpileAfterDecl(decl: AfterDecl, env: Environment): String {
 
     result.append("\n}, $actMs)")
 
-    return result.toString()
+    return "$result"
 }

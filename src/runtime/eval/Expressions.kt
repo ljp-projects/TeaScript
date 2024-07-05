@@ -1,23 +1,106 @@
 package runtime.eval
 
 import com.google.gson.Gson
+import errors.Error
+import errors.IncorrectTypeError
+import errors.Warning
 import frontend.*
 import globalCoroutineScope
-import globalVars
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import runtime.*
+import runtime.Environment
+import runtime.evaluate
+import runtime.makeGlobalEnv
+import runtime.types.*
 import java.util.concurrent.CompletableFuture
+import kotlin.math.max
 import kotlin.math.pow
+import kotlin.time.ExperimentalTime
 
 fun evalNumericBinaryExpr(lhs: NumberVal, rhs: NumberVal, op: String, env: Environment): RuntimeVal {
     return when (op) {
-        "+" -> makeNumber(lhs.value + rhs.value)
-        "-" -> makeNumber(lhs.value - rhs.value)
-        "*" -> makeNumber(lhs.value * rhs.value)
-        "/" -> if (lhs.value != 0.0 && rhs.value != 0.0) makeNumber(lhs.value / rhs.value) else throw RuntimeException("Cannot divide by zero.")
+        "+" -> {
+            // We shall dodge floating point imprecision errors!
+
+            fun getDecimalPlaces(value: Double): Int {
+                val stringValue = value.toString()
+                return if (stringValue.contains('.')) {
+                    stringValue.length - stringValue.indexOf('.') - 1
+                } else {
+                    0
+                }
+            }
+
+            val d = (10.0).pow(getDecimalPlaces(max(lhs.value, rhs.value)))
+            val l = lhs.value * d
+            val r = rhs.value * d
+            val lr = l + r
+
+            makeNumber(lr / d)
+        }
+        "-" -> {
+            // We shall dodge floating point imprecision errors!
+
+            fun getDecimalPlaces(value: Double): Int {
+                val stringValue = value.toString()
+                return if (stringValue.contains('.')) {
+                    stringValue.length - stringValue.indexOf('.') - 1
+                } else {
+                    0
+                }
+            }
+
+            val d = (10.0).pow(getDecimalPlaces(max(lhs.value, rhs.value)))
+            val l = lhs.value * d
+            val r = rhs.value * d
+            val lr = l - r
+
+            makeNumber(lr / d)
+        }
+        "*" -> {
+            // We shall dodge floating point imprecision errors!
+
+            fun getDecimalPlaces(value: Double): Int {
+                val stringValue = value.toString()
+                return if (stringValue.contains('.')) {
+                    stringValue.length - stringValue.indexOf('.') - 1
+                } else {
+                    0
+                }
+            }
+
+            val d = (10.0).pow(getDecimalPlaces(max(lhs.value, rhs.value)))
+            val df = (10.0).pow(getDecimalPlaces(lhs.value) + getDecimalPlaces(rhs.value))
+            val l = lhs.value * d
+            val r = rhs.value * d
+            val lr = l * r
+
+            makeNumber(lr / df)
+        }
+        "/" ->
+            if (lhs.value != 0.0 && rhs.value != 0.0) {
+                // We shall dodge floating point imprecision errors!
+
+                fun getDecimalPlaces(value: Double): Int {
+                    val stringValue = value.toString()
+                    return if (stringValue.contains('.')) {
+                        stringValue.length - stringValue.indexOf('.') - 1
+                    } else {
+                        0
+                    }
+                }
+
+                val d = (10.0).pow(getDecimalPlaces(max(lhs.value, rhs.value)))
+                val l = lhs.value * d
+                val r = rhs.value * d
+                val lr = l / r
+
+                makeNumber(lr / d * 10)
+            } else
+                throw RuntimeException("Cannot divide by zero.")
+
         "%" -> makeNumber(lhs.value % rhs.value)
         "^" -> makeNumber(lhs.value.pow(rhs.value))
         "|" -> makeNumber((lhs.value.toRawBits() or rhs.value.toRawBits()).toDouble())
@@ -42,14 +125,13 @@ fun evalComparisonBinaryExpr(lhs: RuntimeVal, rhs: RuntimeVal, op: String, env: 
 fun evalOtherBinaryExpr(lhs: RuntimeVal, rhs: RuntimeVal, op: String, env: Environment): RuntimeVal {
     return when (op) {
         "to" -> {
-            val map = Pair<MutableList<String>, MutableList<RuntimeVal>>(mutableListOf(), mutableListOf())
+            val map = HashMap<String, Pair<RuntimeVal, Type>>()
 
             var inc = (lhs as NumberVal).value
             var idx = 0
 
             while (inc <= (rhs as NumberVal).value) {
-                map.first.addLast(idx.toString())
-                map.second.addLast(makeNumber(inc))
+                map["$idx"] = makeNumber(inc) to NumberType()
 
                 idx++
                 inc++
@@ -69,6 +151,7 @@ fun evalIdentBinaryExpr(lhs: Identifier, rhs: Identifier, op: String, env: Envir
 
             makeNull()
         }
+
         else -> throw RuntimeException("Undefined operator '$op'")
     }
 }
@@ -95,12 +178,14 @@ fun evalStringBinaryExpr(lhs: StringVal, rhs: RuntimeVal, op: String, env: Envir
                 }
             }
 
-            makeString(diff.toString())
+            makeString("$diff")
         }
+
         else -> throw RuntimeException("Undefined string operator '$op'")
     }
 }
 
+@ExperimentalTime
 fun evalBinaryExpr(expr: BinaryExpr, env: Environment): RuntimeVal {
     val (lhs, rhs) = arrayOf(evaluate(expr.left, env), evaluate(expr.right, env))
     val comparisonOps = hashSetOf("is", "isnt", "or", "nor", "and", "nand", ">", "<")
@@ -118,8 +203,8 @@ fun evalBinaryExpr(expr: BinaryExpr, env: Environment): RuntimeVal {
     }
 }
 
+@OptIn(ExperimentalTime::class)
 fun evalMemberExpr(expr: MemberExpr, env: Environment): RuntimeVal {
-    val obj = evaluate(expr.obj, env) as ObjectVal
     val prop = when (expr.prop) {
         is Identifier -> expr.prop.symbol
         is NumberLiteral -> expr.prop.value.toInt().toString()
@@ -127,89 +212,97 @@ fun evalMemberExpr(expr: MemberExpr, env: Environment): RuntimeVal {
         else -> throw Exception("huh")
     }
 
-    val idx = obj.value.first.indexOf(prop)
+    val obj = evaluate(expr.obj, env) as ObjectVal
 
-    if (idx == -1) {
-        throw IllegalAccessException("Cannot access member $prop as it is either private or doesn't exist.")
-    }
-
-    return obj.value.second[idx]
+    return obj.value[prop]?.first ?: Error<Nothing> (
+        "Attempted to access a property that does not exist in this scope (trying to access ${prop})",
+        ""
+    ).raise()
 }
 
 fun evalIdentifier(identifier: Identifier, env: Environment): RuntimeVal {
-    return env.lookupVar(identifier.symbol)
+    val v = env.getVarNoCache(identifier.symbol)
+
+    return v.value
 }
 
+@OptIn(ExperimentalTime::class)
 fun evalAssignment(node: AssignmentExpr, env: Environment, file: String): RuntimeVal {
-    if (node.assigned !is Identifier) {
-        throw RuntimeException("Expected an identifier in an assignment expression.")
+    if (node.assigned is Identifier) {
+        val value = evaluate(node.value, env)
+        val type = if (node.assigned.type == null) AnyType() else typeEval(node.assigned.type!!, env)
+
+        if (!(type matches value)) {
+            Error<Nothing> (
+                "IncorrectTypeError: Attempted to assign a value of ${value.kind} (${value.toFancy()}) to ${node.assigned.symbol}, which is a ${type}.",
+                file
+            )
+                .raise()
+        }
+
+        return env.assignVar(node.assigned.symbol, value, file)
+    } else if (node.assigned is MemberExpr) {
+        val value = evaluate(node.value, env)
+
+        val `object` = evaluate(node.assigned.obj, env) as ObjectVal
+
+        val property = when (node.assigned.prop) {
+            is Identifier -> node.assigned.prop.symbol
+            is NumberLiteral -> node.assigned.prop.value.toInt().toString()
+            is StringLiteral -> node.assigned.prop.value
+            else -> throw Exception("huh")
+        }
+
+        if (!((`object`.value[property]?.second ?: NeverType()) matches value)) {
+            IncorrectTypeError(`object`.value[property]?.second ?: NeverType(), value)
+                .raise()
+        }
+
+        `object`.value[property] = value to (`object`.value[property]?.second ?: NeverType())
+
+        return value
     }
 
-    val value = evaluate(node.value, env)
-    val variable = env.lookupVar(node.assigned.symbol)
-    val type: String? = if (env.resolve(node.assigned.type) != null) {
-        env.lookupVar(node.assigned.type).value.toString()
-    } else null
-
-    if ((type ?: variable.kind) != value.kind) {
-        Error("Attempted to assign a value of ${value.kind} (${value.toFancy()}) to ${node.assigned.symbol}, which is a ${type ?: variable.kind}.", file)
-            .raise()
-    }
-
-    return env.assignVar(node.assigned.symbol, value, file)
+    throw RuntimeException("Expected an identifier or member expression in an assignment expression.")
 }
 
-fun evalObjectExpr(expr: ObjectLiteral, env: Environment): RuntimeVal {
-    val props = Pair<MutableList<String>, MutableList<RuntimeVal>>(mutableListOf(), mutableListOf())
+@OptIn(ExperimentalTime::class)
+fun evalObjectExpr(expr: ObjectLiteral, env: Environment): ObjectVal {
+    val props = HashMap<String, Pair<RuntimeVal, Type>>()
 
     expr.properties.forEach {
+        val type = if (it.type == null) AnyType() else typeEval(it.type, env)
+
         if (it.value.isEmpty) {
-            props.first.addLast(it.key)
-            props.second.addLast(env.lookupVar(it.key))
+            val value = env.lookupVar(it.key)
+
+            if (!(type matches value)) {
+                IncorrectTypeError(type, value)
+                    .raise()
+            }
+
+            props[it.key] = value to type
         } else {
-            props.first.addLast(it.key)
-            props.second.addLast(evaluate(it.value.get(), env))
+            props[it.key] = evaluate(it.value.get(), env) to type
         }
     }
 
     return makeObject(props)
 }
 
-fun runPrefix(fn: FunctionValue, env: Environment) {
-    fn.prefixes.forEach {
-        val prefix = env.lookupVar(it) as FunctionValue
-
-        runPrefix(prefix, env)
-
-        for (statement in prefix.value) {
-            evaluate(statement, prefix.declEnv)
-        }
-
-        runSuffix(prefix, env)
-    }
-}
-
-fun runSuffix(fn: FunctionValue, env: Environment) {
-    fn.suffixes.forEach {
-        val suffix = env.lookupVar(it) as FunctionValue
-
-        runPrefix(suffix, env)
-
-        for (statement in suffix.value) {
-            evaluate(statement, suffix.declEnv)
-        }
-
-        runSuffix(suffix, env)
-    }
-}
-
+@OptIn(ExperimentalTime::class)
 fun evalCallExpr(call: CallExpr, env: Environment): RuntimeVal {
     val args = call.args.map { evaluate(it, env) }
+
     val fn = evaluate(call.caller, env)
 
     if (fn is NativeFnValue) {
         if (fn.arity > -1 && fn.arity != args.size) {
-            throw RuntimeException("Native Function ${(call.caller as Identifier).symbol} expected ${fn.arity} arguments, instead got ${args.size}.")
+            when (call.caller) {
+                is MemberExpr -> throw RuntimeException("Native Function ${(call.caller.prop as? Identifier)?.symbol} expected ${fn.arity} arguments, instead got ${args.size}.")
+                is Identifier -> throw RuntimeException("Native Function ${call.caller.symbol} expected ${fn.arity} arguments, instead got ${args.size}.")
+                else -> throw RuntimeException("Native Function UNKNOWN expected ${fn.arity} arguments, instead got ${args.size}.")
+            }
         }
 
         return fn.value(args, env)
@@ -217,75 +310,73 @@ fun evalCallExpr(call: CallExpr, env: Environment): RuntimeVal {
 
     if (fn is FunctionValue) {
         // An arity of -1 means any number of arguments are allowed
-        if (fn.arity > -1 && fn.arity != args.size) {
+        if (fn.arity > -1 && fn.arity != args.size.toByte()) {
             throw RuntimeException("${fn.name} expected ${fn.arity} arguments, instead got ${args.size}.")
         }
 
-        val scope = if (fn.mutating) Environment(fn.declEnv) else Environment(fn.declEnv).toReadonly()
+        val scope =
+            if (fn.hasModifier(ModifierType.Annotation, "ScopeReadonly")) Environment(env).toReadonly()
+            else if (fn.hasModifier(ModifierType.Annotation, "ScopeLimited")) Environment(makeGlobalEnv(arrayOf())).toReadonly()
+            else if (fn.hasModifier(ModifierType.Annotation, "ScopeCopy")) Environment(env.copy())
+            else if (!fn.hasModifier(ModifierType.Synchronised)) {
+                    Warning("""
+                        |Concurrent functions must be annotated with either ScopeReadonly, ScopeLimited or ScopeCopy in v1.0.0-beta.3 (ScopeLimited has been implicitly applied).
+                        |This will be an error in future versions.
+                        """.trimMargin(), "")
+                    .raise()
 
-        fn.params.forEachIndexed { index, pair ->
-            val type: String = if (scope.resolve(pair.second) != null) {
-                scope.lookupVar(pair.second).value.toString()
-            } else pair.second
-            
-            if (type != "any" && type != args[index].kind) {
-                throw IllegalArgumentException("Cannot pass argument of type ${args[index].kind} to an expected type of $type.")
+                Environment(makeGlobalEnv(arrayOf())).toReadonly()
+        } else Environment(env)
+            /*if (fn.mutating) Environment(fn.declEnv, isCoroutine = fn.coroutine && !fn.promise)
+            else Environment(fn.declEnv, isCoroutine = fn.coroutine && !fn.promise).toReadonly()*/
+
+        for ((name, type) in fn.params) {
+            if (!(type matches args[name.second.toInt()])) {
+                Error<Nothing>(
+                    "Parameter ${name.first} at position ${name.second} of function ${fn.name.first ?: "ANONYMOUS"} required a type of ${type}.",
+                    ""
+                ).raise()
             }
 
-            scope.declareVar(pair.first, args[index], true)
+            scope.declareVar(name.first, args[name.second.toInt()], true)
         }
 
         var result: RuntimeVal = makeNull()
 
         if (fn.coroutine && !fn.promise) globalCoroutineScope.launch {
-            runPrefix(fn, env)
+            if (!call.hasModifier(ModifierType.Annotation, "CoroutineCall") && fn.coroutine && !call.hasModifier(ModifierType.Annotation, "UncheckedCall")) {
+                Warning("As of v1.0.0-beta.3, all calls to coroutines must be marked with @CoroutineCall or @UncheckedCall. This will be an error in future versions.", "")
+                    .raise()
+            }
 
             for (statement in fn.value) {
                 result = evaluate(statement, scope)
             }
-
-            runSuffix(fn, env)
         } else if (fn.coroutine) {
             val future = CompletableFuture<RuntimeVal>()
 
             globalCoroutineScope.launch {
-                runPrefix(fn, env)
-
                 for (statement in fn.value) {
                     result = evaluate(statement, scope)
                 }
 
-                runSuffix(fn, env)
+                val type = fn.name.second
 
-                val type: String = if (fn.name.second != null && scope.resolve(fn.name.second!!) != null)
-                    scope.lookupVar(fn.name.second!!).value.toString()
-                else fn.name.second ?: "any"
-
-                if (type != "any" && type != result.kind) {
-                    throw IllegalArgumentException("Cannot pass argument of type $result.kind} to an expected type of $type.")
-                }
+                require(type matches result) { "Cannot pass argument of type $result.kind} to an expected type of $type." }
 
                 future.complete(result)
             }
 
             result = makePromise(future)
         } else {
-            runPrefix(fn, env)
-
             for (statement in fn.value) {
                 result = evaluate(statement, scope)
             }
-
-            runSuffix(fn, env)
         }
-                
-        val type: String = if (fn.name.second != null && scope.resolve(fn.name.second!!) != null && fn.name.second !in globalVars)
-            scope.lookupVar(fn.name.second!!).value.toString()
-        else fn.name.second ?: "any"
 
-        if (result.kind != type && !fn.promise) {
-            throw IllegalStateException("Expected ${fn.name.first} to return a ${type}, but actually got ${result.kind}.")
-        }
+        val type = fn.name.second
+
+        check(!fn.promise && type matches result) { "Expected ${fn.name.first} to return a ${type}, but actually got ${result.kind}." }
 
         return result
     }
@@ -293,6 +384,7 @@ fun evalCallExpr(call: CallExpr, env: Environment): RuntimeVal {
     throw RuntimeException("Attempted to call a non-function value (${fn.kind}).")
 }
 
+@OptIn(ExperimentalTime::class)
 fun evalAwaitDecl(decl: AwaitDecl, env: Environment): RuntimeVal {
     val fn = object : AwaitValue(
         param = decl.parameter,
@@ -311,7 +403,7 @@ fun evalAwaitDecl(decl: AwaitDecl, env: Environment): RuntimeVal {
 
             scope.declareVar(fn.param.symbol, res, true)
 
-            for (statement in fn.value) launch {
+            for (statement in fn.value) this.launch {
                 result = evaluate(statement, scope)
             }
         }
@@ -328,6 +420,7 @@ fun evalAwaitDecl(decl: AwaitDecl, env: Environment): RuntimeVal {
     return result
 }
 
+@OptIn(ExperimentalTime::class)
 fun evalAfterDecl(decl: AfterDecl, env: Environment): RuntimeVal = runBlocking {
     val ms = evaluate(decl.ms, env)
 
@@ -358,6 +451,7 @@ fun evalAfterDecl(decl: AfterDecl, env: Environment): RuntimeVal = runBlocking {
     return@runBlocking result
 }
 
+@OptIn(ExperimentalTime::class)
 fun evalIfDecl(decl: IfDecl, env: Environment): RuntimeVal {
     val cond = evaluate(decl.cond, env)
     val fn = object : IfValue(
@@ -456,10 +550,28 @@ fun evalIfDecl(decl: IfDecl, env: Environment): RuntimeVal {
 }
 
 fun evalFuncDecl(decl: FunctionDecl, env: Environment): RuntimeVal {
+    val params = HashMap<Pair<String, Byte>, Type>()
+
+    for ((name, type) in decl.parameters) {
+        params[name] = if (type != null) typeEval(type, env) else AnyType()
+    }
+
     val fn = object : FunctionValue(
-        name = decl.name?.symbol to decl.name?.type,
-        declEnv = env,
-        params = decl.parameters,
+        name = decl.name?.symbol to if (decl.name?.type != null) typeEval(decl.name.type!!, env) else AnyType(),
+        declEnv =
+            if (decl.hasModifier(ModifierType.Annotation, "ScopeReadonly")) env.toReadonly()
+            else if (decl.hasModifier(ModifierType.Annotation, "ScopeLimited")) makeGlobalEnv(arrayOf()).toReadonly()
+            else if (decl.hasModifier(ModifierType.Annotation, "ScopeCopy")) env.copy()
+            else if (!decl.hasModifier(ModifierType.Synchronised)) {
+                Warning("""
+                    |Concurrent functions must be annotated with either ScopeReadonly, ScopeLimited or ScopeCopy in v1.0.0-beta.3 (ScopeLimited has been implicitly applied).
+                    |This will be an error in future versions.
+                """.trimMargin(), "idk")
+                    .raise()
+
+                makeGlobalEnv(arrayOf()).toReadonly()
+            } else env,
+        params = params,
         value = decl.body,
         arity = decl.arity,
         modifiers = decl.modifiers,
@@ -471,55 +583,4 @@ fun evalFuncDecl(decl: FunctionDecl, env: Environment): RuntimeVal {
     }
 
     return fn
-}
-
-fun evalClassDecl(decl: ClassDecl, env: Environment): RuntimeVal {
-    val c = object : ClassValue(
-        kind = decl.name.symbol,
-        name = decl.name.symbol to decl.name.type,
-        declEnv = env,
-        params = decl.parameters,
-        value = decl.body,
-        arity = decl.arity
-    ) {}
-
-    val scope = Environment(c.declEnv)
-
-    for (statement in c.value) {
-        evaluate(statement, scope)
-    }
-
-    val pv = mutableMapOf<String, RuntimeVal>()
-
-    scope.variables.map {
-        if (it.value is FunctionValue) {
-            if (!(it.value as FunctionValue).private) pv[it.name] = it.value
-        } else {
-            pv[it.name] = it.value
-        }
-    }
-
-    val public = pv.keys.toMutableList() to pv.values.toMutableList()
-
-    val init = makeNativeFn(c.name.first, c.arity) { args, _ ->
-        for (index in 0..<c.params.size) {
-            val pair = c.params.toList()[index]
-
-            val type: String = if (scope.resolve(pair.second) != null) {
-                scope.lookupVar(pair.second).value.toString()
-            } else pair.second
-
-            if (type != "any" && type != args[index].kind) {
-                throw IllegalArgumentException("Cannot pass argument of type ${args[index].kind} to an expected type of $type.")
-            }
-
-            scope.declareVar(c.params.toList()[index].first, args.getOrNull(index) ?: makeAny(c.params.toList()[index].second), c.params.toList()[index].first.uppercase() == c.params.toList()[index].first)
-        }
-
-        makeObject(public, c.name.first)
-    }
-
-    env.declareVar(decl.name.symbol, init, true)
-
-    return init
 }

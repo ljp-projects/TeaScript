@@ -1,19 +1,35 @@
 package frontend
 
-import java.util.*
-import kotlin.collections.ArrayDeque
-import kotlin.collections.HashMap
-import kotlin.collections.MutableList
-import kotlin.collections.firstOrNull
-import kotlin.collections.getOrNull
-import kotlin.collections.hashMapOf
-import kotlin.collections.isNotEmpty
-import kotlin.collections.removeFirstOrNull
+import errors.MalpracticeError
+import globalVars
+import runtime.types.nativeTypes
 
-val KEYWORDS: HashMap<String, TokenType> = hashMapOf(
+/**
+ *  Identifiers can contain some special characters
+ *  @ $
+ *  It supports kebab and snake case
+ *  When subtracting, use a space
+ *  They can also be emoji
+ */
+fun Char.isTeaScriptIdentPart() =
+    this.isLetterOrDigit() or (this in setOf('@', '$', '_', '-')) or this.isJavaIdentifierPart() or this.isEmoji()
+
+fun Char.isTeaScriptIdentStart() =
+    this.isLetter() or (this in setOf('@', '$', '_')) or this.isJavaIdentifierStart() or this.isEmoji()
+
+val emojiRegex = Regex("[\\p{So}\\p{Sk}\\p{S}]")
+
+fun Char.isEmoji(): Boolean {
+    return emojiRegex.matches(this.toString())
+}
+
+/**
+ * A list of every reserved word in TeaScript.
+ */
+val DEFAULT_RESERVED_WORDS: HashMap<String, TokenType> = hashMapOf(
     "mutable" to TokenType.Mutable,
     "constant" to TokenType.Constant,
-    "func" to TokenType.Fn,
+    "func" to TokenType.Func,
     "after" to TokenType.After,
     "if" to TokenType.If,
     "is" to TokenType.Is,
@@ -29,7 +45,6 @@ val KEYWORDS: HashMap<String, TokenType> = hashMapOf(
     "otherwise" to TokenType.Otherwise,
     "import" to TokenType.Import,
     "from" to TokenType.From,
-    "class" to TokenType.Class,
     "lambda" to TokenType.Lambda,
     "anonymous" to TokenType.Lambda,
     "private" to TokenType.Private,
@@ -38,37 +53,45 @@ val KEYWORDS: HashMap<String, TokenType> = hashMapOf(
     "promise" to TokenType.Promise
 )
 
-fun tokenise(sourceCode: String): MutableList<Token> {
+/**
+ * Given TeaScript source code, generate a list of tokens.
+ * @param sourceCode The TeaScript source code to parse.
+ * @return A mutable list containing the tokens from the source code.
+ * @see Token
+ */
+fun tokenise(sourceCode: String, reservedWords: HashMap<String, TokenType> = DEFAULT_RESERVED_WORDS): MutableList<Token> {
     val tokens: ArrayDeque<Token> = ArrayDeque(sourceCode.split(" ").size)
     val buf = StringBuilder()
-    val chars = LinkedList(sourceCode.toMutableList())
+    val chars = sourceCode.toCharArray()
+    var charPointer = 0
 
-    while (chars.isNotEmpty()) {
-        when (val c = chars.firstOrNull()) {
+    while (charPointer < chars.size) {
+        when (val c = chars[charPointer]) {
             '"' -> {
-                chars.removeFirst()
+                charPointer++
 
-                while (chars.firstOrNull() != null && chars.firstOrNull() != '"') {
-                    buf.append(chars.removeFirst())
+                while (charPointer < chars.size && chars[charPointer] != '"') {
+                    buf.append(chars[charPointer++])
                 }
 
-                chars.removeFirstOrNull()
+                charPointer++
 
-                tokens.addLast(Token(TokenType.Str, buf.toString()))
+                tokens.addLast(Token(TokenType.Str, "$buf"))
 
                 buf.clear()
             }
-            ':' -> tokens.addLast(Token(TokenType.Colon, chars.removeFirst().toString()))
-            '@' -> {
-                chars.removeFirstOrNull()
 
-                while (chars.isNotEmpty() && chars.firstOrNull() != '@') {
-                    buf.append(chars.removeFirst())
+            ':' -> tokens.addLast(Token(TokenType.Colon, chars[charPointer++].toString()))
+            '@' -> {
+                charPointer++
+
+                while (charPointer < chars.size && !chars[charPointer].isWhitespace()) {
+                    buf.append(chars[charPointer++])
                 }
 
-                val id = buf.toString()
+                val id = "$buf"
 
-                if (id in KEYWORDS) {
+                if (id in reservedWords) {
                     throw Error("Cannot annotate with keywords.")
                 }
 
@@ -78,113 +101,119 @@ fun tokenise(sourceCode: String): MutableList<Token> {
 
                 buf.clear()
             }
+
             '#' -> {
-                while (chars.isNotEmpty() && chars.firstOrNull() != '\n') {
-                    chars.removeFirst()
+                while (charPointer < chars.size && chars[charPointer] != '\n' && chars[charPointer] != '\r') {
+                    charPointer++
                 }
             }
-            '(' -> tokens.addLast(Token(TokenType.OpenParen, chars.removeFirst().toString()))
-            ')' -> tokens.addLast(Token(TokenType.CloseParen, chars.removeFirst().toString()))
-            '[' -> tokens.addLast(Token(TokenType.OpenBracket, chars.removeFirst().toString()))
-            ']' -> tokens.addLast(Token(TokenType.CloseBracket, chars.removeFirst().toString()))
-            '{' -> tokens.addLast(Token(TokenType.OpenBrace, chars.removeFirst().toString()))
-            '}' -> tokens.addLast(Token(TokenType.CloseBrace, chars.removeFirst().toString()))
-            '=' -> tokens.addLast(Token(TokenType.Equals, chars.removeFirst().toString()))
-            ',' -> tokens.addLast(Token(TokenType.Comma, chars.removeFirst().toString()))
-            '.' -> tokens.addLast(Token(TokenType.Dot, chars.removeFirst().toString()))
-            '+', '/', '%', '^', '*', '>', '<', '|' -> tokens.addLast(Token(TokenType.BinaryOperator, chars.removeFirst().toString()))
+
+            '(' -> tokens.addLast(Token(TokenType.OpenParen, chars[charPointer++].toString()))
+            ')' -> tokens.addLast(Token(TokenType.CloseParen, chars[charPointer++].toString()))
+            '[' -> tokens.addLast(Token(TokenType.OpenBracket, chars[charPointer++].toString()))
+            ']' -> tokens.addLast(Token(TokenType.CloseBracket, chars[charPointer++].toString()))
+            '{' -> tokens.addLast(Token(TokenType.OpenBrace, chars[charPointer++].toString()))
+            '}' -> tokens.addLast(Token(TokenType.CloseBrace, chars[charPointer++].toString()))
+            '=' -> tokens.addLast(Token(TokenType.Equals, chars[charPointer++].toString()))
+            ',' -> tokens.addLast(Token(TokenType.Comma, chars[charPointer++].toString()))
+            '.' -> {
+                tokens.addLast(Token(TokenType.Dot, chars[charPointer].toString()))
+                charPointer++
+            }
+            '+', '/', '%', '^', '*', '>', '<', '|' -> tokens.addLast(
+                Token(
+                    TokenType.BinaryOperator,
+                    chars[charPointer++].toString()
+                )
+            )
+
             '\\' -> {
-                chars.removeFirst()
+                charPointer++
 
                 if (chars.firstOrNull() == '>') {
-                    chars.removeFirst()
+                    charPointer++
                     tokens.addLast(Token(TokenType.BinaryOperator, "\\>"))
                 }
             }
+
             '-' -> {
                 if (chars.getOrNull(1)?.isDigit() == false) {
-                    tokens.addLast(Token(TokenType.BinaryOperator, chars.removeFirst().toString()))
+                    tokens.addLast(Token(TokenType.BinaryOperator, chars[charPointer++].toString()))
                 } else {
-                    buf.append(chars.removeFirst())
+                    buf.append(chars[charPointer++])
 
-                    while (chars.firstOrNull()?.isDigit() == true || chars.firstOrNull() == '.' || chars.firstOrNull() == '_') {
-                        if (chars.firstOrNull() != '_')
-                            buf.append(chars.removeFirst())
+                    while (
+                        charPointer < chars.size &&
+                        (chars[charPointer].isDigit() ||
+                                chars[charPointer] == '.' ||
+                                chars[charPointer] == '_')
+                    ) {
+                        if (chars[charPointer] != '_')
+                            buf.append(chars[charPointer++])
                         else
-                            chars.removeFirst()
+                            chars[charPointer++]
                     }
 
-                    tokens.addLast(Token(TokenType.Number, buf.toString()))
+                    tokens.addLast(Token(TokenType.Number, "$buf"))
 
                     buf.clear()
                 }
             }
-            '~' -> {
-                chars.removeFirst()
 
-                buf.append(chars.removeFirst())
-
-                while (chars.firstOrNull()?.isLetter() == true) {
-                    buf.append(chars.removeFirst())
-                }
-
-                tokens.addLast(Token(TokenType.FuncSuffix, buf.toString()))
-
-                buf.clear()
-            }
             else -> {
-                if (c?.isDigit() == true) {
-                    buf.append(chars.removeFirst())
+                if (c.isDigit()) {
+                    buf.append(chars[charPointer++])
 
-                    while (chars.firstOrNull()?.isDigit() == true || chars.firstOrNull() == '.' || chars.firstOrNull() == '_') {
+                    while (
+                        charPointer < chars.size &&
+                        (chars[charPointer].isDigit() ||
+                                chars[charPointer] == '.' ||
+                                chars[charPointer] == '_')
+                    ) {
                         if (chars.firstOrNull() != '_')
-                            buf.append(chars.removeFirst())
+                            buf.append(chars[charPointer++])
                         else
-                            chars.removeFirst()
+                            charPointer++
                     }
 
-                    tokens.addLast(Token(TokenType.Number, buf.toString()))
+                    tokens.addLast(Token(TokenType.Number, "$buf"))
 
                     buf.clear()
-                } else if (c?.isLetter() == true) {
-                    buf.append(chars.removeFirst().toString())
-
-                    while (chars.firstOrNull()?.isLetter() == true) {
-                        buf.append(chars.removeFirst())
+                } else if (c.isTeaScriptIdentStart() || (chars.getOrElse(charPointer + 1) { ' ' }.toString() + c).matches(emojiRegex)) {
+                    if ((chars[charPointer].toString() + chars.getOrElse(charPointer + 1) { ' ' }).matches(emojiRegex)) {
+                        buf.append(chars[charPointer++])
                     }
 
-                    val t: Token = KEYWORDS[buf.toString()]?.let {
-                        Token(it, buf.toString())
-                    } ?: Token(TokenType.Identifier, buf.toString())
+                    buf.append(chars[charPointer++].toString())
 
-                    while (chars.firstOrNull()?.isWhitespace() == true) chars.removeFirst()
-
-                    if (chars.firstOrNull() == '~' && t.type == TokenType.Identifier) {
-                        tokens.addLast(Token(TokenType.FuncPrefix, t.value))
-                        chars.removeFirstOrNull()
-                    } else if (chars.firstOrNull() == ':' && t.type == TokenType.Identifier) {
-                        chars.removeFirst()
-
-                        while (chars.firstOrNull()?.isWhitespace() == true) chars.removeFirst()
-
-                        buf.clear()
-
-                        while (chars.firstOrNull()?.isLetter() == true || chars.firstOrNull() == '-') {
-                            buf.append(chars.removeFirst())
+                    while (
+                        charPointer < chars.size &&
+                        (chars[charPointer].isTeaScriptIdentPart() ||
+                        (chars[charPointer].toString() + chars.getOrElse(charPointer + 1) { ' ' }).matches(emojiRegex))
+                    ) {
+                        if ((chars[charPointer].toString() + chars.getOrElse(charPointer + 1) { ' ' }).matches(emojiRegex)) {
+                            buf.append(chars[charPointer++])
                         }
 
-                        tokens.addLast(Token(t.type, t.value, buf.toString()))
-
-                        while (chars.firstOrNull()?.isWhitespace() == true) chars.removeFirst()
-                    } else {
-                        tokens.addLast(t)
+                        buf.append(chars[charPointer++])
                     }
 
+                    val t: Token = reservedWords["$buf"]?.let {
+                        Token(it, "$buf")
+                    } ?: Token(TokenType.Identifier, "$buf")
+
+                    if (t.value.length <= 3 && t.value !in globalVars && t.value !in nativeTypes) {
+                        MalpracticeError("Identifiers with a length of less than 3 (${t.value} with a length of ${t.value.length}) are generally cryptic.")
+                            .raise()
+                    }
+
+                    tokens.addLast(t)
+
                     buf.clear()
-                } else if (c?.isWhitespace() == true) {
-                    chars.removeFirstOrNull()
+                } else if (c.isWhitespace()) {
+                    charPointer++
                 } else {
-                    error("Unexpected character '$c' in code (character #${sourceCode.length - chars.size}).")
+                    error("Unexpected character '$c' in code.")
                 }
             }
         }

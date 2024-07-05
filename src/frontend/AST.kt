@@ -14,12 +14,17 @@ interface Statement {
  */
 interface Expr : Statement
 
+/**
+ * Type expressions are used when doing type magic, and are a smaller subset of expressions.
+ */
+interface TypeExpr : Expr
+
 abstract class Program(
     final override val kind: String,
     val body: MutableList<Statement>
 ) : Statement {
     init {
-        require(kind == "program") { "Key can't be $kind." }
+        require(this.kind == "program") { "Key can't be ${this.kind}." }
     }
 }
 
@@ -33,41 +38,28 @@ abstract class VarDecl(
     val value: Optional<Expr>
 ) : Statement {
     init {
-        require(kind == "var-decl") { "Key can't be $kind." }
+        require(this.kind == "var-decl") { "Key can't be ${this.kind}." }
     }
 }
 
 /**
  * An expression representing a function declaration. Kind must be fn-decl.
  */
-abstract class FunctionDecl(
+open class FunctionDecl(
     final override val kind: String,
-    // Parameters is an array deque of a pair representing name to type
-    val parameters: ArrayDeque<Pair<String, String>>,
+    // HashMap representing name and position to type
+    val parameters: HashMap<Pair<String, Byte>, TypeExpr?>,
     val name: Identifier?,
     val body: List<Statement>,
-    val arity: Int,
-    val modifiers: Set<Modifier>
+    val arity: Byte,
+    val modifiers: HashSet<Modifier>
 ) : Expr {
     init {
-        require(kind == "fn-decl") { "Key can't be $kind." }
+        require(this.kind == "fn-decl") { "Key can't be ${this.kind}." }
     }
-}
 
-/**
- * An expression representing a function declaration. Kind must be fn-decl.
- */
-abstract class ClassDecl(
-    final override val kind: String,
-    // Parameters is an array deque of a pair representing name to type
-    val parameters: ArrayDeque<Pair<String, String>>,
-    val name: Identifier,
-    val body: List<Statement>,
-    val arity: Int
-) : Expr {
-    init {
-        require(kind == "class-decl") { "Key can't be $kind." }
-    }
+    fun hasModifier(type: ModifierType, value: String = "YES") =
+        modifiers.any { it.type == type && it.value == value }
 }
 
 /**
@@ -81,7 +73,7 @@ abstract class ForDecl(
     val modifiers: Set<Modifier>,
 ) : Statement {
     init {
-        require(kind == "for-decl") { "Key can't be $kind." }
+        require(this.kind == "for-decl") { "Key can't be ${this.kind}." }
     }
 }
 
@@ -95,12 +87,23 @@ abstract class ImportDecl(
     val net: Boolean
 ) : Statement {
     init {
-        require(kind == "use-decl") { "Key can't be $kind." }
+        require(this.kind == "use-decl") { "Key can't be ${this.kind}." }
+    }
+}
+
+open class ArrayLiteral(
+    val parameter: Identifier,
+    val elements: List<Expr>,
+    val modifiers: Set<Modifier>,
+    final override val kind: String = "array-lit",
+): TypeExpr {
+    init {
+        require(this.kind == "array-lit") { "Key can't be ${this.kind}." }
     }
 }
 
 /**
- * An expression repres enting an await block declaration. Kind must be await-decl.
+ * An expression representing an await block declaration. Kind must be await-decl.
  */
 abstract class AwaitDecl(
     final override val kind: String,
@@ -110,7 +113,7 @@ abstract class AwaitDecl(
     val modifiers: Set<Modifier>
 ) : Expr {
     init {
-        require(kind == "await-decl") { "Key can't be $kind." }
+        require(this.kind == "await-decl") { "Key can't be ${this.kind}." }
     }
 }
 
@@ -124,13 +127,11 @@ open class AfterDecl(
     val modifiers: Set<Modifier>,
 ) : Expr {
     init {
-        require(kind == "after-decl") { "Key can't be $kind." }
+        require(this.kind == "after-decl") { "Key can't be ${this.kind}." }
     }
 
     val async: Boolean
-        get() {
-            return modifiers.none { it.type == ModifierType.Synchronised }
-        }
+        get() = this.modifiers.none { it.type == ModifierType.Synchronised }
 }
 
 /**
@@ -145,7 +146,7 @@ abstract class IfDecl(
     val or: ArrayDeque<OrDecl>,
 ) : Expr {
     init {
-        require(kind == "if-decl") { "Key can't be $kind." }
+        require(this.kind == "if-decl") { "Key can't be ${this.kind}." }
     }
 }
 
@@ -156,9 +157,9 @@ abstract class OrDecl(
     final override val kind: String,
     val cond: Expr,
     val body: ArrayDeque<Statement>,
-) : Statement {
+) : Expr {
     init {
-        require(kind == "or-decl") { "Key can't be $kind." }
+        require(this.kind == "or-decl") { "Key can't be ${this.kind}." }
     }
 }
 
@@ -171,7 +172,7 @@ abstract class AssignmentExpr(
     val value: Expr,
 ) : Expr {
     init {
-        require(kind == "assign-expr") { "Key can't be $kind." }
+        require(this.kind == "assign-expr") { "Key can't be ${this.kind}." }
     }
 }
 
@@ -185,7 +186,7 @@ abstract class BinaryExpr(
     val operator: String
 ) : Expr {
     init {
-        require(kind == "binary-expr") { "Key can't be $kind." }
+        require(this.kind == "binary-expr") { "Key can't be ${this.kind}." }
     }
 }
 
@@ -198,21 +199,25 @@ abstract class UnaryExpr(
     val operator: String
 ) : Expr {
     init {
-        require(kind == "unary-expr") { "Key can't be $kind." }
+        require(this.kind == "unary-expr") { "Key can't be ${this.kind}." }
     }
 }
 
 /**
  * An expression representing a call to a function. Kind must be call-expr.
  */
-abstract class CallExpr(
+open class CallExpr(
     final override val kind: String,
     val args: List<Expr>,
     val caller: Expr,
+    val modifiers: HashSet<Modifier>
 ) : Expr {
     init {
-        require(kind == "call-expr") { "Key can't be $kind." }
+        require(this.kind == "call-expr") { "Key can't be ${this.kind}." }
     }
+
+    fun hasModifier(type: ModifierType, value: String) =
+        modifiers.any { it.type == type && it.value == value }
 }
 
 /**
@@ -223,9 +228,9 @@ abstract class MemberExpr(
     val obj: Expr,
     val prop: Expr,
     val computed: Boolean,
-) : Expr {
+) : TypeExpr {
     init {
-        require(kind == "member-expr") { "Key can't be $kind." }
+        require(this.kind == "member-expr") { "Key can't be ${this.kind}." }
     }
 }
 
@@ -235,10 +240,10 @@ abstract class MemberExpr(
 abstract class Identifier(
     final override val kind: String,
     val symbol: String,
-    val type: String,
-) : Expr {
+    var type: TypeExpr?,
+) : TypeExpr {
     init {
-        require(kind == "ident") { "Key can't be $kind." }
+        require(this.kind == "ident") { "Key can't be ${this.kind}." }
     }
 }
 
@@ -248,9 +253,9 @@ abstract class Identifier(
 abstract class NumberLiteral(
     final override val kind: String,
     val value: Double,
-) : Expr {
+) : TypeExpr {
     init {
-        require(kind == "num-lit") { "Key can't be $kind." }
+        require(this.kind == "num-lit") { "Key can't be ${this.kind}." }
     }
 }
 
@@ -260,9 +265,9 @@ abstract class NumberLiteral(
 abstract class StringLiteral(
     final override val kind: String,
     val value: String,
-) : Expr {
+) : TypeExpr {
     init {
-        require(kind == "str-lit") { "Key can't be $kind." }
+        require(this.kind == "str-lit") { "Key can't be ${this.kind}." }
     }
 }
 
@@ -272,12 +277,16 @@ abstract class StringLiteral(
 abstract class Property(
     final override val kind: String,
     val key: String,
-    val value: Optional<Expr>
+    val value: Optional<Expr>,
+    val type: TypeExpr?
 ) : Expr {
     init {
-        require(kind == "prop") { "Key can't be $kind." }
+        require(this.kind == "prop") { "Key can't be ${this.kind}." }
     }
 }
+
+fun makeProperty(key: String, value: Optional<Expr>, type: TypeExpr?) =
+    object : Property("prop", key, value, type) {}
 
 /**
  * A value representing an object. Kind must be obj-lit.
@@ -285,8 +294,8 @@ abstract class Property(
 abstract class ObjectLiteral(
     final override val kind: String,
     val properties: List<Property>,
-) : Expr {
+) : TypeExpr {
     init {
-        require(kind == "obj-lit") { "Key can't be $kind." }
+        require(this.kind == "obj-lit") { "Key can't be ${this.kind}." }
     }
 }

@@ -1,3 +1,5 @@
+@file:Suppress("ScopeFunctionConversion")
+
 package runtime.eval
 
 import frontend.*
@@ -5,23 +7,26 @@ import globalCoroutineScope
 import globalVars
 import kotlinx.coroutines.launch
 import okhttp3.*
-import runtime.*
+import runtime.Environment
+import runtime.evaluate
+import runtime.makeGlobalEnv
+import runtime.types.*
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.CompletableFuture
 import kotlin.jvm.optionals.getOrNull
+import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
+@ExperimentalTime
 fun evalProgram(program: Program, env: Environment): RuntimeVal {
     var result: RuntimeVal = makeNull()
 
     val time = measureTime {
-        /*for (statement in program.body) {
-            result = evaluate(statement, env)
-        }*/
+        var stmtPointer = 0
 
-        program.body.forEach {
-            result = evaluate(it, env)
+        while (stmtPointer < program.body.size) {
+            result = evaluate(program.body[stmtPointer++], env)
         }
     }
 
@@ -34,26 +39,30 @@ fun evalProgram(program: Program, env: Environment): RuntimeVal {
     return result
 }
 
+@OptIn(ExperimentalTime::class)
 fun evalVarDecl(decl: VarDecl, env: Environment): RuntimeVal {
     val value: RuntimeVal = decl.value.getOrNull().let {
         return@let if (it != null) evaluate(it, env) else null
     } ?: makeNull()
 
-    val type: String = if (env.resolve(decl.identifier.type) != null) {
-        env.lookupVar(decl.identifier.type).value.toString()
-    } else if (decl.identifier.type == "infer") {
-        value.kind
-    } else decl.identifier.type
+    val type = if (decl.identifier.type == null) AnyType() else typeEval(decl.identifier.type!!, env)
 
-    if (decl.value.isPresent && value.kind != type && type != "any") {
-        throw IllegalArgumentException("Expected a value of type $type, instead got ${value.kind}")
+    require(decl.value.isPresent && type matches value) {
+        "Expected a value of type $type, instead got ${value.kind}"
     }
 
     return env.declareVar(decl.identifier.symbol, value, decl.constant)
 }
 
+@OptIn(ExperimentalTime::class)
 fun evalImportDecl(decl: ImportDecl, currentEnvironment: Environment): RuntimeVal {
     val env = makeGlobalEnv(emptyArray())
+
+    val `import` = object : ImportVal(
+        value = env,
+        imports = decl.symbols
+    ) {}
+
     val file = if (decl.net) {
         val future = CompletableFuture<String>()
         val client = OkHttpClient()
@@ -76,18 +85,18 @@ fun evalImportDecl(decl: ImportDecl, currentEnvironment: Environment): RuntimeVa
 
     env.variables.forEach {
         if (currentEnvironment.resolve(it.name) != null && !globalVars.contains(it.name)) {
-            throw RuntimeException("Conflicting name of function/variable with ${it.name} of ${decl.file}. It will not be imported.")
+            throw RuntimeException(
+                "Conflicting name of function/variable with ${it.name} of ${decl.file}. It will not be imported."
+            )
         } else if (!globalVars.contains(it.name) && decl.symbols.contains(it.name)) {
             currentEnvironment.declareVar(it.name, it.value, true)
         }
     }
 
-    return object : ImportVal(
-        value = env,
-        imports = decl.symbols
-    ) {}
+    return `import`
 }
 
+@OptIn(ExperimentalTime::class)
 fun evalForDecl(decl: ForDecl, env: Environment): RuntimeVal {
     val fn = object : ForValue(
         param = decl.parameter,
@@ -99,10 +108,10 @@ fun evalForDecl(decl: ForDecl, env: Environment): RuntimeVal {
 
     if (fn.async) {
         globalCoroutineScope.launch {
-            (fn.obj as ObjectVal).value.first.forEachIndexed { idx, _ ->
+            for ((_, value) in (fn.obj as ObjectVal).value) {
                 val scope = Environment(fn.declEnv)
 
-                scope.declareVar(fn.param.symbol, fn.obj.value.second[idx], true)
+                scope.declareVar(fn.param.symbol, value.first, true)
 
                 for (statement in fn.value) {
                     evaluate(statement, scope)
@@ -110,10 +119,10 @@ fun evalForDecl(decl: ForDecl, env: Environment): RuntimeVal {
             }
         }
     } else {
-        (fn.obj as ObjectVal).value.first.forEachIndexed { idx, _ ->
+        for ((_, value) in (fn.obj as ObjectVal).value) {
             val scope = Environment(fn.declEnv)
 
-            scope.declareVar(fn.param.symbol, fn.obj.value.second[idx], true)
+            scope.declareVar(fn.param.symbol, value.first, true)
 
             for (statement in fn.value) {
                 evaluate(statement, scope)

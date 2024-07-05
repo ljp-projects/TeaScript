@@ -4,9 +4,16 @@ import frontend.AssignmentExpr
 import frontend.CallExpr
 import frontend.Identifier
 import frontend.Program
-import globalVars
-import runtime.*
+import runtime.Environment
+import runtime.evaluate
+import runtime.transpile
+import runtime.types.FunctionValue
+import runtime.types.NativeFnValue
+import runtime.types.RuntimeVal
+import runtime.types.makeNull
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 fun transpileAssignment(node: AssignmentExpr, env: Environment): String {
     if (node.assigned !is Identifier) {
         throw RuntimeException("Expected an identifier in an assignment expression.")
@@ -14,15 +21,15 @@ fun transpileAssignment(node: AssignmentExpr, env: Environment): String {
 
     val value = evaluate(node.value, env)
 
-    if (env.lookupVar(node.assigned.symbol).kind != value.kind) {
-        throw IllegalArgumentException("Expected a value of type ${env.lookupVar(node.assigned.symbol).kind}, instead got ${value.kind}")
+    require(env.lookupVar(node.assigned.symbol).kind == value.kind) {
+        "Expected a value of type ${env.lookupVar(node.assigned.symbol).kind}, instead got ${value.kind}"
     }
 
     return "${node.assigned.symbol} = ${value.value};"
 }
-fun transpileIdentifier(identifier: Identifier, env: Environment): String {
-    return identifier.symbol
-}
+fun transpileIdentifier(identifier: Identifier, env: Environment): String = identifier.symbol
+
+@OptIn(ExperimentalTime::class)
 fun transpileCallExpr(call: CallExpr, env: Environment): String {
     val actArgs = call.args.map { transpile(it, env) }
     val fn = evaluate(call.caller, env)
@@ -37,7 +44,7 @@ fun transpileCallExpr(call: CallExpr, env: Environment): String {
 
     if (fn is FunctionValue) {
         // An arity of -1 means any number of arguments are allowed
-        if (fn.arity > -1 && fn.arity != actArgs.size) {
+        if (fn.arity > -1 && fn.arity.toInt() != actArgs.size) {
             throw RuntimeException("${fn.name} expected ${fn.arity} arguments, instead got ${actArgs.size}.")
         }
 
@@ -46,14 +53,12 @@ fun transpileCallExpr(call: CallExpr, env: Environment): String {
         val result = StringBuilder("")
         var fr: RuntimeVal = makeNull()
 
-        result.append(transpilePrefix(fn, env))
-
         fn.value.forEach { statement ->
             fr = evaluate(statement, scope)
         }
 
         result.append("${
-            fn.name.first ?: if (call.caller !is Identifier) ("((${fn.params.joinToString { it.first }}) => {" +
+            fn.name.first ?: if (call.caller !is Identifier) ("((${fn.params.keys.sortedBy { it.second }.joinToString { it.first }}) => {" +
                     transpileProgram(
                         object : Program(
                             "program",
@@ -64,19 +69,11 @@ fun transpileCallExpr(call: CallExpr, env: Environment): String {
             else call.caller.symbol
         }(${actArgs.joinToString()})")
 
-        result.append(transpileSuffix(fn, env))
+        val type = fn.name.second
 
-        val type: String = if (fn.name.second != null && scope.resolve(fn.name.second!!) != null && fn.name.second !in globalVars)
-            scope.lookupVar(fn.name.second!!).value.toString()
-        else if (fn.name.second == null)
-            "any"
-        else fn.name.second!!
+        check(type matches fr) { "Expected ${fn.name.first} to return a $type, but actually got ${fr.kind}." }
 
-        if (fr.kind != type && !fn.promise && type != "any") {
-            throw IllegalStateException("Expected ${fn.name.first} to return a ${type}, but actually got ${fr.kind}.")
-        }
-
-        return result.toString()
+        return "$result"
     }
 
     throw RuntimeException("Attempted to call a non-function value.")

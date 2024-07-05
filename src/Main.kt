@@ -4,13 +4,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.runBlocking
-import okhttp3.*
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import org.kohsuke.args4j.Argument
 import org.kohsuke.args4j.CmdLineParser
 import org.kohsuke.args4j.Option
 import org.kohsuke.args4j.spi.StringArrayOptionHandler
 import runtime.*
+import runtime.types.makeString
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -24,30 +26,82 @@ import java.util.jar.Manifest
 import javax.swing.JFrame
 import kotlin.io.path.*
 import kotlin.system.exitProcess
+import kotlin.time.ExperimentalTime
 
-val globalCoroutineScope = CoroutineScope(Dispatchers.Default)
-val globalVars = hashSetOf("io", "math", "net", "data", "false", "null", "true", "time", "argv", "std", "ui")
+/**
+ * This is the global coroutine scope.
+ * It is used to execute tasks in parallel.
+ * */
+val globalCoroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Default)
+
+/**
+ * These are global variables created by the makeGlobalEnv family of functions.
+ * */
+val globalVars: HashSet<String> =
+    hashSetOf(
+        "io",
+        "math",
+        "net",
+        "data",
+        "false",
+        "null",
+        "true",
+        "time",
+        "argv",
+        "std",
+        "ui"
+    )
+
+/**
+ * These are any current windows open.
+ * It is unused in the TeaScript runtime currently.
+ */
 val windows: MutableMap<Double, JFrame> = mutableMapOf()
+
+/**
+ * The user's home directory (used for the build system primarily)
+ * */
 val home: String = System.getProperty("user.home")
-val argsParsed = Main()
 
-/*
-Example package JSON
-{
-    name: "Test-Package",
-    files: [ "https://example.com/example.tea" ],
-    dependencies: [ "https://example.com/dependency.tea" ],
-    bin: null
-}
-*/
+/**
+ * Will store command-line arguments parsed by Args4j.
+ */
+val argsParsed: Main = Main()
 
-data class Package(val name: String, val files: List<String>, val dependencies: List<String>, val bin: String?)
+/**
+ * A data class containing every parameter that may be in a TeaScript package.
+ * This class is generated after the package json file is received (via GSON)
+ * ```json
+ * {
+ *  name: "Test-Package",
+ *  files: [ "https://example.com/example.tea" ],
+ *  dependencies: [ "https://example.com/dependency.tea" ],
+ *  bin: null
+ * }
+ * ```
+ *
+ * @property name The name of the package
+ * @property files The files included with the package
+ * @property dependencies Packages this package needs to run properly
+ * @property bin The (optional) binary to include with the package (also TeaScript code)
+ */
+data class Package(
+    val name: String,
+    val files: List<String>,
+    val dependencies: List<String>,
+    val bin: String?
+)
 
+/**
+ * Run the TeaScript Build System with the arguments parsed by Args4j.
+ */
+@OptIn(ExperimentalTime::class)
 fun run(argv: Main) = runBlocking {
-    val parser = Parser()
+    val parser by lazy { Parser() }
     val cmd = argv["CMD"] ?: "help"
-    val args = argv.args.map { makeString(it) }
-    val env = makeGlobalEnv(args.toTypedArray())
+    val args by lazy { argv.args.map { makeString(it) } }
+    val env by lazy { makeGlobalEnv(args.toTypedArray()) }
+    val cEnv by lazy { makeGlobalCompilationEnv() }
 
     when (cmd) {
         "run" -> {
@@ -61,6 +115,7 @@ fun run(argv: Main) = runBlocking {
                 argv["SRC"].toString()
             )
         }
+
         "compile" -> {
             val buf = File(argv["SRC"].toString()).readBytes()
 
@@ -69,12 +124,14 @@ fun run(argv: Main) = runBlocking {
             val stdlibDir = Paths.get("src/tea")
             val mainClass = File(argv["SRC"].toString()).nameWithoutExtension
 
-            val manifest = Manifest().apply {
-                mainAttributes[Attributes.Name.MANIFEST_VERSION] = "1.0"
-                mainAttributes[Attributes.Name.MAIN_CLASS] = mainClass
+            val manifest = Manifest().also {
+                it.mainAttributes[Attributes.Name.MANIFEST_VERSION] = "1.0"
+                it.mainAttributes[Attributes.Name.MAIN_CLASS] = mainClass
             }
 
-            val jar = JarOutputStream(FileOutputStream(argv["OUTPUT"].toString()), manifest)
+            println(argv["OUT"].toString())
+
+            val jar = JarOutputStream(FileOutputStream(argv["OUT"].toString()), manifest)
 
             stdlibDir.forEachDirectoryEntry {
                 if (it.extension == "class") {
@@ -86,10 +143,11 @@ fun run(argv: Main) = runBlocking {
                 }
             }
 
-            compile(ast, env, cw, mainClass, jar)
+            compile(ast, cEnv, cw, mainClass, jar)
 
             jar.close()
         }
+
         "transpile" -> {
             val buf = File(argv["SRC"].toString()).readBytes()
 
@@ -114,7 +172,7 @@ const __std = Object.freeze({
 	},
 });
 // End standard library for non-native js functions
-               
+            
                 ${transpile(ast, env)}
             """.trimIndent()
             Path(argv["OUT"].toString()).writeText(js)
@@ -179,9 +237,11 @@ const __std = Object.freeze({
                 throw Exception("Package ${argv["SRC"].toString()} could not be deleted.")
             }
         }
+
         "version" -> {
-            println("TeaScript Build System ${Path("/usr/local/bin/tea-version").readText()}")
+            println("TeaScript Build System ${ Path("/usr/local/bin/tea-version").readText()}")
         }
+
         "help" -> {
             println(
                 """
@@ -197,7 +257,12 @@ const __std = Object.freeze({
             """.trimMargin()
             )
         }
+
         else -> Unit
+    }
+
+    while (windows.any { it.value.isVisible }) {
+        // Do nothing because we are waiting for windows to be closed
     }
 
     while ((globalCoroutineScope.coroutineContext[Job]?.children?.count() ?: 0) > 0) {
@@ -206,42 +271,72 @@ const __std = Object.freeze({
         }
     }
 
-    while (windows.any { it.value.isVisible }) {
-        // Do nothing because we are waiting for windows to be closed
-    }
-
     println("All windows have been closed and coroutines finished.")
+
+    env.variablesCache.cache.cleanUp()
 
     return@runBlocking
 }
 
+/**
+ * The class to use add arguments parsed by Args4j.
+ */
 class Main {
 
-    @Option(name = "-M", aliases = ["--module"], required = false, usage = "Export all functions and variables when transpiling to JS.")
+    /**
+     * When passing -M or --module, all variables, functions and classes will be
+     * exported when transpiling to JavaScript code.
+     */
+    @Option(
+        name = "-M",
+        aliases = ["--module"],
+        required = false,
+        usage = "Export all items compatible when transpiling to JS."
+    )
     var exportAll = false
 
+    /**
+     * The command to run.
+     * It is required.
+     * @see run
+     */
     @Argument(index = 0, usage = "The command to run.", required = true, metaVar = "CMD")
     lateinit var command: String
 
+    /**
+     * The source file to use for certain commands.
+     */
     @Argument(index = 1, usage = "The source file to use.", required = false, metaVar = "SRC")
     var source: String = ""
 
+    /**
+     * The output file to use for certain commands.
+     */
     @Argument(index = 2, usage = "The file to output a result to.", required = false, metaVar = "OUT")
     var output: String = ""
 
+    /**
+     * Arguments to the program
+     */
     @Argument(index = 3, usage = "Arguments to the program.", handler = StringArrayOptionHandler::class)
     var args: Array<String> = arrayOf()
 
+    /**
+     * Return the arguments parsed as a HashMap.
+     * */
     val map: HashMap<String, Any>
         get() =
             hashMapOf(
-                "M" to exportAll,
-                "CMD" to command,
-                "SRC" to source,
-                "OUT" to output
+                "M" to this.exportAll,
+                "CMD" to this.command,
+                "SRC" to this.source,
+                "OUT" to this.output
             )
 
-    operator fun get(key: String): Any? = map[key]
+    /**
+     * Use the HashMap made by the .map value to get a key
+     */
+    operator fun get(key: String): Any? = this.map[key]
 }
 
 fun main(args: Array<String>) {
@@ -253,11 +348,11 @@ fun main(args: Array<String>) {
         println(argsParsed.map)
     } catch (e: Exception) {
         println(e.message)
-        parser.printUsage(System.out)
+        
+        parser.printUsage(System.err)
+
         exitProcess(1)
     }
 
     run(argsParsed)
-
-    exitProcess(0)
 }

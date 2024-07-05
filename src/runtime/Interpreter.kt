@@ -2,7 +2,12 @@ package runtime
 
 import frontend.*
 import runtime.eval.*
+import runtime.types.RuntimeVal
+import runtime.types.makeNumber
+import runtime.types.makeString
+import kotlin.time.ExperimentalTime
 
+@ExperimentalTime
 fun evaluate(astNode: Statement, env: Environment, file: String = ""): RuntimeVal {
     return when (astNode) {
         is NumberLiteral -> makeNumber(astNode.value)
@@ -21,7 +26,6 @@ fun evaluate(astNode: Statement, env: Environment, file: String = ""): RuntimeVa
         is ForDecl -> evalForDecl(astNode, env)
         is AwaitDecl -> evalAwaitDecl(astNode, env)
         is ImportDecl -> evalImportDecl(astNode, env)
-        is ClassDecl -> evalClassDecl(astNode, env)
         else -> throw NotImplementedError("This AST Node hasn't been setup for implementation yet -- ${astNode.kind}.")
     }
 }

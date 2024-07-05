@@ -1,3 +1,7 @@
-mutable x = 7 # Inferred type: number
+@ScopeReadonly
+func conCurrent() -> null {
+    io.println("hello")
+}
 
-x = "str" # Attempting to assign a str to a number
+@UncheckedCall
+conCurrent()

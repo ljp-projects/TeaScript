@@ -1,82 +1,63 @@
 package runtime.eval.compile
 
+import frontend.Identifier
 import frontend.Program
 import frontend.VarDecl
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
-import runtime.*
+import runtime.CompilationEnvironment
+import runtime.compile
+import runtime.globalVarToDescriptor
+import runtime.typeToStore
+import runtime.types.typeEval
 import java.util.jar.JarEntry
 import java.util.jar.JarOutputStream
-import kotlin.jvm.optionals.getOrNull
-import kotlin.time.measureTime
 
-fun compileProgram(program: Program, env: Environment, cw: ClassWriter, cn: String, jar: JarOutputStream): ClassWriter {
-    val time = measureTime {
-        cw.visit(Opcodes.V1_1, Opcodes.ACC_PUBLIC, cn, null, "java/lang/Object", null)
+fun compileProgram(
+    program: Program,
+    env: CompilationEnvironment,
+    cw: ClassWriter,
+    cn: String,
+    jar: JarOutputStream
+): ClassWriter {
+   cw.visit(Opcodes.V1_1, Opcodes.ACC_PUBLIC, cn, null, "java/lang/Object", null)
 
-        cw.visitField(Opcodes.ACC_STATIC + Opcodes.ACC_PUBLIC, "io", globalVarToDescriptor("io"), null, null)
+   cw.visitField(Opcodes.ACC_STATIC + Opcodes.ACC_PUBLIC, "io", globalVarToDescriptor("io"), null, null)
 
-        val clinit = cw.visitMethod(Opcodes.ACC_STATIC, "<clinit>", "()V", null, null)
-        clinit.visitCode()
+   val clinit = cw.visitMethod(Opcodes.ACC_STATIC, "<clinit>", "()V", null, null)
+   clinit.visitCode()
 
-        clinit.visitTypeInsn(Opcodes.NEW, "tea/IO")
-        clinit.visitInsn(Opcodes.DUP)
-        clinit.visitMethodInsn(Opcodes.INVOKESPECIAL, "tea/IO", "<init>", "()V", false)
-        clinit.visitFieldInsn(Opcodes.PUTSTATIC, cn, "io", globalVarToDescriptor("io"))
+   clinit.visitTypeInsn(Opcodes.NEW, "tea/IO")
+   clinit.visitInsn(Opcodes.DUP)
+   clinit.visitMethodInsn(Opcodes.INVOKESPECIAL, "tea/IO", "<init>", "()V", false)
+   clinit.visitFieldInsn(Opcodes.PUTSTATIC, cn, "io", globalVarToDescriptor("io"))
 
-        clinit.visitInsn(Opcodes.RETURN)
-        clinit.visitMaxs(2, 0)
-        clinit.visitEnd()
+   clinit.visitInsn(Opcodes.RETURN)
+   clinit.visitMaxs(2, 0)
+   clinit.visitEnd()
 
-        program.body.forEach {
-            compile(it, env, cw, cn, jar)
-        }
+   program.body.forEach {
+       compile(it, env, cw, cn, jar)
+   }
 
-        val entry = JarEntry("$cn.class")
+   val entry = JarEntry("$cn.class")
 
-        jar.putNextEntry(entry)
-        jar.write(cw.toByteArray())
-        jar.closeEntry()
-    }
-
-    println()
-    println("------------------------------")
-    println("Compiled code in $time")
-    println("------------------------------")
-    println()
+   jar.putNextEntry(entry)
+   jar.write(cw.toByteArray())
+   jar.closeEntry()
 
     return cw
 }
-fun compileVarDecl(decl: VarDecl, env: Environment, cw: ClassWriter) {
-    val value: RuntimeVal = decl.value.getOrNull().let {
-        return@let if (it != null) evaluate(it, env) else null
-    } ?: makeNull()
 
-    val type: String = if (env.resolve(decl.identifier.type) != null) {
-        env.lookupVar(decl.identifier.type).value.toString()
-    } else if (decl.identifier.type == "infer") {
-        value.kind
-    } else decl.identifier.type
+fun compileVarDeclaration(declaration: VarDecl, env: CompilationEnvironment, mw: MethodVisitor, cn: String) {
+    val t = typeEval(declaration.identifier.type ?: object : Identifier("ident", "any", null) {}, env)
 
-    if (decl.value.isPresent && value.kind != type && type != "any") {
-        throw IllegalArgumentException("Expected a value of type $type, instead got ${value.kind}")
-    }
-
-    if (decl.constant) {
-        cw.visitField(Opcodes.ACC_PRIVATE + Opcodes.ACC_FINAL + Opcodes.ACC_STATIC, decl.identifier.symbol, typeToDescriptor(value), null, value.value)
-    } else {
-        cw.visitField(Opcodes.ACC_PRIVATE + Opcodes.ACC_STATIC, decl.identifier.symbol, typeToDescriptor(value), null, value.value)
-    }
-
-    env.declareVar(decl.identifier.symbol, value, decl.constant)
-}
-fun compileVarDecl(decl: VarDecl, env: Environment, mw: MethodVisitor, cn: String) {
-    val g = decl.value.get()
+    val g = declaration.value.get()
 
     compile(g, env, mw, cn)
 
-    env.declareVar(decl.identifier.symbol, makeAny(decl.identifier.type), decl.constant, env.getSize() + 2)
+    env.declareVar(declaration.identifier.symbol, declaration.constant, env.getSize() + 2)
 
-    mw.visitVarInsn(typeToStore(decl.identifier.type, decl.identifier.type), env.getSize() + 1)
+    mw.visitVarInsn(typeToStore(t.toString(), "any"), env.getSize() + 1)
 }

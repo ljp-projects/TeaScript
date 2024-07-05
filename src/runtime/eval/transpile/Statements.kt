@@ -3,17 +3,14 @@ package runtime.eval.transpile
 import frontend.*
 import globalVars
 import okhttp3.*
-import org.objectweb.asm.ClassWriter
-import org.objectweb.asm.MethodVisitor
-import org.objectweb.asm.Opcodes
 import runtime.*
+import runtime.types.ForValue
+import runtime.types.makeAny
+import runtime.types.typeEval
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.CompletableFuture
-import java.util.jar.JarEntry
-import java.util.jar.JarOutputStream
 import kotlin.jvm.optionals.getOrNull
-import kotlin.time.measureTime
 
 fun transpileProgram(program: Program, env: Environment): String {
     var result = ""
@@ -25,10 +22,11 @@ fun transpileProgram(program: Program, env: Environment): String {
 
     return result
 }
+
 fun transpileVarDecl(decl: VarDecl, env: Environment): String {
     val actValue: String = decl.value.getOrNull().let {
-        return@let if (it != null) transpile(it, env) else null
-    } ?: ""
+        return@let (if (it != null) transpile(it, env) else null).toString()
+    }
 
     return """
         ${if (decl.constant) "const" else "let"} ${decl.identifier.symbol} = $actValue;
@@ -60,8 +58,14 @@ fun transpileImportDecl(decl: ImportDecl, currentEnvironment: Environment): Stri
 
     env.variables.forEach {
         if (currentEnvironment.resolve(it.name) != null && !globalVars.contains(it.name)) {
-            System.err.println("${it.value.kind} of ${it.value.value} (${it.name}) to ${currentEnvironment.resolve(it.name)?.lookupVar(it.name)?.value}")
-            throw RuntimeException("Conflicting name of function/variable with ${it.name} of ${decl.file}. It will not be imported.")
+            System.err.println(
+                "${it.value.kind} of ${it.value.value} (${it.name}) to ${
+                    currentEnvironment.resolve(it.name)?.lookupVar(it.name)?.value
+                }"
+            )
+            throw RuntimeException(
+                "Conflicting name of function/variable with ${it.name} of ${decl.file}. It will not be imported."
+            )
         } else if (!globalVars.contains(it.name) && decl.symbols.contains(it.name)) {
             currentEnvironment.declareVar(it.name, it.value, true)
         }
@@ -69,7 +73,7 @@ fun transpileImportDecl(decl: ImportDecl, currentEnvironment: Environment): Stri
 
     res.append("\n// End imports from transpiled file \"${decl.file}\"")
 
-    return res.toString()
+    return "$res"
 }
 fun transpileForDecl(decl: ForDecl, env: Environment): String {
     val fn = object : ForValue(
@@ -84,7 +88,7 @@ fun transpileForDecl(decl: ForDecl, env: Environment): String {
 
     val innerScope = Environment(fn.declEnv)
 
-    innerScope.declareVar(fn.param.symbol, makeAny(fn.param.type), true)
+    innerScope.declareVar(fn.param.symbol, makeAny(if (fn.param.type == null) "any" else typeEval(fn.param.type!!, env).toString()), true)
 
     for (statement in fn.value) {
         res += "\t"
