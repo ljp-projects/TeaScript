@@ -9,7 +9,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="157f05c8-c06f-40a7-960c-0f5c4e09291a" name="Changes" comment="Just trust me">
+    <list default="true" id="157f05c8-c06f-40a7-960c-0f5c4e09291a" name="Changes" comment="Implement some more features of v1.0.0-beta.3">
       <change afterPath="$PROJECT_DIR$/.idea/copyright/profiles_settings.xml" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/qodana.yaml" afterDir="false" />
@@ -40,6 +40,7 @@
       <change beforePath="$PROJECT_DIR$/src/frontend/Lexer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/Lexer.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/frontend/Parser.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/Parser.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/frontend/Token.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/Token.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/installer.sh" beforeDir="false" afterPath="$PROJECT_DIR$/src/installer.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/runtime/Compiler.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/Compiler.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/runtime/Environment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/Environment.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/runtime/Error.kt" beforeDir="false" />
@@ -425,6 +426,7 @@
     <MESSAGE value="Use double quotes for transpiled strings and update how binary expressions are transpiled" />
     <MESSAGE value="&quot;The best way to debug is to use your product.&quot;" />
     <MESSAGE value="Just trust me" />
-    <option name="LAST_COMMIT_MESSAGE" value="Just trust me" />
+    <MESSAGE value="Implement some more features of v1.0.0-beta.3" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implement some more features of v1.0.0-beta.3" />
   </component>
 </project>
