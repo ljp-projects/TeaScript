@@ -26,6 +26,7 @@ fun evaluate(astNode: Statement, env: Environment, file: String = ""): RuntimeVa
         is ForDecl -> evalForDecl(astNode, env)
         is AwaitDecl -> evalAwaitDecl(astNode, env)
         is ImportDecl -> evalImportDecl(astNode, env)
+        is LockedBlock -> evalLockedBlock(astNode, env)
         else -> throw NotImplementedError("This AST Node hasn't been setup for implementation yet -- ${astNode.kind}.")
     }
 }

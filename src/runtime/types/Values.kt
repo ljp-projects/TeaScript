@@ -194,8 +194,7 @@ open class FunctionValue(
     open val name: Pair<String?, Type>,
     val params: HashMap<Pair<String, Byte>, Type>,
     open val declEnv: Environment,
-    override val value: List<Statement>,
-    open val arity: Byte,
+    override val value: ParameterBlock,
     val modifiers: HashSet<Modifier>
 ) : RuntimeVal {
     init {
@@ -213,6 +212,9 @@ open class FunctionValue(
 
     val static
         get() = this.static()
+
+    val arity
+        get() = this.value.parameters.size
 
     private fun private(): Boolean = this.modifiers.any { it.type == ModifierType.Private }
 
@@ -246,7 +248,7 @@ open class ForValue(
     val param: Identifier,
     val obj: RuntimeVal,
     val declEnv: Environment,
-    override val value: List<Statement>,
+    override val value: Block,
     val modifiers: Set<Modifier>,
 ) : RuntimeVal {
     init {
@@ -262,7 +264,7 @@ abstract class AwaitValue(
     val param: Identifier,
     val obj: PromiseVal,
     val declEnv: Environment,
-    override val value: List<Statement>,
+    override val value: Block,
     val async: Boolean,
 ) : RuntimeVal {
     init {
@@ -274,7 +276,7 @@ abstract class AfterValue(
     final override val kind: String = "after",
     val ms: RuntimeVal,
     val declEnv: Environment,
-    override val value: ArrayDeque<Statement>,
+    override val value: Block,
     val async: Boolean,
 ) : RuntimeVal {
     init {
@@ -282,7 +284,7 @@ abstract class AfterValue(
     }
 }
 
-fun makeAfter(ms: RuntimeVal, env: Environment, value: ArrayDeque<Statement>, sync: Boolean): AfterValue =
+fun makeAfter(ms: RuntimeVal, env: Environment, value: Block, sync: Boolean): AfterValue =
     object : AfterValue(
         ms = ms,
         declEnv = env,
@@ -294,9 +296,9 @@ abstract class IfValue(
     final override val kind: String = "if",
     val cond: RuntimeVal,
     val declEnv: Environment,
-    override val value: ArrayDeque<Statement>,
+    override val value: Block,
     val modifiers: Set<Modifier>,
-    val otherwise: ArrayDeque<Statement>?,
+    val otherwise: Block?,
     val orStmts: ArrayDeque<OrDecl>,
 ) : RuntimeVal {
     init {

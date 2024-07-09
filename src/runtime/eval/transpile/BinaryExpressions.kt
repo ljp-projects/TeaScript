@@ -6,7 +6,7 @@ import runtime.Environment
 import runtime.transpile
 import runtime.types.makeNull
 
-fun transpileComparisonBinaryExpr(lhs: String, rhs: String, op: String): String {
+fun transpileComparisonBinaryExpr(lhs: Any, rhs: Any, op: String): String {
     return when (op) {
         "is" -> "$lhs === $rhs"
         "isnt" -> "$lhs !== $rhs"
@@ -48,6 +48,6 @@ fun transpileBinaryExpr(expr: BinaryExpr, env: Environment): String {
     } else if (expr.operator == "to") {
         transpileOtherBinaryExpr(lhs as String, rhs as String, expr.operator)
     } else {
-        transpileComparisonBinaryExpr(lhs as String, rhs as String, expr.operator)
+        transpileComparisonBinaryExpr(lhs, rhs, expr.operator)
     }
 }

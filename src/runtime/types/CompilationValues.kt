@@ -31,10 +31,9 @@ open class CompilationFunctionValue(
     val name: Pair<String?, Type>,
     val params: HashMap<Pair<String, Byte>, Type>,
     val declEnv: CompilationEnvironment,
-    override val value: List<Statement>,
-    val arity: Int,
+    override val value: ParameterBlock,
     val modifiers: Set<Modifier>
-) : RuntimeVal {
+) : RuntimeVal, Iterable<Statement> {
     init {
         require(this.kind == "func") { "Key can't be ${this.kind}." }
     }
@@ -63,6 +62,8 @@ open class CompilationFunctionValue(
     private fun mutating(): Boolean = this.modifiers.any { it.type == ModifierType.Mutating }
 
     private fun static(): Boolean = this.modifiers.any { it.type == ModifierType.Static }
+
+    override fun iterator(): Iterator<Statement> = value.iterator()
 }
 
 abstract class CompilationClassValue(
@@ -133,9 +134,9 @@ abstract class CompilationIfValue(
     final override val kind: String = "if",
     val cond: RuntimeVal,
     val declEnv: CompilationEnvironment,
-    override val value: ArrayDeque<Statement>,
+    override val value: Block,
     val modifiers: Set<Modifier>,
-    val otherwise: ArrayDeque<Statement>?,
+    val otherwise: Block?,
     val orStmts: ArrayDeque<OrDecl>,
 ) : RuntimeVal {
     init {

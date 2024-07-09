@@ -63,16 +63,15 @@ fun transpileIfDecl(decl: IfDecl, env: Environment): String {
 fun transpileFuncDecl(decl: FunctionDecl, env: Environment): String {
     val params = HashMap<Pair<String, Byte>, Type>()
 
-    for ((name, type) in decl.parameters) {
-        params[name] = if (type != null) typeEval(type, env) else AnyType()
+    for ((_, name, index, type) in decl.block.parameters) {
+        params[name to index] = if (type != null) typeEval(type, env) else AnyType()
     }
 
     val fn = object : FunctionValue(
         name = decl.name?.symbol to if (decl.name?.type == null) AnyType() else typeEval(decl.name.type!!, env),
         declEnv = env,
         params = params,
-        value = decl.body,
-        arity = decl.arity,
+        value = decl.block,
         modifiers = decl.modifiers
     ) {}
 
@@ -90,10 +89,10 @@ fun transpileFuncDecl(decl: FunctionDecl, env: Environment): String {
 
     res.append("function ${fn.name.first ?: ""}(${fn.params.keys.sortedBy { it.second }.joinToString { it.first }}) {\\n")
 
-    fn.value.forEachIndexed { index, statement ->
+    fn.value.body.forEachIndexed { index, statement ->
         res.append("\t")
 
-        if (index == fn.value.size - 1) {
+        if (index == fn.value.body.size - 1) {
             res.append("return ")
         }
 

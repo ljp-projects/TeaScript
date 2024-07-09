@@ -86,5 +86,6 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="google.guava" level="project" />
+    <orderEntry type="library" name="moandjiezana.toml.toml4j" level="project" />
   </component>
 </module>

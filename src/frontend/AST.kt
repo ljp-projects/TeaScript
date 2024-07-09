@@ -19,6 +19,13 @@ interface Expr : Statement
  */
 interface TypeExpr : Expr
 
+/**
+ * Typed expressions are expressions that have a type
+ */
+interface TypedExpr : Expr {
+    val type: TypeExpr?
+}
+
 abstract class Program(
     final override val kind: String,
     val body: MutableList<Statement>
@@ -35,24 +42,40 @@ abstract class VarDecl(
     final override val kind: String,
     val constant: Boolean,
     val identifier: Identifier,
-    val value: Optional<Expr>
+    val value: Expr?
 ) : Statement {
     init {
         require(this.kind == "var-decl") { "Key can't be ${this.kind}." }
     }
 }
 
+data class Parameter(
+    override val kind: String = "param",
+    val name: String,
+    val index: Byte,
+    override val type: TypeExpr?
+): TypedExpr
+
+open class Block(
+    val kind: String = "block",
+    val body: List<Statement>
+) {
+    operator fun iterator(): Iterator<Statement> = body.iterator()
+}
+
+open class ParameterBlock(
+    body: List<Statement>,
+    val parameters: HashSet<Parameter>,
+): Block(body = body)
+
 /**
  * An expression representing a function declaration. Kind must be fn-decl.
  */
 open class FunctionDecl(
     final override val kind: String,
-    // HashMap representing name and position to type
-    val parameters: HashMap<Pair<String, Byte>, TypeExpr?>,
     val name: Identifier?,
-    val body: List<Statement>,
-    val arity: Byte,
-    val modifiers: HashSet<Modifier>
+    val block: ParameterBlock,
+    val modifiers: HashSet<Modifier>,
 ) : Expr {
     init {
         require(this.kind == "fn-decl") { "Key can't be ${this.kind}." }
@@ -68,8 +91,8 @@ open class FunctionDecl(
 abstract class ForDecl(
     final override val kind: String,
     val parameter: Identifier,
-    val obj: Identifier,
-    val body: List<Statement>,
+    val obj: Expr,
+    val body: Block,
     val modifiers: Set<Modifier>,
 ) : Statement {
     init {
@@ -102,6 +125,12 @@ open class ArrayLiteral(
     }
 }
 
+abstract class LockedBlock(
+    val items: HashSet<String>,
+    val body: Block,
+    final override val kind: String = "locked-block"
+): Expr
+
 /**
  * An expression representing an await block declaration. Kind must be await-decl.
  */
@@ -109,7 +138,7 @@ abstract class AwaitDecl(
     final override val kind: String,
     val parameter: Identifier,
     val obj: Expr,
-    val body: List<Statement>,
+    val body: Block,
     val modifiers: Set<Modifier>
 ) : Expr {
     init {
@@ -123,7 +152,7 @@ abstract class AwaitDecl(
 open class AfterDecl(
     final override val kind: String,
     val ms: Expr,
-    val body: ArrayDeque<Statement>,
+    val body: Block,
     val modifiers: Set<Modifier>,
 ) : Expr {
     init {
@@ -140,9 +169,9 @@ open class AfterDecl(
 abstract class IfDecl(
     final override val kind: String,
     val cond: Expr,
-    val body: ArrayDeque<Statement>,
+    val body: Block,
     val modifiers: Set<Modifier>,
-    val otherwise: ArrayDeque<Statement>?,
+    val otherwise: Block?,
     val or: ArrayDeque<OrDecl>,
 ) : Expr {
     init {
@@ -156,7 +185,7 @@ abstract class IfDecl(
 abstract class OrDecl(
     final override val kind: String,
     val cond: Expr,
-    val body: ArrayDeque<Statement>,
+    val body: Block,
 ) : Expr {
     init {
         require(this.kind == "or-decl") { "Key can't be ${this.kind}." }
@@ -277,7 +306,7 @@ abstract class StringLiteral(
 abstract class Property(
     final override val kind: String,
     val key: String,
-    val value: Optional<Expr>,
+    val value: Expr?,
     val type: TypeExpr?
 ) : Expr {
     init {
@@ -285,7 +314,7 @@ abstract class Property(
     }
 }
 
-fun makeProperty(key: String, value: Optional<Expr>, type: TypeExpr?) =
+fun makeProperty(key: String, value: Expr?, type: TypeExpr?) =
     object : Property("prop", key, value, type) {}
 
 /**

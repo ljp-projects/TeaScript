@@ -13,10 +13,10 @@ fun transpileObjectExpr(expr: ObjectLiteral, env: Environment): String {
             "\"${it.key}\""
         } else it.key
 
-        if (it.value.isEmpty) {
+        if (it.value == null) {
             res.append("$key: ${env.lookupVar(it.key)},")
         } else {
-            res.append("$key: ${transpile(it.value.get(), env)},")
+            res.append("$key: ${transpile(it.value!!, env)},")
         }
     }
 

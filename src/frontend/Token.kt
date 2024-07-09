@@ -129,6 +129,12 @@ enum class TokenType {
     Await,
 
     /**
+     * A token representing the `locked` keyword.
+     * @since v1.0.0-beta.3-proto.3
+     */
+    Locked,
+
+    /**
      * A token representing the `to` keyword.
      * @since v1.0.0-beta.2
      */

@@ -3,28 +3,40 @@ package runtime
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.gson.Gson
+import com.sun.net.httpserver.HttpExchange
+import com.sun.net.httpserver.HttpHandler
+import com.sun.net.httpserver.HttpServer
 import errors.Error
+import errors.IncorrectTypeError
+import globalCoroutineScope
 import globalVars
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import runtime.types.*
+import serverRunning
 import java.io.File
 import java.io.IOException
+import java.io.OutputStream
+import java.net.InetSocketAddress
 import java.nio.file.Paths
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.locks.ReentrantLock
 import kotlin.io.path.absolutePathString
-import kotlin.math.cos
-import kotlin.math.floor
-import kotlin.math.sin
+import kotlin.math.*
 import kotlin.system.exitProcess
+import kotlin.time.ExperimentalTime
+
 
 val nativeFuncType = object : Type {
     override fun matches(v: RuntimeVal): Boolean = v is NativeFnValue
 }
 
+@OptIn(ExperimentalTime::class)
 fun makeGlobalEnv(argv: Array<StringVal>): Environment {
     val envP = Environment(null)
 
@@ -163,7 +175,7 @@ fun makeGlobalEnv(argv: Array<StringVal>): Environment {
         }
     )
 
-    val math = hashMapOf<String, Pair<RuntimeVal, Type>>(
+    val math = hashMapOf(
         "cos" to makeNativeFnWithType("Math.cos") { args, _ ->
             return@makeNativeFnWithType makeNumber(cos((args[0] as NumberVal).value))
         },
@@ -197,6 +209,113 @@ fun makeGlobalEnv(argv: Array<StringVal>): Environment {
 
     envP.declareVar("argv", makeObject(args), true)
 
+    (envP.getVar("net").value as ObjectVal).value["serve"] = makeNativeFnWithType("__std.not_supported_js", 3) { args, _ ->
+        class ServerHandlerType : Type {
+            override fun matches(v: RuntimeVal): Boolean =
+                v is ObjectVal
+                        && v.value.all { it.value.first is FunctionValue }
+                        && v.value["index"] != null
+
+            override fun toString(): String = "server-handler"
+        }
+
+        class ServerResponseType : Type {
+            override fun matches(v: RuntimeVal): Boolean =
+                v is ObjectVal
+                        && NumberType() matches (v.value["code"]?.first ?: makeNull())
+                        && StringType() matches (v.value["response"]?.first ?: makeNull())
+                        && StringType() matches (v.value["mimeType"]?.first ?: makeNull())
+
+            override fun toString(): String = "server-response"
+        }
+
+        val hostname = (args[0] as? StringVal ?: IncorrectTypeError(StringType(), args[0]).raise()).value
+        val port = (args[1] as? NumberVal ?: IncorrectTypeError(NumberType(), args[1]).raise()).value
+        val handlers = (args[2] as? ObjectVal ?: IncorrectTypeError(ServerHandlerType(), args[2]).raise()).value
+
+        val server = HttpServer.create(
+            InetSocketAddress(hostname, port.roundToInt()),
+            0
+        )
+
+        for ((route, handler) in handlers) {
+            val requestHandler = object : HttpHandler {
+                override fun handle(exchange: HttpExchange?) {
+                    globalCoroutineScope.launch {
+                        if (exchange == null) return@launch
+
+                        val requestInfo = hashMapOf<String, Pair<RuntimeVal, Type>>(
+                            "localHostname" to (makeString(exchange.localAddress.hostName) to StringType()),
+                            "body" to (makeString(String(exchange.requestBody.readAllBytes())) to StringType()),
+                            "method" to (makeString(exchange.requestMethod) to StringType())
+                        )
+
+                        val handlerArgs = listOf(makeObject(requestInfo))
+
+                        if (handler.first !is FunctionValue) {
+                            IncorrectTypeError(FunctionType(), handler.first).raise()
+                        }
+
+                        if ((handler.first as FunctionValue).arity != handlerArgs.size) {
+                            throw RuntimeException("${(handler.first as FunctionValue).name} expected ${(handler.first as FunctionValue).arity} arguments, instead got ${handlerArgs.size}.")
+                        }
+
+                        val scope = Environment(envP)
+
+                        for ((name, type) in (handler.first as FunctionValue).params) {
+                            if (!(type matches handlerArgs[name.second.toInt()])) {
+                                Error<Nothing>(
+                                    "Parameter ${name.first} at position ${name.second} of function ${(handler.first as FunctionValue).name.first ?: "ANONYMOUS"} required a type of ${type}.",
+                                    ""
+                                ).raise()
+                            }
+
+                            scope.declareVar(name.first, handlerArgs[name.second.toInt()], true)
+                        }
+
+                        var result: RuntimeVal = makeNull()
+
+                        for (statement in (handler.first as FunctionValue).value) {
+                            result = evaluate(statement, scope)
+                        }
+
+                        if (!(ServerResponseType() matches result) || result !is ObjectVal) {
+                            IncorrectTypeError(StringType(), result)
+                                .raise()
+                        }
+
+                        val code = (result.value["code"]?.first as? NumberVal)?.value?.roundToInt() ?: 404
+                        val response = (result.value["response"]?.first as? StringVal)?.value
+                            ?: "The server did not send a correct response."
+                        val mimeType = (result.value["mimeType"]?.first as? StringVal)?.value ?: "text/plain"
+
+                        exchange.sendResponseHeaders(code, response.toByteArray().size.toLong())
+                        exchange.responseHeaders["Content-Type"] = Collections.singletonList(mimeType)
+                        val os: OutputStream = exchange.responseBody
+
+                        os.write(response.toByteArray())
+                        os.close()
+                    }
+                }
+
+            }
+
+            if (route == "index") {
+                server.createContext("/", requestHandler)
+
+                continue
+            }
+
+            server.createContext("/$route/", requestHandler)
+        }
+
+        server.executor = null
+        serverRunning = true
+        server.start()
+
+        return@makeNativeFnWithType makeNull()
+    }
+
     return envP
 }
 
@@ -220,8 +339,12 @@ open class Variable(
     open var constant: Boolean = true,
     open val name: String,
     open var value: RuntimeVal,
+    open val lock: ReentrantLock,
     private val bindings: HashSet<Variable> = hashSetOf()
 ) {
+
+    fun lock() = lock.lock()
+    fun unlock() = lock.unlock()
 
     /**
      * 'Peg' a variable to another so that they both always have the same value
@@ -344,7 +467,7 @@ class Environment(
                 .raise()
         }
 
-        this.variables.add(Variable(constant, name, value))
+        this.variables.add(Variable(constant, name, value, ReentrantLock()))
 
         return getVarNoCache(name)
     }
@@ -378,6 +501,8 @@ class Environment(
         return variablesCache[name] ?: run {
             val v = getVarNoCache(name)
 
+            v.lock.lock()
+
             variablesCache.cache.put(name, v)
 
             v
@@ -407,14 +532,12 @@ class Environment(
         }
     }
 
-    fun assignVar(name: String, value: RuntimeVal, file: String): RuntimeVal {
+    fun assignVar(name: String, value: RuntimeVal): RuntimeVal {
         this.resolve(name)
             ?: throw IllegalAccessException("Variable $name cannot be reassigned as it was never declared.")
 
-        this.variables.remove(getVarNoCache(name))
+        this.getVar(name).mutate(value, "")
         this.variablesCache.cache.invalidate(name)
-
-        this.declareVar(name, value, false)
 
         return value
     }

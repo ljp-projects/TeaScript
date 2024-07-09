@@ -31,6 +31,12 @@ class NeverType : Type {
     override fun toString(): String = "never"
 }
 
+class FunctionType : Type {
+    override fun matches(v: RuntimeVal): Boolean = v is FunctionValue
+
+    override fun toString(): String = "func"
+}
+
 class NumberType : Type {
     override fun matches(v: RuntimeVal): Boolean = v is NumberVal
 
@@ -93,6 +99,10 @@ fun typeEval(t: TypeExpr, env: Environment): Type = when (t) {
     }
 
     else -> AnyType()
+}
+
+interface Typed {
+    val type: Type
 }
 
 fun typeEval(t: TypeExpr, env: CompilationEnvironment): Type = when (t) {

@@ -6,6 +6,7 @@ import okhttp3.*
 import runtime.*
 import runtime.types.ForValue
 import runtime.types.makeAny
+import runtime.types.makeNull
 import runtime.types.typeEval
 import java.io.File
 import java.io.IOException
@@ -24,7 +25,7 @@ fun transpileProgram(program: Program, env: Environment): String {
 }
 
 fun transpileVarDecl(decl: VarDecl, env: Environment): String {
-    val actValue: String = decl.value.getOrNull().let {
+    val actValue: String = decl.value.let {
         return@let (if (it != null) transpile(it, env) else null).toString()
     }
 
@@ -75,16 +76,17 @@ fun transpileImportDecl(decl: ImportDecl, currentEnvironment: Environment): Stri
 
     return "$res"
 }
+
 fun transpileForDecl(decl: ForDecl, env: Environment): String {
     val fn = object : ForValue(
         param = decl.parameter,
         declEnv = env,
-        obj = env.lookupVar(decl.obj.symbol),
+        obj = makeNull(),
         value = decl.body,
         modifiers = decl.modifiers
     ) {}
 
-    var res = "for (const ${fn.param} in ${decl.obj}) {\n"
+    var res = "for (const ${fn.param} in ${transpile(decl.obj, env)}) {\n"
 
     val innerScope = Environment(fn.declEnv)
 

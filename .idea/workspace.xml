@@ -2,68 +2,17 @@
 <project version="4">
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
-      <artifact name="TeaScriptCore:jar" />
+      <artifact name="TeaScript:jar" />
     </artifacts-to-build>
   </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="157f05c8-c06f-40a7-960c-0f5c4e09291a" name="Changes" comment="Implement some more features of v1.0.0-beta.3">
-      <change afterPath="$PROJECT_DIR$/.idea/copyright/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/qodana.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/errors/Error.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/errors/IncorrectTypeError.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/errors/MalpracticeError.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/errors/Warning.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/runtime/types/CompilationValues.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/runtime/types/Type.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/std/VirtualJokes.tea" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.github/ISSUE_TEMPLATE/bug_report.md" beforeDir="false" afterPath="$PROJECT_DIR$/.github/ISSUE_TEMPLATE/bug_report.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/artifacts/TeaScript_jar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/kotlinc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/kotlinc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+    <list default="true" id="157f05c8-c06f-40a7-960c-0f5c4e09291a" name="Changes" comment="idk locked blocks">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TeaScript.iml" beforeDir="false" afterPath="$PROJECT_DIR$/TeaScript.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/Main.jar" beforeDir="false" afterPath="$PROJECT_DIR$/examples/Main.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/Main.tea" beforeDir="false" afterPath="$PROJECT_DIR$/examples/Main.tea" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/index.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/std.tea" beforeDir="false" afterPath="$PROJECT_DIR$/examples/std.tea" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TeaScript.jar.xz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/AST.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/AST.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/Lexer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/Lexer.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/Parser.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/Parser.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/Token.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/Token.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/installer.sh" beforeDir="false" afterPath="$PROJECT_DIR$/src/installer.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/Compiler.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/Compiler.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/Environment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/Environment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/Error.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/Interpreter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/Interpreter.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/Values.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/types/Values.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/eval/Expressions.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/eval/Expressions.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/eval/Statement.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/eval/Statement.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/eval/compile/BinaryExpressions.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/eval/compile/BinaryExpressions.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/eval/compile/Decls.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/eval/compile/Decls.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/eval/compile/Identifiers.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/eval/compile/Identifiers.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/eval/compile/Objects.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/eval/compile/Objects.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/eval/compile/Statements.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/eval/compile/Statements.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/eval/transpile/BinaryExpressions.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/eval/transpile/BinaryExpressions.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/eval/transpile/Decls.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/eval/transpile/Decls.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/eval/transpile/Identifiers.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/eval/transpile/Identifiers.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/eval/transpile/Objects.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/eval/transpile/Objects.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/eval/transpile/Statements.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/eval/transpile/Statements.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/tea/IO.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/tea/IO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/tea/IO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/tea/IO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/tea/KVObject.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/tea/KVObject.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/tea/KVObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/tea/KVObject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/tea/NativeRunnable.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/tea/NativeRunnable.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/tea/NativeRunnable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/tea/NativeRunnable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/TeaScript.jar" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,6 +23,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Kotlin Class" />
+        <option value="Kotlin File" />
+        <option value="Kotlin Data Class" />
       </list>
     </option>
   </component>
@@ -109,6 +60,9 @@
       </MavenGeneralSettings>
     </option>
   </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="ProjectErrors" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 6
@@ -131,12 +85,14 @@
     &quot;Downloaded.Files.Path.Enabled&quot;: &quot;true&quot;,
     &quot;JAR Application.Main.jar.executor&quot;: &quot;Run&quot;,
     &quot;JAR Application.TeaScript.jar.executor&quot;: &quot;Run&quot;,
+    &quot;JAR Application.TeaScriptCore.jar.executor&quot;: &quot;Run&quot;,
     &quot;JAR Application.asm-9.7.jar.executor&quot;: &quot;Run&quot;,
     &quot;Kotlin.MainKt.executor&quot;: &quot;Run&quot;,
     &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
     &quot;Repository.Attach.JavaDocs&quot;: &quot;false&quot;,
     &quot;Repository.Attach.Sources&quot;: &quot;false&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
@@ -144,25 +100,32 @@
     &quot;project.structure.proportion&quot;: &quot;0.33955225&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.5103448&quot;,
     &quot;run.code.analysis.last.selected.profile&quot;: &quot;aDefault&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.excludes&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src" />
       <recent name="$PROJECT_DIR$/src/errors" />
     </key>
   </component>
-  <component name="RunManager" selected="JAR Application.TeaScript.jar">
+  <component name="RunManager" selected="JAR Application.TeaScriptCore.jar">
     <configuration name="Main.jar" type="JarApplication" temporary="true">
       <option name="JAR_PATH" value="$PROJECT_DIR$/examples/Main.jar" />
       <method v="2">
         <option name="com.soywiz.korge.intellij.UpdateResourceBeforeRunTask" enabled="false" />
       </method>
     </configuration>
+    <configuration name="TeaScriptCore.jar" type="JarApplication" temporary="true">
+      <option name="JAR_PATH" value="$PROJECT_DIR$/src/TeaScriptCore.jar" />
+      <method v="2">
+        <option name="com.soywiz.korge.intellij.UpdateResourceBeforeRunTask" enabled="false" />
+      </method>
+    </configuration>
     <configuration name="TeaScript.jar" type="JarApplication" temporary="true">
       <option name="JAR_PATH" value="$PROJECT_DIR$/src/TeaScript.jar" />
-      <option name="PROGRAM_PARAMETERS" value="run examples/Main.tea examples/Main.jar" />
+      <option name="PROGRAM_PARAMETERS" value="run examples/Main.tea" />
       <option name="ALTERNATIVE_JRE_PATH" />
       <method v="2">
         <option name="com.soywiz.korge.intellij.UpdateResourceBeforeRunTask" enabled="false" />
@@ -177,7 +140,7 @@
     <configuration name="MainKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="MainKt" />
       <module name="TeaScript" />
-      <option name="PROGRAM_PARAMETERS" value="run examples/Main.tea" />
+      <option name="PROGRAM_PARAMETERS" value="transpile examples/Main.tea examples/Main.js" />
       <shortenClasspath name="NONE" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -265,6 +228,7 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="JAR Application.TeaScriptCore.jar" />
       <item itemvalue="JAR Application.Main.jar" />
       <item itemvalue="JAR Application.TeaScript.jar" />
       <item itemvalue="JAR Application.asm-9.7.jar" />
@@ -272,6 +236,7 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JAR Application.TeaScriptCore.jar" />
         <item itemvalue="JAR Application.TeaScript.jar" />
         <item itemvalue="Kotlin.MainKt" />
         <item itemvalue="JAR Application.asm-9.7.jar" />
@@ -394,7 +359,55 @@
       <option name="project" value="LOCAL" />
       <updated>1717294321921</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Implement some more features of v1.0.0-beta.3">
+      <option name="closed" value="true" />
+      <created>1720219171943</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1720219171943</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Implement some more features of v1.0.0-beta.3">
+      <option name="closed" value="true" />
+      <created>1720219264986</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1720219264986</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Implement some more features of v1.0.0-beta.3">
+      <option name="closed" value="true" />
+      <created>1720219276222</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1720219276222</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Implement some more features of v1.0.0-beta.3">
+      <option name="closed" value="true" />
+      <created>1720219289912</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1720219289912</updated>
+    </task>
+    <task id="LOCAL-00018" summary="idk locked blocks">
+      <option name="closed" value="true" />
+      <created>1720564766935</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1720564766935</updated>
+    </task>
+    <task id="LOCAL-00019" summary="idk locked blocks">
+      <option name="closed" value="true" />
+      <created>1720569092285</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1720569092285</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -427,6 +440,17 @@
     <MESSAGE value="&quot;The best way to debug is to use your product.&quot;" />
     <MESSAGE value="Just trust me" />
     <MESSAGE value="Implement some more features of v1.0.0-beta.3" />
-    <option name="LAST_COMMIT_MESSAGE" value="Implement some more features of v1.0.0-beta.3" />
+    <MESSAGE value="idk locked blocks" />
+    <option name="LAST_COMMIT_MESSAGE" value="idk locked blocks" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.net.BindException" package="java.net" />
+          <option name="timeStamp" value="1" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

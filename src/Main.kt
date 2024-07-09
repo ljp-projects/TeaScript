@@ -1,4 +1,6 @@
 import com.google.gson.Gson
+import com.moandjiezana.toml.Toml
+import com.moandjiezana.toml.TomlWriter
 import frontend.Parser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -52,11 +54,7 @@ val globalVars: HashSet<String> =
         "ui"
     )
 
-/**
- * These are any current windows open.
- * It is unused in the TeaScript runtime currently.
- */
-val windows: MutableMap<Double, JFrame> = mutableMapOf()
+var serverRunning = false
 
 /**
  * The user's home directory (used for the build system primarily)
@@ -101,7 +99,7 @@ fun run(argv: Main) = runBlocking {
     val cmd = argv["CMD"] ?: "help"
     val args by lazy { argv.args.map { makeString(it) } }
     val env by lazy { makeGlobalEnv(args.toTypedArray()) }
-    val cEnv by lazy { makeGlobalCompilationEnv() }
+    // uncomment when needed val cEnv by lazy { makeGlobalCompilationEnv() }
 
     when (cmd) {
         "run" -> {
@@ -114,38 +112,6 @@ fun run(argv: Main) = runBlocking {
                 env,
                 argv["SRC"].toString()
             )
-        }
-
-        "compile" -> {
-            val buf = File(argv["SRC"].toString()).readBytes()
-
-            val ast = parser.produceAST(String(buf))
-
-            val stdlibDir = Paths.get("src/tea")
-            val mainClass = File(argv["SRC"].toString()).nameWithoutExtension
-
-            val manifest = Manifest().also {
-                it.mainAttributes[Attributes.Name.MANIFEST_VERSION] = "1.0"
-                it.mainAttributes[Attributes.Name.MAIN_CLASS] = mainClass
-            }
-
-            println(argv["OUT"].toString())
-
-            val jar = JarOutputStream(FileOutputStream(argv["OUT"].toString()), manifest)
-
-            stdlibDir.forEachDirectoryEntry {
-                if (it.extension == "class") {
-                    val entry = JarEntry("tea/" + it.name)
-
-                    jar.putNextEntry(entry)
-                    jar.write(it.readBytes())
-                    jar.closeEntry()
-                }
-            }
-
-            compile(ast, cEnv, cw, mainClass, jar)
-
-            jar.close()
         }
 
         "transpile" -> {
@@ -242,6 +208,22 @@ const __std = Object.freeze({
             println("TeaScript Build System ${ Path("/usr/local/bin/tea-version").readText()}")
         }
 
+        "config" -> {
+            if (argsParsed.json) {
+                val gson = Gson()
+                val configParsed = gson.fromJson(File(argsParsed.source).readText(), Config::class.java)
+
+                println(configParsed)
+
+                return@runBlocking
+            }
+
+            val tomlParser = Toml().read(File(argsParsed.source))
+            val configParsed = tomlParser.to(Config::class.java)
+
+            println(configParsed)
+        }
+
         "help" -> {
             println(
                 """
@@ -261,17 +243,11 @@ const __std = Object.freeze({
         else -> Unit
     }
 
-    while (windows.any { it.value.isVisible }) {
-        // Do nothing because we are waiting for windows to be closed
-    }
-
-    while ((globalCoroutineScope.coroutineContext[Job]?.children?.count() ?: 0) > 0) {
+    while ((globalCoroutineScope.coroutineContext[Job]?.children?.count() ?: 0) > 0 || serverRunning) {
         if (globalCoroutineScope.coroutineContext[Job]?.children?.count() == 0) {
             break
         }
     }
-
-    println("All windows have been closed and coroutines finished.")
 
     env.variablesCache.cache.cleanUp()
 
@@ -291,9 +267,22 @@ class Main {
         name = "-M",
         aliases = ["--module"],
         required = false,
-        usage = "Export all items compatible when transpiling to JS."
+        usage = "Export all items compatible when transpiling to JS.",
+        metaVar = "MOD"
     )
     var exportAll = false
+
+    /**
+     * When passing -J or --json, JSON will be used instead of TOML.
+     */
+    @Option(
+        name = "-J",
+        aliases = ["--json"],
+        required = false,
+        usage = "Prefer JSON over TOML.",
+        metaVar = "JSON"
+    )
+    var json = false
 
     /**
      * The command to run.

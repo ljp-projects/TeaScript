@@ -50,7 +50,8 @@ val DEFAULT_RESERVED_WORDS: HashMap<String, TokenType> = hashMapOf(
     "private" to TokenType.Private,
     "mutating" to TokenType.Mutating,
     "static" to TokenType.Static,
-    "promise" to TokenType.Promise
+    "promise" to TokenType.Promise,
+    "locked" to TokenType.Locked,
 )
 
 /**
@@ -202,7 +203,7 @@ fun tokenise(sourceCode: String, reservedWords: HashMap<String, TokenType> = DEF
                         Token(it, "$buf")
                     } ?: Token(TokenType.Identifier, "$buf")
 
-                    if (t.value.length <= 3 && t.value !in globalVars && t.value !in nativeTypes) {
+                    if (t.value.length <= 3 && t.value !in globalVars && t.value !in nativeTypes && t.type == TokenType.Identifier) {
                         MalpracticeError("Identifiers with a length of less than 3 (${t.value} with a length of ${t.value.length}) are generally cryptic.")
                             .raise()
                     }

@@ -14,7 +14,6 @@ import runtime.types.*
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.CompletableFuture
-import kotlin.jvm.optionals.getOrNull
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
@@ -41,13 +40,13 @@ fun evalProgram(program: Program, env: Environment): RuntimeVal {
 
 @OptIn(ExperimentalTime::class)
 fun evalVarDecl(decl: VarDecl, env: Environment): RuntimeVal {
-    val value: RuntimeVal = decl.value.getOrNull().let {
+    val value: RuntimeVal = decl.value.let {
         return@let if (it != null) evaluate(it, env) else null
     } ?: makeNull()
 
     val type = if (decl.identifier.type == null) AnyType() else typeEval(decl.identifier.type!!, env)
 
-    require(decl.value.isPresent && type matches value) {
+    require(decl.value != null && type matches value) {
         "Expected a value of type $type, instead got ${value.kind}"
     }
 
@@ -101,23 +100,23 @@ fun evalForDecl(decl: ForDecl, env: Environment): RuntimeVal {
     val fn = object : ForValue(
         param = decl.parameter,
         declEnv = env,
-        obj = env.lookupVar(decl.obj.symbol),
+        obj = evaluate(decl.obj, env),
         value = decl.body,
         modifiers = decl.modifiers
     ) {}
 
     if (fn.async) {
-        globalCoroutineScope.launch {
-            for ((_, value) in (fn.obj as ObjectVal).value) {
-                val scope = Environment(fn.declEnv)
+       for ((_, value) in (fn.obj as ObjectVal).value) {
+           globalCoroutineScope.launch {
+               val scope = Environment(fn.declEnv)
 
-                scope.declareVar(fn.param.symbol, value.first, true)
+               scope.declareVar(fn.param.symbol, value.first, true)
 
-                for (statement in fn.value) {
-                    evaluate(statement, scope)
-                }
-            }
-        }
+               for (statement in fn.value) {
+                   evaluate(statement, scope)
+               }
+           }
+       }
     } else {
         for ((_, value) in (fn.obj as ObjectVal).value) {
             val scope = Environment(fn.declEnv)

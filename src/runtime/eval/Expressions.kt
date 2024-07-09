@@ -240,7 +240,7 @@ fun evalAssignment(node: AssignmentExpr, env: Environment, file: String): Runtim
                 .raise()
         }
 
-        return env.assignVar(node.assigned.symbol, value, file)
+        return env.assignVar(node.assigned.symbol, value)
     } else if (node.assigned is MemberExpr) {
         val value = evaluate(node.value, env)
 
@@ -273,7 +273,7 @@ fun evalObjectExpr(expr: ObjectLiteral, env: Environment): ObjectVal {
     expr.properties.forEach {
         val type = if (it.type == null) AnyType() else typeEval(it.type, env)
 
-        if (it.value.isEmpty) {
+        if (it.value == null) {
             val value = env.lookupVar(it.key)
 
             if (!(type matches value)) {
@@ -283,7 +283,7 @@ fun evalObjectExpr(expr: ObjectLiteral, env: Environment): ObjectVal {
 
             props[it.key] = value to type
         } else {
-            props[it.key] = evaluate(it.value.get(), env) to type
+            props[it.key] = evaluate(it.value, env) to type
         }
     }
 
@@ -310,13 +310,14 @@ fun evalCallExpr(call: CallExpr, env: Environment): RuntimeVal {
 
     if (fn is FunctionValue) {
         // An arity of -1 means any number of arguments are allowed
-        if (fn.arity > -1 && fn.arity != args.size.toByte()) {
+        if (fn.arity > -1 && fn.arity != args.size) {
             throw RuntimeException("${fn.name} expected ${fn.arity} arguments, instead got ${args.size}.")
         }
 
         val scope =
             if (fn.hasModifier(ModifierType.Annotation, "ScopeReadonly")) Environment(env).toReadonly()
             else if (fn.hasModifier(ModifierType.Annotation, "ScopeLimited")) Environment(makeGlobalEnv(arrayOf())).toReadonly()
+            else if (fn.hasModifier(ModifierType.Annotation, "ConcurrencyUnprotected")) Environment(env)
             else if (fn.hasModifier(ModifierType.Annotation, "ScopeCopy")) Environment(env.copy())
             else if (!fn.hasModifier(ModifierType.Synchronised)) {
                     Warning("""
@@ -552,8 +553,8 @@ fun evalIfDecl(decl: IfDecl, env: Environment): RuntimeVal {
 fun evalFuncDecl(decl: FunctionDecl, env: Environment): RuntimeVal {
     val params = HashMap<Pair<String, Byte>, Type>()
 
-    for ((name, type) in decl.parameters) {
-        params[name] = if (type != null) typeEval(type, env) else AnyType()
+    for ((_, name, index, type) in decl.block.parameters) {
+        params[name to index] = if (type != null) typeEval(type, env) else AnyType()
     }
 
     val fn = object : FunctionValue(
@@ -562,6 +563,7 @@ fun evalFuncDecl(decl: FunctionDecl, env: Environment): RuntimeVal {
             if (decl.hasModifier(ModifierType.Annotation, "ScopeReadonly")) env.toReadonly()
             else if (decl.hasModifier(ModifierType.Annotation, "ScopeLimited")) makeGlobalEnv(arrayOf()).toReadonly()
             else if (decl.hasModifier(ModifierType.Annotation, "ScopeCopy")) env.copy()
+            else if (decl.hasModifier(ModifierType.Annotation, "ConcurrencyUnprotected")) env
             else if (!decl.hasModifier(ModifierType.Synchronised)) {
                 Warning("""
                     |Concurrent functions must be annotated with either ScopeReadonly, ScopeLimited or ScopeCopy in v1.0.0-beta.3 (ScopeLimited has been implicitly applied).
@@ -572,8 +574,7 @@ fun evalFuncDecl(decl: FunctionDecl, env: Environment): RuntimeVal {
                 makeGlobalEnv(arrayOf()).toReadonly()
             } else env,
         params = params,
-        value = decl.body,
-        arity = decl.arity,
+        value = decl.block,
         modifiers = decl.modifiers,
     ) {}
 
@@ -583,4 +584,25 @@ fun evalFuncDecl(decl: FunctionDecl, env: Environment): RuntimeVal {
     }
 
     return fn
+}
+
+@OptIn(ExperimentalTime::class)
+fun evalLockedBlock(block: LockedBlock, env: Environment): RuntimeVal {
+    var result = makeNull() as RuntimeVal
+
+    for (v in block.items) {
+        env.getVar(v).lock()
+    }
+
+    try {
+        for (statement in block.body) {
+            result = evaluate(statement, env)
+        }
+    } finally {
+        for (v in block.items) {
+            env.getVar(v).unlock()
+        }
+    }
+
+    return result
 }

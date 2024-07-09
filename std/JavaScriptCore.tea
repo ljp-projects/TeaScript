@@ -1,0 +1,31 @@
+constant __LANG = {
+    TYPING = {
+        NUMBER = 0,
+        STR = 1,
+        OBJECT = 2,
+        BOOL = 3,
+        FUNC = lambda func FUNC(RETURN_TYPE: any, ARGS: [any]) {
+            {
+                # null() = { 5, 0 }
+                # str(number) = { 1, 3 }
+                # str(number, str) = { 1, 5 }
+                # str(str, number) = { 1, 6 }
+                RETURN_TYPE,
+                CODE = sumOf(map(ARGS, lambda func _(value: any, index: number, iteration: number, prev: number) {
+                    (value.?CODE + 1) ?: value + iteration + prev
+                })) * 3
+            }
+        },
+        NULL = 5,
+        ARRAY = lambda func ARRAY(CONTENT_TYPE: any, LENGTH: number) {
+            {
+                CONTENT_TYPE,
+                LENGTH,
+                CODE = 6 + (CONTENT_TYPE.?CODE ?: CONTENT_TYPE) * LENGTH
+            }
+        },
+        ANY = 7
+    }
+}
+
+constant funcType = __LANG.TYPING.FUNC(__LANG.TYPING.NUMBER, )

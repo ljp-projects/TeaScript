@@ -4,7 +4,7 @@ import home
 import errors.Error
 import java.nio.file.Paths
 import java.util.*
-import kotlin.collections.HashMap
+import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
 
 /**
@@ -82,8 +82,8 @@ class Parser {
     /**
      * @throws Error Throws when the expected TokenType isn't found.
      */
-    private fun expect(type: TokenType, error: String): Token {
-        val prev = eat()
+    private fun expect(type: TokenType, error: String, preserve: Boolean = false): Token {
+        val prev = if (preserve) at() else eat()
         if (prev?.type != type) {
             Error<Nothing>(error, "")
                 .raise()
@@ -217,7 +217,7 @@ class Parser {
                 "var-decl",
                 false,
                 identifier,
-                Optional.empty()
+                null
             ) {}
         }
 
@@ -230,10 +230,37 @@ class Parser {
             "var-decl",
             isConstant,
             identifier,
-            Optional.of(parseExpr())
+            parseExpr()
         ) {}
 
         return declaration
+    }
+
+    private fun parseArgsUntil(stopAt: TokenType): List<Expr> {
+        val args: List<Expr> = if (at().type == TokenType.CloseParen) {
+            listOf()
+        } else {
+            parseArgsList()
+        }
+
+        expect(
+            stopAt,
+            "Expected a $stopAt in an argument list.",
+            true
+        )
+
+        return args
+    }
+
+    private fun parseLockedBlock(): Expr {
+        eat() // skip locked token
+
+        return object : LockedBlock(
+            parseArgsUntil(TokenType.OpenBrace).map {
+                (it as? Identifier)?.symbol ?: Error<Nothing>("Expected identifiers only in locked block.", "").raise()
+            }.toHashSet(),
+            Block(body = parseBlock())
+        ) {}
     }
 
     private fun parseAwaitDeclaration(): Expr {
@@ -248,27 +275,11 @@ class Parser {
 
         val promise = parseExpr()
 
-        expect(
-            TokenType.OpenBrace,
-            "Expected function body following declaration."
-        )
-
-        val body: ArrayList<Statement> = ArrayList()
-
-        while (at().type != TokenType.CloseBrace && notEOF()) {
-            body.addLast(parseStatement())
-        }
-
-        expect(
-            TokenType.CloseBrace,
-            "Closing brace expected inside function declaration",
-        )
-
         return object : AwaitDecl(
             "await-decl",
             param,
             promise,
-            body,
+            Block(body = parseBlock()),
             modifiers.toHashSet()
         ) {}.apply { this@Parser.modifiers.clear() }
     }
@@ -276,38 +287,22 @@ class Parser {
     private fun parseForDeclaration(): Statement {
         this.eat()
 
-        val args = this.parseArgs()
-        val params = ArrayList<Identifier>()
-
-        for (arg in args) {
-            if (arg.kind != "ident") {
-                Error<Nothing>("Inside function declaration expected parameters to be an identifier.", "").raise()
-            }
-
-            params.addLast(arg as Identifier)
-        }
+        val arg = parseIdentifier()
 
         expect(
-            TokenType.OpenBrace,
-            "Expected function body following declaration."
+            TokenType.From,
+            "Expected from following identifier in foreach"
         )
 
-        val body: ArrayList<Statement> = ArrayList()
+        val from = parseExpr()
 
-        while (at().type != TokenType.CloseBrace && notEOF()) {
-            body.addLast(parseStatement())
-        }
-
-        expect(
-            TokenType.CloseBrace,
-            "Closing brace expected inside function declaration",
-        )
+        println(at())
 
         return object : ForDecl(
             "for-decl",
-            params.first(),
-            params[1],
-            body,
+            arg,
+            from,
+            Block(body = parseBlock()),
             modifiers.toHashSet()
         ) {}.apply { this@Parser.modifiers.clear() }
     }
@@ -321,26 +316,10 @@ class Parser {
 
         val cond = parseAdditiveExpr()
 
-        expect(
-            TokenType.OpenBrace,
-            "Expected function body following declaration."
-        )
-
-        val body = ArrayDeque<Statement>()
-
-        while (at().type != TokenType.CloseBrace && notEOF()) {
-            body.addLast(parseStatement())
-        }
-
-        expect(
-            TokenType.CloseBrace,
-            "Closing brace expected inside function declaration",
-        )
-
         return object : AfterDecl(
             "after-decl",
             cond,
-            body,
+            Block(body = parseBlock()),
             modifiers.toHashSet()
         ) {}.apply { this@Parser.modifiers.clear() }
     }
@@ -354,21 +333,7 @@ class Parser {
 
         val cond = parseOtherOp()
 
-        expect(
-            TokenType.OpenBrace,
-            "Expected function body following declaration."
-        )
-
-        val body = ArrayDeque<Statement>()
-
-        while (at().type != TokenType.CloseBrace && notEOF()) {
-            body.addLast(parseStatement())
-        }
-
-        expect(
-            TokenType.CloseBrace,
-            "Closing brace expected inside function declaration",
-        )
+        val body = parseBlock()
 
         val orBodies: ArrayDeque<OrDecl> = ArrayDeque()
 
@@ -377,25 +342,9 @@ class Parser {
 
             val orCond = parseOtherOp()
 
-            expect(
-                TokenType.OpenBrace,
-                "Expected function body following declaration."
-            )
-
-            val orBodyBacking = ArrayDeque<Statement>()
-
-            while (at().type != TokenType.CloseBrace && notEOF()) {
-                orBodyBacking.addLast(parseStatement())
-            }
-
-            expect(
-                TokenType.CloseBrace,
-                "Closing brace expected inside function declaration",
-            )
-
             orBodies.addLast(object : OrDecl(
                 kind = "or-decl",
-                body = orBodyBacking,
+                body = Block(body = parseBlock()),
                 cond = orCond
             ) {})
         }
@@ -403,31 +352,15 @@ class Parser {
         val otherwiseBody = if (at().type == TokenType.Otherwise) {
             eat()
 
-            expect(
-                TokenType.OpenBrace,
-                "Expected function body following declaration."
-            )
-
-            val otherWiseBodyBacking = ArrayDeque<Statement>()
-
-            while (at().type != TokenType.CloseBrace && notEOF()) {
-                otherWiseBodyBacking.addLast(parseStatement())
-            }
-
-            expect(
-                TokenType.CloseBrace,
-                "Closing brace expected inside function declaration",
-            )
-
-            otherWiseBodyBacking
+            parseBlock()
         } else null
 
         return object : IfDecl(
             "if-decl",
             cond,
-            body,
+            Block(body = body),
             modifiers.toHashSet(),
-            otherwiseBody,
+            if (otherwiseBody == null) null else Block(body = otherwiseBody),
             orBodies
         ) {}.apply { this@Parser.modifiers.clear() }
     }
@@ -447,14 +380,14 @@ class Parser {
         }
 
         val args = parseArgs()
-        val params = HashMap<Pair<String, Byte>, TypeExpr?>()
+        val params = HashSet<Parameter>()
 
         for (arg in args) {
             if (arg !is Identifier) {
                 Error<Nothing>("Inside function declaration expected parameters to be an identifier.", "").raise()
             }
 
-            params[arg.symbol to params.size.toByte()] = arg.type
+            params.add(Parameter(name = arg.symbol, index = params.size.toByte(), type = arg.type))
         }
 
         if (at().type == TokenType.BinaryOperator && at().value == "-") {
@@ -467,6 +400,15 @@ class Parser {
             name?.type = parseExpr() as TypeExpr
         }
 
+        return object : FunctionDecl(
+            "fn-decl",
+            name,
+            ParameterBlock(body = parseBlock(), parameters = params),
+            fnMods,
+        ) {}
+    }
+
+    private fun parseBlock(): ArrayList<Statement> {
         expect(
             TokenType.OpenBrace,
             "Expected function body following declaration."
@@ -483,14 +425,7 @@ class Parser {
             "Closing brace expected inside function declaration",
         )
 
-        return object : FunctionDecl(
-            "fn-decl",
-            params,
-            name,
-            body,
-            params.size.toByte(),
-            fnMods,
-        ) {}
+        return body
     }
 
     private fun parseArgs(): ArrayList<Expr> {
@@ -531,6 +466,7 @@ class Parser {
             TokenType.After -> parseAfterDeclaration()
             TokenType.Await -> parseAwaitDeclaration()
             TokenType.Func -> parseFnDeclaration()
+            TokenType.Locked -> parseLockedBlock()
             TokenType.Annotation -> {
                 modifiers.add(
                     Modifier(ModifierType.Annotation, this.eat()?.value ?: "")
@@ -671,7 +607,7 @@ class Parser {
                 eat() // advance past comma
                 properties.addLast(makeProperty(
                     key,
-                    Optional.empty(),
+                    null,
                     type
                 ))
                 continue
@@ -679,7 +615,7 @@ class Parser {
             else if (at().type == TokenType.CloseBrace) {
                 properties.addLast(makeProperty(
                     key,
-                    Optional.empty(),
+                    null,
                     type
                 ))
                 continue
@@ -695,7 +631,7 @@ class Parser {
 
             properties.add(makeProperty(
                 key,
-                Optional.of(value),
+                value,
                 type
             ))
 

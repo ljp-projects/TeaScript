@@ -53,7 +53,7 @@ fun transpileCallExpr(call: CallExpr, env: Environment): String {
         val result = StringBuilder("")
         var fr: RuntimeVal = makeNull()
 
-        fn.value.forEach { statement ->
+        fn.value.body.forEach { statement ->
             fr = evaluate(statement, scope)
         }
 
@@ -62,7 +62,7 @@ fun transpileCallExpr(call: CallExpr, env: Environment): String {
                     transpileProgram(
                         object : Program(
                             "program",
-                            fn.value.toMutableList()
+                            fn.value.body.toMutableList()
                         ) {},
                         scope
                     ) + "})")
