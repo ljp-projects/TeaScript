@@ -8,7 +8,7 @@ git clone https://github.com/ljp-projects/TeaScript.git -b v1beta2-legacy-fixes
 cd TeaScript || exit
 
 unzip src/TeaScript.jar.zip src/TeaScript.jar
-cp src/TeaScript.jar /usr/local/bin/TeaScript.jar
+mv src/TeaScript.jar /usr/local/bin/TeaScript.jar
 
 touch tea
 echo "java -jar /usr/local/bin/TeaScript.jar \$*" > tea
