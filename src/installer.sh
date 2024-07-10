@@ -7,7 +7,7 @@ git clone --single-branch -qb v1beta2-legacy-fixes https://github.com/ljp-projec
 
 cd TeaScript || exit
 
-unzip -oqq src/TeaScript.jar.zip src/TeaScript.jar
+xz -T0 -dq src/TeaScript.jar.xz src/TeaScript.jar
 mv src/TeaScript.jar /usr/local/bin/TeaScript.jar
 
 touch tea
