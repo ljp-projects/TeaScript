@@ -1,7 +1,9 @@
-tea_version="v1.0.0-beta.1"
+tea_version="v1.0.0-beta.2"
 
 cd /tmp/ || exit
-git clone https://github.com/ljp-projects/TeaScript.git
+
+# We need to clone the legacy repo
+git clone https://github.com/ljp-projects/TeaScript.git -b v1beta2-legacy-fixes
 
 cd TeaScript || exit
 
