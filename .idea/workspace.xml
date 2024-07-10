@@ -9,7 +9,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="157f05c8-c06f-40a7-960c-0f5c4e09291a" name="Changes" comment="Remove .jar to make the installer work" />
+    <list default="true" id="157f05c8-c06f-40a7-960c-0f5c4e09291a" name="Changes" comment="Update installer and README.md">
+      <change afterPath="$PROJECT_DIR$/jar-keystore.p12" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/TeaScriptSigned.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/installer.sh" beforeDir="false" afterPath="$PROJECT_DIR$/src/installer.sh" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -166,6 +173,7 @@
       <list>
         <item itemvalue="Kotlin.MainKt" />
         <item itemvalue="Kotlin.MainKt" />
+        <item itemvalue="Kotlin.MainKt" />
       </list>
     </recent_temporary>
   </component>
@@ -213,6 +221,7 @@
     <MESSAGE value="Uh oh" />
     <MESSAGE value=":)" />
     <MESSAGE value="Remove .jar to make the installer work" />
-    <option name="LAST_COMMIT_MESSAGE" value="Remove .jar to make the installer work" />
+    <MESSAGE value="Update installer and README.md" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update installer and README.md" />
   </component>
 </project>

@@ -3,11 +3,11 @@ tea_version="v1.0.0-beta.2"
 cd /tmp/ || exit
 
 # We need to clone the legacy repo
-git clone https://github.com/ljp-projects/TeaScript.git -b v1beta2-legacy-fixes
+git clone --single-branch -qb v1beta2-legacy-fixes https://github.com/ljp-projects/TeaScript.git
 
 cd TeaScript || exit
 
-unzip src/TeaScript.jar.zip src/TeaScript.jar
+unzip -oqq src/TeaScript.jar.zip src/TeaScript.jar
 mv src/TeaScript.jar /usr/local/bin/TeaScript.jar
 
 touch tea
