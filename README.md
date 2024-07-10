@@ -8,8 +8,14 @@
 
 ### Instructions
 
-1. Download the TeaScript.jar file from the desired release (v1.0.0-beta.3-proto.2 or later only)
-2. Run these commands. `curl https://raw.githubusercontent.com/ljp-projects/TeaScript/main/src/installer.sh > /tmp/installer.sh;chmod +x /tmp/installer.sh/;tmp/installer.sh /path/to/TeaScript.jar`
+| flag                  | value                      | description                                     |
+|-----------------------|----------------------------|-------------------------------------------------|
+| --tag                 | The desired tag.           | Install with JAR from the specified tag.        |
+| -L or --legacy-branch | The desired legacy branch. | Install via installer.sh from specified branch. |
+| none                  | N/A                        | Install with the latest JAR.                    |
+
+1. Download the TeaScript.jar file from the desired release
+2. Run `curl https://raw.githubusercontent.com/ljp-projects/TeaScript/main/src/installer.sh | sh -s options`.
 3. Run `tea version` to verify the installation.
 
 ### Instructions (legacy)

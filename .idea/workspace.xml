@@ -9,10 +9,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="157f05c8-c06f-40a7-960c-0f5c4e09291a" name="Changes" comment="Update installer.sh to use new system">
-      <change afterPath="$PROJECT_DIR$/TeaScript.jar" afterDir="false" />
+    <list default="true" id="157f05c8-c06f-40a7-960c-0f5c4e09291a" name="Changes" comment="Change README.md">
+      <change afterPath="$PROJECT_DIR$/jar-keystore-timestamped.p12" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jar-keystore.jks" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/TeaScriptSigned.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/installer.sh" beforeDir="false" afterPath="$PROJECT_DIR$/src/installer.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,17 +26,14 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Kotlin Class" />
-        <option value="Kotlin File" />
-        <option value="Kotlin Data Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="PUSH_TAGS">
-      <GitPushTagMode>
-        <option name="argument" value="--follow-tags" />
-        <option name="title" value="Current Branch" />
-      </GitPushTagMode>
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="v1beta2-legacy-fixes" />
+      </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -49,20 +49,6 @@
     &quot;accountId&quot;: &quot;4f70c07d-8072-4241-9c78-d608ade19dff&quot;
   }
 }</component>
-  <component name="HighlightingSettingsPerFile">
-    <setting file="jar://$MAVEN_REPOSITORY$/org/jetbrains/kotlin/kotlin-stdlib/1.9.23/kotlin-stdlib-1.9.23-sources.jar!/jvmMain/kotlin/Primitives.kt" root0="SKIP_INSPECTION" />
-  </component>
-  <component name="MavenImportPreferences">
-    <option name="generalSettings">
-      <MavenGeneralSettings>
-        <option name="printErrorStackTraces" value="true" />
-        <option name="workOffline" value="true" />
-      </MavenGeneralSettings>
-    </option>
-  </component>
-  <component name="ProblemsViewState">
-    <option name="selectedTabId" value="ProjectErrors" />
-  </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 6
@@ -72,75 +58,31 @@
     <ConfirmationsSetting value="2" id="Add" />
   </component>
   <component name="ProjectViewState">
-    <option name="flattenModules" value="true" />
-    <option name="flattenPackages" value="true" />
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
-    <option name="showMembers" value="true" />
-    <option name="showVisibilityIcons" value="true" />
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
     &quot;Downloaded.Files.Path.Enabled&quot;: &quot;true&quot;,
-    &quot;JAR Application.Main.jar.executor&quot;: &quot;Run&quot;,
-    &quot;JAR Application.TeaScript.jar.executor&quot;: &quot;Run&quot;,
-    &quot;JAR Application.TeaScriptCore.jar.executor&quot;: &quot;Run&quot;,
-    &quot;JAR Application.asm-9.7.jar.executor&quot;: &quot;Run&quot;,
     &quot;Kotlin.MainKt.executor&quot;: &quot;Run&quot;,
     &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
-    &quot;Repository.Attach.JavaDocs&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.JavaDocs&quot;: &quot;true&quot;,
     &quot;Repository.Attach.Sources&quot;: &quot;false&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.33955225&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.5103448&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;aDefault&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.Mappings&quot;
   }
 }</component>
-  <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/src" />
-      <recent name="$PROJECT_DIR$/src/errors" />
-    </key>
-  </component>
-  <component name="RunManager" selected="JAR Application.TeaScriptCore.jar">
-    <configuration name="Main.jar" type="JarApplication" temporary="true">
-      <option name="JAR_PATH" value="$PROJECT_DIR$/examples/Main.jar" />
-      <method v="2">
-        <option name="com.soywiz.korge.intellij.UpdateResourceBeforeRunTask" enabled="false" />
-      </method>
-    </configuration>
-    <configuration name="TeaScriptCore.jar" type="JarApplication" temporary="true">
-      <option name="JAR_PATH" value="$PROJECT_DIR$/src/TeaScriptCore.jar" />
-      <method v="2">
-        <option name="com.soywiz.korge.intellij.UpdateResourceBeforeRunTask" enabled="false" />
-      </method>
-    </configuration>
-    <configuration name="TeaScript.jar" type="JarApplication" temporary="true">
-      <option name="JAR_PATH" value="$PROJECT_DIR$/src/TeaScript.jar" />
-      <option name="PROGRAM_PARAMETERS" value="run examples/Main.tea" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <method v="2">
-        <option name="com.soywiz.korge.intellij.UpdateResourceBeforeRunTask" enabled="false" />
-      </method>
-    </configuration>
-    <configuration name="asm-9.7.jar" type="JarApplication" temporary="true">
-      <option name="JAR_PATH" value="$PROJECT_DIR$/lib/asm-9.7.jar" />
-      <method v="2">
-        <option name="com.soywiz.korge.intellij.UpdateResourceBeforeRunTask" enabled="false" />
-      </method>
-    </configuration>
+  <component name="RunManager">
     <configuration name="MainKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="MainKt" />
       <module name="TeaScript" />
-      <option name="PROGRAM_PARAMETERS" value="transpile examples/Main.tea examples/Main.js" />
+      <option name="PROGRAM_PARAMETERS" value="run examples/Main.tea examples/Main.jar" />
       <shortenClasspath name="NONE" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -227,20 +169,11 @@
       <option name="docutils_open_in_browser" value="false" />
       <method v="2" />
     </configuration>
-    <list>
-      <item itemvalue="JAR Application.TeaScriptCore.jar" />
-      <item itemvalue="JAR Application.Main.jar" />
-      <item itemvalue="JAR Application.TeaScript.jar" />
-      <item itemvalue="JAR Application.asm-9.7.jar" />
-      <item itemvalue="Kotlin.MainKt" />
-    </list>
     <recent_temporary>
       <list>
-        <item itemvalue="JAR Application.TeaScriptCore.jar" />
-        <item itemvalue="JAR Application.TeaScript.jar" />
         <item itemvalue="Kotlin.MainKt" />
-        <item itemvalue="JAR Application.asm-9.7.jar" />
-        <item itemvalue="JAR Application.Main.jar" />
+        <item itemvalue="Kotlin.MainKt" />
+        <item itemvalue="Kotlin.MainKt" />
       </list>
     </recent_temporary>
   </component>
@@ -252,8 +185,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1716627113852</updated>
-      <workItem from="1717137838286" duration="8014000" />
-      <workItem from="1719095295017" duration="47000" />
     </task>
     <task id="LOCAL-00001" summary=":)">
       <option name="closed" value="true" />
@@ -263,175 +194,23 @@
       <option name="project" value="LOCAL" />
       <updated>1717016348611</updated>
     </task>
-    <task id="LOCAL-00002" summary="Fix bug where standard library for non-native js functions 'not_supported_js' needed escape or double quotes">
+    <task id="LOCAL-00002" summary="Remove .jar to make the installer work">
       <option name="closed" value="true" />
-      <created>1717017991834</created>
+      <created>1720620573974</created>
       <option name="number" value="00002" />
       <option name="presentableId" value="LOCAL-00002" />
       <option name="project" value="LOCAL" />
-      <updated>1717017991834</updated>
+      <updated>1720620573974</updated>
     </task>
-    <task id="LOCAL-00003" summary="New release">
+    <task id="LOCAL-00003" summary="Change README.md">
       <option name="closed" value="true" />
-      <created>1717018282314</created>
+      <created>1720621698344</created>
       <option name="number" value="00003" />
       <option name="presentableId" value="LOCAL-00003" />
       <option name="project" value="LOCAL" />
-      <updated>1717018282314</updated>
+      <updated>1720621698344</updated>
     </task>
-    <task id="LOCAL-00004" summary="New release (fixed transpilation bug)">
-      <option name="closed" value="true" />
-      <created>1717018518756</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1717018518756</updated>
-    </task>
-    <task id="LOCAL-00005" summary="Parse args differently">
-      <option name="closed" value="true" />
-      <created>1717052987561</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1717052987561</updated>
-    </task>
-    <task id="LOCAL-00006" summary="Use xz to compress/decompress jar file">
-      <option name="closed" value="true" />
-      <created>1717054972611</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1717054972611</updated>
-    </task>
-    <task id="LOCAL-00007" summary="Add data.join function for objects">
-      <option name="closed" value="true" />
-      <created>1717104410186</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1717104410186</updated>
-    </task>
-    <task id="LOCAL-00008" summary="Idk why the zipped jar filem is so small">
-      <option name="closed" value="true" />
-      <created>1717104988283</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1717104988283</updated>
-    </task>
-    <task id="LOCAL-00009" summary="idk">
-      <option name="closed" value="true" />
-      <created>1717136163937</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1717136163937</updated>
-    </task>
-    <task id="LOCAL-00010" summary="????">
-      <option name="closed" value="true" />
-      <created>1717151342038</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1717151342038</updated>
-    </task>
-    <task id="LOCAL-00011" summary="???? idk">
-      <option name="closed" value="true" />
-      <created>1717154152018</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1717154152018</updated>
-    </task>
-    <task id="LOCAL-00012" summary="Use double quotes for transpiled strings and update how binary expressions are transpiled">
-      <option name="closed" value="true" />
-      <created>1717283699470</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1717283699470</updated>
-    </task>
-    <task id="LOCAL-00013" summary="&quot;The best way to debug is to use your product.&quot;">
-      <option name="closed" value="true" />
-      <created>1717294321921</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1717294321921</updated>
-    </task>
-    <task id="LOCAL-00014" summary="Implement some more features of v1.0.0-beta.3">
-      <option name="closed" value="true" />
-      <created>1720219171943</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1720219171943</updated>
-    </task>
-    <task id="LOCAL-00015" summary="Implement some more features of v1.0.0-beta.3">
-      <option name="closed" value="true" />
-      <created>1720219264986</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1720219264986</updated>
-    </task>
-    <task id="LOCAL-00016" summary="Implement some more features of v1.0.0-beta.3">
-      <option name="closed" value="true" />
-      <created>1720219276222</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1720219276222</updated>
-    </task>
-    <task id="LOCAL-00017" summary="Implement some more features of v1.0.0-beta.3">
-      <option name="closed" value="true" />
-      <created>1720219289912</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1720219289912</updated>
-    </task>
-    <task id="LOCAL-00018" summary="idk locked blocks">
-      <option name="closed" value="true" />
-      <created>1720564766935</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1720564766935</updated>
-    </task>
-    <task id="LOCAL-00019" summary="idk locked blocks">
-      <option name="closed" value="true" />
-      <created>1720569092285</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1720569092285</updated>
-    </task>
-    <task id="LOCAL-00020" summary="idk locked blocks">
-      <option name="closed" value="true" />
-      <created>1720616574707</created>
-      <option name="number" value="00020" />
-      <option name="presentableId" value="LOCAL-00020" />
-      <option name="project" value="LOCAL" />
-      <updated>1720616574707</updated>
-    </task>
-    <task id="LOCAL-00021" summary="Update installer.sh to use new system">
-      <option name="closed" value="true" />
-      <created>1720617669450</created>
-      <option name="number" value="00021" />
-      <option name="presentableId" value="LOCAL-00021" />
-      <option name="project" value="LOCAL" />
-      <updated>1720617669450</updated>
-    </task>
-    <task id="LOCAL-00022" summary="Update installer.sh to use new system">
-      <option name="closed" value="true" />
-      <created>1720617889982</created>
-      <option name="number" value="00022" />
-      <option name="presentableId" value="LOCAL-00022" />
-      <option name="project" value="LOCAL" />
-      <updated>1720617889982</updated>
-    </task>
-    <option name="localTasksCounter" value="23" />
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -449,33 +228,8 @@
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Uh oh" />
     <MESSAGE value=":)" />
-    <MESSAGE value="Fix bug where standard library for non-native js functions 'not_supported_js' needed escape or double quotes" />
-    <MESSAGE value="New release" />
-    <MESSAGE value="New release (fixed transpilation bug)" />
-    <MESSAGE value="Parse args differently" />
-    <MESSAGE value="Use xz to compress/decompress jar file" />
-    <MESSAGE value="Add data.join function for objects" />
-    <MESSAGE value="Idk why the zipped jar filem is so small" />
-    <MESSAGE value="Sacrifice type safety during traspilation for stuff actually working" />
-    <MESSAGE value="idk" />
-    <MESSAGE value="????" />
-    <MESSAGE value="???? idk" />
-    <MESSAGE value="Use double quotes for transpiled strings and update how binary expressions are transpiled" />
-    <MESSAGE value="&quot;The best way to debug is to use your product.&quot;" />
-    <MESSAGE value="Just trust me" />
-    <MESSAGE value="Implement some more features of v1.0.0-beta.3" />
-    <MESSAGE value="idk locked blocks" />
-    <MESSAGE value="Update installer.sh to use new system" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update installer.sh to use new system" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <breakpoint enabled="true" type="java-exception">
-          <properties class="java.net.BindException" package="java.net" />
-          <option name="timeStamp" value="1" />
-        </breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="Remove .jar to make the installer work" />
+    <MESSAGE value="Change README.md" />
+    <option name="LAST_COMMIT_MESSAGE" value="Change README.md" />
   </component>
 </project>
