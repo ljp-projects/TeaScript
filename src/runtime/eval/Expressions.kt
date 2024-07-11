@@ -205,12 +205,12 @@ fun evalBinaryExpr(expr: BinaryExpr, env: Environment): RuntimeVal {
 
 @OptIn(ExperimentalTime::class)
 fun evalMemberExpr(expr: MemberExpr, env: Environment): RuntimeVal {
-    val prop = when (expr.prop) {
+    val prop = if (!expr.computed) when (expr.prop) {
         is Identifier -> expr.prop.symbol
         is NumberLiteral -> expr.prop.value.toInt().toString()
         is StringLiteral -> expr.prop.value
         else -> throw Exception("huh")
-    }
+    } else evaluate(expr.prop, env).asString()
 
     val obj = evaluate(expr.obj, env) as ObjectVal
 
@@ -221,7 +221,7 @@ fun evalMemberExpr(expr: MemberExpr, env: Environment): RuntimeVal {
 }
 
 fun evalIdentifier(identifier: Identifier, env: Environment): RuntimeVal {
-    val v = env.getVarNoCache(identifier.symbol)
+    val v = env.getVar(identifier.symbol)
 
     return v.value
 }
@@ -246,12 +246,13 @@ fun evalAssignment(node: AssignmentExpr, env: Environment, file: String): Runtim
 
         val `object` = evaluate(node.assigned.obj, env) as ObjectVal
 
-        val property = when (node.assigned.prop) {
+        val property = if (!node.assigned.computed) when (node.assigned.prop) {
             is Identifier -> node.assigned.prop.symbol
             is NumberLiteral -> node.assigned.prop.value.toInt().toString()
             is StringLiteral -> node.assigned.prop.value
             else -> throw Exception("huh")
-        }
+        } else evaluate(node.assigned.prop, env).asString()
+
 
         if (!((`object`.value[property]?.second ?: NeverType()) matches value)) {
             IncorrectTypeError(`object`.value[property]?.second ?: NeverType(), value)
@@ -314,22 +315,11 @@ fun evalCallExpr(call: CallExpr, env: Environment): RuntimeVal {
             throw RuntimeException("${fn.name} expected ${fn.arity} arguments, instead got ${args.size}.")
         }
 
-        val scope =
-            if (fn.hasModifier(ModifierType.Annotation, "ScopeReadonly")) Environment(env).toReadonly()
-            else if (fn.hasModifier(ModifierType.Annotation, "ScopeLimited")) Environment(makeGlobalEnv(arrayOf())).toReadonly()
-            else if (fn.hasModifier(ModifierType.Annotation, "ConcurrencyUnprotected")) Environment(env)
-            else if (fn.hasModifier(ModifierType.Annotation, "ScopeCopy")) Environment(env.copy())
-            else if (!fn.hasModifier(ModifierType.Synchronised)) {
-                    Warning("""
-                        |Concurrent functions must be annotated with either ScopeReadonly, ScopeLimited or ScopeCopy in v1.0.0-beta.3 (ScopeLimited has been implicitly applied).
-                        |This will be an error in future versions.
-                        """.trimMargin(), "")
-                    .raise()
-
-                Environment(makeGlobalEnv(arrayOf())).toReadonly()
-        } else Environment(env)
+        val scope = fn.declEnv
             /*if (fn.mutating) Environment(fn.declEnv, isCoroutine = fn.coroutine && !fn.promise)
             else Environment(fn.declEnv, isCoroutine = fn.coroutine && !fn.promise).toReadonly()*/
+
+        scope.clear()
 
         for ((name, type) in fn.params) {
             if (!(type matches args[name.second.toInt()])) {
@@ -377,7 +367,7 @@ fun evalCallExpr(call: CallExpr, env: Environment): RuntimeVal {
 
         val type = fn.name.second
 
-        check(!fn.promise && type matches result) { "Expected ${fn.name.first} to return a ${type}, but actually got ${result.kind}." }
+        if (!fn.promise && !(type matches result)) { Error<Nothing>("Expected ${fn.name.first} to return a ${type}, but actually got ${result.kind}.", "").raise() }
 
         return result
     }
@@ -398,24 +388,12 @@ fun evalAwaitDecl(decl: AwaitDecl, env: Environment): RuntimeVal {
     val scope = Environment(fn.declEnv)
     var result: RuntimeVal = makeNull()
 
-    if (fn.async) {
-        globalCoroutineScope.launch {
-            val res = fn.obj.value.join()
+    val res = fn.obj.value.join()
 
-            scope.declareVar(fn.param.symbol, res, true)
+    scope.declareVar(fn.param.symbol, res, true)
 
-            for (statement in fn.value) this.launch {
-                result = evaluate(statement, scope)
-            }
-        }
-    } else {
-        val res = fn.obj.value.join()
-
-        scope.declareVar(fn.param.symbol, res, true)
-
-        for (statement in fn.value) {
-            result = evaluate(statement, scope)
-        }
+    for (statement in fn.value) {
+        result = evaluate(statement, scope)
     }
 
     return result
@@ -466,84 +444,41 @@ fun evalIfDecl(decl: IfDecl, env: Environment): RuntimeVal {
 
     var result: RuntimeVal = makeNull()
 
-    if (fn.async) {
-        globalCoroutineScope.launch {
-            if ((fn.cond as BoolVal).value) {
+    if ((fn.cond as BoolVal).value) {
+        val scope = Environment(fn.declEnv)
+
+        for (statement in fn.value) {
+            result = evaluate(statement, scope)
+        }
+    } else if (fn.orStmts.size > 0) {
+        var didRun = false
+
+        for (or in fn.orStmts) {
+            if ((evaluate(or.cond, env) as BoolVal).value) {
                 val scope = Environment(fn.declEnv)
 
-                for (statement in fn.value) {
+                for (statement in or.body) {
                     result = evaluate(statement, scope)
                 }
-            } else if (fn.orStmts.size > 0) {
-                var didRun = false
 
-                for (or in fn.orStmts) {
-                    if ((evaluate(or.cond, env) as BoolVal).value) {
-                        val scope = Environment(fn.declEnv)
+                didRun = true
 
-                        for (statement in or.body) {
-                            result = evaluate(statement, scope)
-                        }
-
-                        didRun = true
-
-                        break
-                    }
-
-                }
-
-                if (!didRun && fn.otherwise != null) {
-                    val scope = Environment(fn.declEnv)
-
-                    for (statement in fn.otherwise) {
-                        result = evaluate(statement, scope)
-                    }
-                }
-            } else if (fn.otherwise != null) {
-                val scope = Environment(fn.declEnv)
-
-                for (statement in fn.otherwise) {
-                    result = evaluate(statement, scope)
-                }
+                break
             }
         }
-    } else {
-        if ((fn.cond as BoolVal).value) {
-            val scope = Environment(fn.declEnv)
 
-            for (statement in fn.value) {
-                result = evaluate(statement, scope)
-            }
-        } else if (fn.orStmts.size > 0) {
-            var didRun = false
-
-            for (or in fn.orStmts) {
-                if ((evaluate(or.cond, env) as BoolVal).value) {
-                    val scope = Environment(fn.declEnv)
-
-                    for (statement in or.body) {
-                        result = evaluate(statement, scope)
-                    }
-
-                    didRun = true
-
-                    break
-                }
-            }
-
-            if (!didRun && fn.otherwise != null) {
-                val scope = Environment(fn.declEnv)
-
-                for (statement in fn.otherwise) {
-                    result = evaluate(statement, scope)
-                }
-            }
-        } else if (fn.otherwise != null) {
+        if (!didRun && fn.otherwise != null) {
             val scope = Environment(fn.declEnv)
 
             for (statement in fn.otherwise) {
                 result = evaluate(statement, scope)
             }
+        }
+    } else if (fn.otherwise != null) {
+        val scope = Environment(fn.declEnv)
+
+        for (statement in fn.otherwise) {
+            result = evaluate(statement, scope)
         }
     }
 
@@ -560,11 +495,11 @@ fun evalFuncDecl(decl: FunctionDecl, env: Environment): RuntimeVal {
     val fn = object : FunctionValue(
         name = decl.name?.symbol to if (decl.name?.type != null) typeEval(decl.name.type!!, env) else AnyType(),
         declEnv =
-            if (decl.hasModifier(ModifierType.Annotation, "ScopeReadonly")) env.toReadonly()
+            if (decl.hasModifier(ModifierType.Annotation, "ScopeReadonly")) Environment(env).toReadonly()
             else if (decl.hasModifier(ModifierType.Annotation, "ScopeLimited")) makeGlobalEnv(arrayOf()).toReadonly()
-            else if (decl.hasModifier(ModifierType.Annotation, "ScopeCopy")) env.copy()
+            else if (decl.hasModifier(ModifierType.Annotation, "ScopeCopy")) Environment(env).copy()
             else if (decl.hasModifier(ModifierType.Annotation, "ConcurrencyUnprotected")) env
-            else if (!decl.hasModifier(ModifierType.Synchronised)) {
+            else if (decl.hasModifier(ModifierType.Annotation, "Concurrent")) {
                 Warning("""
                     |Concurrent functions must be annotated with either ScopeReadonly, ScopeLimited or ScopeCopy in v1.0.0-beta.3 (ScopeLimited has been implicitly applied).
                     |This will be an error in future versions.
@@ -572,7 +507,7 @@ fun evalFuncDecl(decl: FunctionDecl, env: Environment): RuntimeVal {
                     .raise()
 
                 makeGlobalEnv(arrayOf()).toReadonly()
-            } else env,
+            } else Environment(env),
         params = params,
         value = decl.block,
         modifiers = decl.modifiers,

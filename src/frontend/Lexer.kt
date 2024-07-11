@@ -72,6 +72,14 @@ fun tokenise(sourceCode: String, reservedWords: HashMap<String, TokenType> = DEF
                 charPointer++
 
                 while (charPointer < chars.size && chars[charPointer] != '"') {
+                    if (chars[charPointer] == '\\' && chars[charPointer + 1] == '\"') {
+                        buf.append(chars[++charPointer])
+
+                        charPointer++
+
+                        continue
+                    }
+
                     buf.append(chars[charPointer++])
                 }
 

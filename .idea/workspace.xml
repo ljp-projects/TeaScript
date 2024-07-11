@@ -9,8 +9,30 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="157f05c8-c06f-40a7-960c-0f5c4e09291a" name="Changes" comment="yeah the installer didn't work">
+    <list default="true" id="157f05c8-c06f-40a7-960c-0f5c4e09291a" name="Changes" comment="Update README requirements and add logo">
+      <change afterPath="$PROJECT_DIR$/archives/gpg-keystore.p12" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/archives/jar-cert.cert" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/archives/jar-key.pem" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/archives/jar-keystore.p12" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/archives/jar-keystore.pem" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/archives/key.pgp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examples/another.tea" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examples/test.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examples/test.tea" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/TeaScript_jar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/TeaScript_jar.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TeaScript.iml" beforeDir="false" afterPath="$PROJECT_DIR$/TeaScript.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/frontend/Lexer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/Lexer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/frontend/Parser.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/Parser.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/installer.sh" beforeDir="false" afterPath="$PROJECT_DIR$/src/installer.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/runtime/Environment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/Environment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/runtime/eval/Expressions.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/eval/Expressions.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/runtime/eval/Statement.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/eval/Statement.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/runtime/types/Type.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/types/Type.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/runtime/types/Values.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/runtime/types/Values.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,6 +82,7 @@
   &quot;keyToString&quot;: {
     &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
     &quot;Downloaded.Files.Path.Enabled&quot;: &quot;true&quot;,
+    &quot;JAR Application.TeaScript.jar.executor&quot;: &quot;Run&quot;,
     &quot;Kotlin.MainKt.executor&quot;: &quot;Run&quot;,
     &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
     &quot;Repository.Attach.JavaDocs&quot;: &quot;true&quot;,
@@ -67,13 +90,28 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.33955225&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.5103448&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;aDefault&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
 }</component>
-  <component name="RunManager">
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/archives" />
+    </key>
+  </component>
+  <component name="RunManager" selected="JAR Application.TeaScript.jar">
+    <configuration name="TeaScript.jar" type="JarApplication" temporary="true">
+      <option name="JAR_PATH" value="$PROJECT_DIR$/archives/TeaScript.jar" />
+      <option name="PROGRAM_PARAMETERS" value="run examples/another.tea" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <method v="2">
+        <option name="com.soywiz.korge.intellij.UpdateResourceBeforeRunTask" enabled="false" />
+      </method>
+    </configuration>
     <configuration name="MainKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="MainKt" />
       <module name="TeaScript" />
@@ -164,8 +202,13 @@
       <option name="docutils_open_in_browser" value="false" />
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="JAR Application.TeaScript.jar" />
+      <item itemvalue="Kotlin.MainKt" />
+    </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JAR Application.TeaScript.jar" />
         <item itemvalue="Kotlin.MainKt" />
         <item itemvalue="Kotlin.MainKt" />
         <item itemvalue="Kotlin.MainKt" />
@@ -222,7 +265,31 @@
       <option name="project" value="LOCAL" />
       <updated>1720664619834</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="pls let the installer.ps1 work">
+      <option name="closed" value="true" />
+      <created>1720668515711</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1720668515711</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Windows is a flawed OS. Just use the Windows Subsystem for Linux instead. Or you can install it manually.">
+      <option name="closed" value="true" />
+      <created>1720669426356</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1720669426357</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Update README requirements and add logo">
+      <option name="closed" value="true" />
+      <created>1720670520209</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1720670520209</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -244,6 +311,10 @@
     <MESSAGE value="Change README.md" />
     <MESSAGE value="Add experimental installer.ps1, it is not listed in README because it has not been tested." />
     <MESSAGE value="yeah the installer didn't work" />
-    <option name="LAST_COMMIT_MESSAGE" value="yeah the installer didn't work" />
+    <MESSAGE value="pls let the installer.ps1 work" />
+    <MESSAGE value="Windows is a flawed OS. Just use the Windows Subsystem for Linux instead. Or you can install it manually." />
+    <MESSAGE value="That many!?" />
+    <MESSAGE value="Update README requirements and add logo" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update README requirements and add logo" />
   </component>
 </project>

@@ -21,19 +21,11 @@ import kotlin.time.measureTime
 fun evalProgram(program: Program, env: Environment): RuntimeVal {
     var result: RuntimeVal = makeNull()
 
-    val time = measureTime {
-        var stmtPointer = 0
+    var stmtPointer = 0
 
-        while (stmtPointer < program.body.size) {
-            result = evaluate(program.body[stmtPointer++], env)
-        }
+    while (stmtPointer < program.body.size) {
+        result = evaluate(program.body[stmtPointer++], env)
     }
-
-    println()
-    println("------------------------------")
-    println("Executed code in $time")
-    println("------------------------------")
-    println()
 
     return result
 }
@@ -50,7 +42,7 @@ fun evalVarDecl(decl: VarDecl, env: Environment): RuntimeVal {
         "Expected a value of type $type, instead got ${value.kind}"
     }
 
-    return env.declareVar(decl.identifier.symbol, value, decl.constant)
+    return env.declareVar(decl.identifier.symbol, value, decl.constant).value
 }
 
 @OptIn(ExperimentalTime::class)
@@ -87,7 +79,7 @@ fun evalImportDecl(decl: ImportDecl, currentEnvironment: Environment): RuntimeVa
             throw RuntimeException(
                 "Conflicting name of function/variable with ${it.name} of ${decl.file}. It will not be imported."
             )
-        } else if (!globalVars.contains(it.name) && decl.symbols.contains(it.name)) {
+        } else if (!globalVars.contains(it.name) && (decl.symbols.contains(it.name) || decl.symbols.isEmpty())) {
             currentEnvironment.declareVar(it.name, it.value, true)
         }
     }

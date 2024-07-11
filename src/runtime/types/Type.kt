@@ -44,9 +44,35 @@ class NumberType : Type {
 }
 
 class StringType : Type {
-    override fun matches(v: RuntimeVal): Boolean = v is StringVal
+    override fun matches(v: RuntimeVal): Boolean = v is StringVal || v.kind == toString()
 
     override fun toString(): String = "str"
+}
+
+class AnyFunctionType : Type {
+    override fun matches(v: RuntimeVal): Boolean = v is FunctionValue || v is NativeFnValue
+    override fun toString(): String = "either(func, native-func)"
+}
+
+class NullType : Type {
+    override fun matches(v: RuntimeVal): Boolean = v is NullVal || v.kind == "null"
+
+    override fun toString(): String = "null"
+}
+
+class BoolType : Type {
+    override fun matches(v: RuntimeVal): Boolean = v is BoolVal
+    override fun toString(): String = "bool"
+}
+
+class PromiseType : Type {
+    override fun matches(v: RuntimeVal): Boolean = v is PromiseVal
+    override fun toString(): String = "promise"
+}
+
+class ObjectType : Type {
+    override fun matches(v: RuntimeVal): Boolean = v is ObjectVal
+    override fun toString(): String = "object"
 }
 
 data class NullableTypeWrapper(val baseType: Type) : NullableType {
@@ -71,12 +97,25 @@ val nativeTypes = hashSetOf(
     "number",
     "object",
     "func",
-    "bool"
+    "bool",
+    "any",
+    "null",
+    "promise"
 )
 
 fun typeEval(t: TypeExpr, env: Environment): Type = when (t) {
     is Identifier -> object : Type {
-        override fun matches(v: RuntimeVal): Boolean = (v.kind == t.symbol) || t.symbol == "any"
+        override fun matches(v: RuntimeVal): Boolean = when (t.symbol) {
+            "null" -> NullType() matches v
+            "number" -> NumberType() matches v
+            "str" -> StringType() matches v
+            "object" -> ObjectType() matches v
+            "func" -> AnyFunctionType() matches v
+            "bool" -> BoolType() matches v
+            "any" -> true
+            "promise" -> PromiseType() matches v
+            else -> v.kind == t.symbol
+        }
         override fun toString(): String = t.symbol
     }
 

@@ -104,7 +104,7 @@ class Parser {
         val program: Program = object : Program("program", mutableListOf()) {}
 
         while (this.notEOF()) {
-            program.body.addLast(this.parseStatement())
+            program.body.add(this.parseStatement())
         }
 
         return program
@@ -177,7 +177,10 @@ class Parser {
     private fun parseImportDeclaration(): Statement {
         eat()
 
-        val imports = parseArgs().map {
+        val imports: HashSet<String> = if (at().value == "*") {
+            eat()
+            hashSetOf()
+        } else parseArgs().map {
             (it as Identifier).symbol
         }.toHashSet()
 
@@ -296,8 +299,6 @@ class Parser {
 
         val from = parseExpr()
 
-        println(at())
-
         return object : ForDecl(
             "for-decl",
             arg,
@@ -342,7 +343,7 @@ class Parser {
 
             val orCond = parseOtherOp()
 
-            orBodies.addLast(object : OrDecl(
+            orBodies.add(object : OrDecl(
                 kind = "or-decl",
                 body = Block(body = parseBlock()),
                 cond = orCond
@@ -417,7 +418,7 @@ class Parser {
         val body: ArrayList<Statement> = ArrayList()
 
         while (at().type != TokenType.CloseBrace && notEOF()) {
-            body.addLast(parseStatement())
+            body.add(parseStatement())
         }
 
         expect(
@@ -428,7 +429,7 @@ class Parser {
         return body
     }
 
-    private fun parseArgs(): ArrayList<Expr> {
+    private fun parseArgs(): List<Expr> {
         expect(
             TokenType.OpenParen,
             "Expected an open parentheses in an argument list."
@@ -448,16 +449,16 @@ class Parser {
         return args
     }
 
-    private fun parseArgsList(): ArrayList<Expr> {
-        val args: ArrayList<Expr> = ArrayList()
+    private fun parseArgsList(): List<Expr> {
+        val args: MutableList<Expr> = mutableListOf()
 
-        args.addLast(parseExpr())
+        args.add(parseExpr())
 
         while (at().type == TokenType.Comma && eat() != null) {
-            args.addLast(parseExpr())
+            args.add(parseExpr())
         }
 
-        return args
+        return args.toList()
     }
 
     private fun parseExpr(): Expr {
@@ -577,7 +578,7 @@ class Parser {
 
         eat()
 
-        val properties: ArrayList<Property> = arrayListOf()
+        val properties: MutableList<Property> = mutableListOf()
 
         while (notEOF() && at().type != TokenType.CloseBrace) {
             val key = when (at().type) {
@@ -605,7 +606,7 @@ class Parser {
             // Allows shorthand key: pair -> { key, }
             if (at().type == TokenType.Comma) {
                 eat() // advance past comma
-                properties.addLast(makeProperty(
+                properties.add(makeProperty(
                     key,
                     null,
                     type
@@ -613,7 +614,7 @@ class Parser {
                 continue
             } // Allows shorthand key: pair -> { key }
             else if (at().type == TokenType.CloseBrace) {
-                properties.addLast(makeProperty(
+                properties.add(makeProperty(
                     key,
                     null,
                     type

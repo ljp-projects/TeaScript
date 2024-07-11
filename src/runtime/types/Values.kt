@@ -6,7 +6,49 @@ import runtime.evaluate
 import runtime.nativeFuncType
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.locks.ReentrantLock
+import java.util.function.*
+import java.util.stream.*
 import kotlin.time.ExperimentalTime
+
+class ValueStream {
+    private val dataQueue: Queue<RuntimeVal> = ArrayDeque()
+    private val lock = ReentrantLock()
+
+    // Read the first item in the dataQueue or wait until it is not empty
+    fun readBlocking(): RuntimeVal {
+        if (dataQueue.isEmpty()) {
+            readBlocking()
+        }
+
+        synchronized(lock) {
+            return dataQueue.remove()
+        }
+    }
+
+    /*
+    yield func fib(term: number) {
+
+    }
+    */
+
+    // Read the first item in the dataQueue or null if it is empty
+    fun readOrNull(): RuntimeVal? {
+        if (dataQueue.isEmpty()) {
+            return null
+        }
+
+        synchronized(lock) {
+            return dataQueue.remove()
+        }
+    }
+
+    fun write(value: RuntimeVal) {
+        synchronized(lock) {
+            dataQueue.offer(value)
+        }
+    }
+}
 
 interface RuntimeVal {
     val kind: String
@@ -36,6 +78,22 @@ fun RuntimeVal.toCommon(): String {
 fun RuntimeVal.toFancy(): String {
     return if (this is StringVal) {
         "\"${this.toCommon()}\""
+    } else {
+        this.toCommon()
+    }
+}
+
+fun RuntimeVal.asString(): String {
+    return if (this is StringVal) {
+        this.toCommon()
+    } else if (this is NumberVal) {
+        val numberString: String = if (this.value % 1 == 0.0) {
+            this.value.toInt().toString()
+        } else {
+            this.value.toString()
+        }
+
+        numberString
     } else {
         this.toCommon()
     }
@@ -82,6 +140,15 @@ abstract class PromiseVal(
     }
 }
 
+abstract class BufferedPromiseVal(
+    final override val kind: String = "promise",
+    override val value: CompletableFuture<RuntimeVal>
+) : RuntimeVal {
+    init {
+        require(this.kind == "promise") { "Key can't be ${this.kind}." }
+    }
+}
+
 fun makePromise(f: CompletableFuture<RuntimeVal>) = object : PromiseVal(value = f) {}
 
 abstract class NumberVal(
@@ -110,18 +177,23 @@ fun makeString(s: String, env: Environment = Environment(null)): StringVal {
     var final = ""
 
     while (str.isNotEmpty()) {
-        when (val c = str.removeFirst()) {
+        when (val c = str.removeAt(0)) {
             "\\" -> {
-                if (str.removeFirstOrNull() == "{") {
-                    var expr = ""
+                when (str.firstOrNull()) {
+                    "{" -> {
+                        str.removeFirst()
 
-                    while (str.isNotEmpty() && str.firstOrNull() != "}") {
-                        expr += str.removeFirst()
+                        var expr = ""
+
+                        while (str.isNotEmpty() && str.firstOrNull() != "}") {
+                            expr += str.removeAt(0)
+                        }
+
+                        str.removeFirstOrNull()
+
+                        final += evaluate(Parser().produceAST(expr), env).value
                     }
-
-                    str.removeFirstOrNull()
-
-                    final += evaluate(Parser().produceAST(expr), env).value
+                    else -> Unit
                 }
             }
 
@@ -171,13 +243,17 @@ fun makeObject(h: HashMap<String, Pair<RuntimeVal, Type>>, kind: String = "objec
 
 typealias FunctionCall = (args: List<RuntimeVal>, env: Environment) -> RuntimeVal
 
+interface Function: RuntimeVal {
+    val arity: Int
+}
+
 abstract class NativeFnValue(
     final override val kind: String = "native-func",
-    val arity: Int,
+    override val arity: Int,
     val name: String,
     val jvmName: String,
     override val value: FunctionCall
-) : RuntimeVal {
+) : Function {
     init {
         require(this.kind == "native-func") { "Key can't be ${this.kind}." }
     }
@@ -196,7 +272,7 @@ open class FunctionValue(
     open val declEnv: Environment,
     override val value: ParameterBlock,
     val modifiers: HashSet<Modifier>
-) : RuntimeVal {
+) : Function {
     init {
         require(this.kind == "func") { "Key can't be ${this.kind}." }
     }
@@ -213,13 +289,13 @@ open class FunctionValue(
     val static
         get() = this.static()
 
-    val arity
+    override val arity
         get() = this.value.parameters.size
 
     private fun private(): Boolean = this.modifiers.any { it.type == ModifierType.Private }
 
     private fun coroutine(): Boolean {
-        return this.modifiers.none { it.type == ModifierType.Synchronised }
+        return this.hasModifier(ModifierType.Annotation, "Concurrent")
     }
 
     private fun promise(): Boolean = this.modifiers.any { it.type == ModifierType.Promise }

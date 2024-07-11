@@ -55,7 +55,7 @@ out/
 *.class
 out/**/**/*.class
 lib/
-src/TeaScript.jar
+archives/TeaScript.jar
 src/TeaScript.jar.xz
 
 # mpeltonen/sbt-idea plugin

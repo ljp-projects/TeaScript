@@ -51,7 +51,8 @@ val globalVars: HashSet<String> =
         "time",
         "argv",
         "std",
-        "ui"
+        "web",
+        "reflection"
     )
 
 var serverRunning = false
@@ -248,8 +249,6 @@ const __std = Object.freeze({
             break
         }
     }
-
-    env.variablesCache.cache.cleanUp()
 
     return@runBlocking
 }

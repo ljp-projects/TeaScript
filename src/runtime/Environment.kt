@@ -1,26 +1,29 @@
 package runtime
 
-import com.google.common.cache.CacheBuilder
-import com.google.common.cache.CacheLoader
 import com.google.gson.Gson
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
 import com.sun.net.httpserver.HttpServer
 import errors.Error
 import errors.IncorrectTypeError
+import frontend.Parser
 import globalCoroutineScope
 import globalVars
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import runtime.types.*
+import runtime.types.Function
 import serverRunning
 import java.io.File
 import java.io.IOException
 import java.io.OutputStream
 import java.net.InetSocketAddress
+import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -54,15 +57,22 @@ fun makeGlobalEnv(argv: Array<StringVal>): Environment {
                 "readString" to makeNativeFnWithType("__std.not_supported_js", arity = 0) { _, _ ->
                     val future = CompletableFuture<RuntimeVal>()
 
-                    f.reader().use {
-                        future.complete(
-                            makeString(it.readText())
-                        )
+                    runBlocking {
+                        withContext(Dispatchers.IO) {
+                            future.complete(
+                                makeString(f.bufferedReader().readText())
+                            )
+                        }
                     }
 
                     return@makeNativeFnWithType makePromise(future)
                 },
                 "readBytes" to makeNativeFnWithType("__std.not_supported_js", arity = 0) {_, _ ->
+                    return@makeNativeFnWithType makeNull()
+                },
+                "close" to makeNativeFnWithType("__std.not_supported_js", arity = 0) { _, _ ->
+                    f.reader().close()
+
                     return@makeNativeFnWithType makeNull()
                 },
                 "absolutePath" to (makeString(absPath.absolutePathString()) to StringType())
@@ -130,6 +140,18 @@ fun makeGlobalEnv(argv: Array<StringVal>): Environment {
             makeString(
                 (args[0] as ObjectVal).value.values.joinToString((args[1] as StringVal).value)
             )
+        },
+        "keysOf" to makeNativeFnWithType("Object.keys", 1) { args, _ ->
+            val of = args[0] as ObjectVal
+            val paired = mutableListOf<Pair<String, Pair<StringVal, StringType>>>()
+
+            of.value.entries.forEachIndexed { index, (key, _) ->
+                paired.add("$index" to (makeString(key) to StringType()))
+            }
+
+            val obj: HashMap<String, Pair<RuntimeVal, Type>> = hashMapOf(*paired.toTypedArray())
+
+            return@makeNativeFnWithType makeObject(obj)
         }
     )
 
@@ -192,10 +214,84 @@ fun makeGlobalEnv(argv: Array<StringVal>): Environment {
         "pi" to (makeNumber(Math.PI) to NumberType())
     )
 
+    val reflectionFuncType = object : Type {
+        override fun matches(v: RuntimeVal): Boolean {
+            return v is ObjectVal &&
+                    AnyFunctionType() matches (v.value["value"]?.first ?: makeNull()) &&
+                    NumberType() matches (v.value["arity"]?.first ?: makeNull())
+        }
+
+        override fun toString(): String = "reflection-func"
+    }
+
+    val reflectionGlobalFuncsType = object : Type {
+        override fun matches(v: RuntimeVal): Boolean {
+            return v is ObjectVal && v.value.values.all { reflectionFuncType matches it.first }
+        }
+
+        override fun toString(): String = "reflection-files"
+    }
+
+    val reflectionFileType = object : Type {
+        override fun matches(v: RuntimeVal): Boolean {
+            return v is ObjectVal && reflectionGlobalFuncsType matches (v.value["globalFunctions"]?.first ?: makeNull())
+        }
+
+        override fun toString(): String = "reflection-file"
+    }
+
+    val reflection = hashMapOf<String, Pair<RuntimeVal, Type>>(
+        "fromSource" to makeNativeFnWithType("__std.not_supported_js") { args, _ ->
+            val sourceCode = args[0] as StringVal
+            val env = makeGlobalEnv(arrayOf())
+
+            evaluate(
+                Parser().produceAST(sourceCode.value),
+                env
+            )
+
+            val functions: List<Pair<String, Pair<RuntimeVal, Type>>> = env.variables.filter { it.value is Function }.map {
+                it.name to (makeObject(hashMapOf(
+                    "value" to (it.value to AnyFunctionType()),
+                    "arity" to (makeNumber((it.value as Function).arity.toDouble()) to AnyFunctionType())
+                )) to reflectionFuncType)
+            }
+
+            val reflected = hashMapOf<String, Pair<RuntimeVal, Type>>(
+                "globalFunctions" to (makeObject(hashMapOf(*functions.toTypedArray())) to reflectionGlobalFuncsType)
+            )
+
+            return@makeNativeFnWithType makeObject(reflected)
+        },
+        "fromFile" to makeNativeFnWithType("__std.not_supported_js") { args, _ ->
+            val sourceCode = Files.readString(Paths.get((args[0] as StringVal).value))
+            val env = makeGlobalEnv(arrayOf())
+
+            evaluate(
+                Parser().produceAST(sourceCode),
+                env
+            )
+
+            val functions: List<Pair<String, Pair<RuntimeVal, Type>>> = env.variables.filter { it.value is Function }.map {
+                it.name to (makeObject(hashMapOf(
+                    "value" to (it.value to AnyFunctionType()),
+                    "arity" to (makeNumber((it.value as Function).arity.toDouble()) to AnyFunctionType())
+                )) to reflectionFuncType)
+            }
+
+            val reflected = hashMapOf<String, Pair<RuntimeVal, Type>>(
+                "globalFunctions" to (makeObject(hashMapOf(*functions.toTypedArray())) to reflectionGlobalFuncsType)
+            )
+
+            return@makeNativeFnWithType makeObject(reflected)
+        }
+    )
+
     envP.declareVar("io", makeObject(io), true)
     envP.declareVar("net", makeObject(net), true)
     envP.declareVar("data", makeObject(data), true)
     envP.declareVar("math", makeObject(math), true)
+    envP.declareVar("reflection", makeObject(reflection), true)
 
     envP.declareVar("time", makeNativeFn("Date.now", 0) { _, _ ->
         return@makeNativeFn makeNumber(Date().time.toDouble())
@@ -209,95 +305,101 @@ fun makeGlobalEnv(argv: Array<StringVal>): Environment {
 
     envP.declareVar("argv", makeObject(args), true)
 
+    class ServerHandlerType : Type {
+        override fun matches(v: RuntimeVal): Boolean =
+            v is ObjectVal
+                    && v.value.all { it.value.first is FunctionValue }
+                    && v.value["index"] != null
+
+        override fun toString(): String = "server-handler"
+    }
+
+    class ServerResponseType : Type {
+        override fun matches(v: RuntimeVal): Boolean =
+            v is ObjectVal
+                    && NumberType() matches (v.value["code"]?.first ?: makeNull())
+                    && StringType() matches (v.value["response"]?.first ?: makeNull())
+                    && StringType() matches (v.value["mimeType"]?.first ?: makeNull())
+
+        override fun toString(): String = "server-response"
+    }
+
+    fun globalHandle(exchange: HttpExchange?, handler: RuntimeVal) {
+        if (exchange == null) return
+
+        val requestInfo = hashMapOf<String, Pair<RuntimeVal, Type>>(
+            "localHostname" to (makeString(exchange.localAddress.hostName) to StringType()),
+            "body" to (makeString(String(exchange.requestBody.readAllBytes())) to StringType()),
+            "method" to (makeString(exchange.requestMethod) to StringType()),
+            "path" to (makeString(exchange.requestURI.path) to StringType())
+        )
+
+        val handlerArgs = listOf(makeObject(requestInfo))
+
+        if (handler !is FunctionValue) {
+            IncorrectTypeError(FunctionType(), handler).raise()
+        }
+
+        if (handler.arity != handlerArgs.size) {
+            throw RuntimeException("${handler.name} expected ${handler.arity} arguments, instead got ${handlerArgs.size}.")
+        }
+
+        val scope = Environment(envP)
+
+        for ((name, type) in handler.params) {
+            if (!(type matches handlerArgs[name.second.toInt()])) {
+                Error<Nothing>(
+                    "Parameter ${name.first} at position ${name.second} of function ${(handler as FunctionValue).name.first ?: "ANONYMOUS"} required a type of ${type}.",
+                    ""
+                ).raise()
+            }
+
+            scope.declareVar(name.first, handlerArgs[name.second.toInt()], true)
+        }
+
+        var result: RuntimeVal = makeNull()
+
+        for (statement in (handler as FunctionValue).value) {
+            result = evaluate(statement, scope)
+        }
+
+        if (!(ServerResponseType() matches result) || result !is ObjectVal) {
+            IncorrectTypeError(ServerResponseType(), result)
+                .raise()
+        }
+
+        val code = (result.value["code"]?.first as? NumberVal)?.value?.roundToInt() ?: 404
+        val response = (result.value["response"]?.first as? StringVal)?.value
+            ?: "The server did not send a correct response."
+        val mimeType = (result.value["mimeType"]?.first as? StringVal)?.value ?: "text/plain"
+
+        exchange.sendResponseHeaders(code, response.toByteArray().size.toLong())
+        exchange.responseHeaders["Content-Type"] = Collections.singletonList(mimeType)
+        val os: OutputStream = exchange.responseBody
+
+        os.write(response.toByteArray())
+        os.close()
+    }
+
     (envP.getVar("net").value as ObjectVal).value["serve"] = makeNativeFnWithType("__std.not_supported_js", 3) { args, _ ->
-        class ServerHandlerType : Type {
-            override fun matches(v: RuntimeVal): Boolean =
-                v is ObjectVal
-                        && v.value.all { it.value.first is FunctionValue }
-                        && v.value["index"] != null
-
-            override fun toString(): String = "server-handler"
-        }
-
-        class ServerResponseType : Type {
-            override fun matches(v: RuntimeVal): Boolean =
-                v is ObjectVal
-                        && NumberType() matches (v.value["code"]?.first ?: makeNull())
-                        && StringType() matches (v.value["response"]?.first ?: makeNull())
-                        && StringType() matches (v.value["mimeType"]?.first ?: makeNull())
-
-            override fun toString(): String = "server-response"
-        }
-
         val hostname = (args[0] as? StringVal ?: IncorrectTypeError(StringType(), args[0]).raise()).value
         val port = (args[1] as? NumberVal ?: IncorrectTypeError(NumberType(), args[1]).raise()).value
         val handlers = (args[2] as? ObjectVal ?: IncorrectTypeError(ServerHandlerType(), args[2]).raise()).value
+
+        println(handlers.entries.joinToString { "/${it.key} -> ${it.value.first.hashCode()}" })
 
         val server = HttpServer.create(
             InetSocketAddress(hostname, port.roundToInt()),
             0
         )
 
-        for ((route, handler) in handlers) {
-            val requestHandler = object : HttpHandler {
-                override fun handle(exchange: HttpExchange?) {
-                    globalCoroutineScope.launch {
-                        if (exchange == null) return@launch
+        for ((route, handlerPair) in handlers) {
+            val handler = handlerPair.first
 
-                        val requestInfo = hashMapOf<String, Pair<RuntimeVal, Type>>(
-                            "localHostname" to (makeString(exchange.localAddress.hostName) to StringType()),
-                            "body" to (makeString(String(exchange.requestBody.readAllBytes())) to StringType()),
-                            "method" to (makeString(exchange.requestMethod) to StringType())
-                        )
-
-                        val handlerArgs = listOf(makeObject(requestInfo))
-
-                        if (handler.first !is FunctionValue) {
-                            IncorrectTypeError(FunctionType(), handler.first).raise()
-                        }
-
-                        if ((handler.first as FunctionValue).arity != handlerArgs.size) {
-                            throw RuntimeException("${(handler.first as FunctionValue).name} expected ${(handler.first as FunctionValue).arity} arguments, instead got ${handlerArgs.size}.")
-                        }
-
-                        val scope = Environment(envP)
-
-                        for ((name, type) in (handler.first as FunctionValue).params) {
-                            if (!(type matches handlerArgs[name.second.toInt()])) {
-                                Error<Nothing>(
-                                    "Parameter ${name.first} at position ${name.second} of function ${(handler.first as FunctionValue).name.first ?: "ANONYMOUS"} required a type of ${type}.",
-                                    ""
-                                ).raise()
-                            }
-
-                            scope.declareVar(name.first, handlerArgs[name.second.toInt()], true)
-                        }
-
-                        var result: RuntimeVal = makeNull()
-
-                        for (statement in (handler.first as FunctionValue).value) {
-                            result = evaluate(statement, scope)
-                        }
-
-                        if (!(ServerResponseType() matches result) || result !is ObjectVal) {
-                            IncorrectTypeError(StringType(), result)
-                                .raise()
-                        }
-
-                        val code = (result.value["code"]?.first as? NumberVal)?.value?.roundToInt() ?: 404
-                        val response = (result.value["response"]?.first as? StringVal)?.value
-                            ?: "The server did not send a correct response."
-                        val mimeType = (result.value["mimeType"]?.first as? StringVal)?.value ?: "text/plain"
-
-                        exchange.sendResponseHeaders(code, response.toByteArray().size.toLong())
-                        exchange.responseHeaders["Content-Type"] = Collections.singletonList(mimeType)
-                        val os: OutputStream = exchange.responseBody
-
-                        os.write(response.toByteArray())
-                        os.close()
-                    }
+            val requestHandler = HttpHandler { exchange ->
+                globalCoroutineScope.launch {
+                    globalHandle(exchange, handler)
                 }
-
             }
 
             if (route == "index") {
@@ -306,7 +408,7 @@ fun makeGlobalEnv(argv: Array<StringVal>): Environment {
                 continue
             }
 
-            server.createContext("/$route/", requestHandler)
+            server.createContext("/$route", requestHandler)
         }
 
         server.executor = null
@@ -422,28 +524,11 @@ class CompilationVariable(
 
 }
 
-class EnvironmentVariablesCache(private val environment: Environment) {
-    val cache = CacheBuilder.newBuilder()
-        .expireAfterWrite(60, TimeUnit.SECONDS) // Adjust the duration as needed
-        .build(object : CacheLoader<String, Variable>() {
-            override fun load(key: String): Variable = environment.getVar(key)
-        })
-
-    operator fun get(key: String): Variable? {
-        return cache.getIfPresent(key)
-    }
-
-    fun invalidate(key: String) {
-        cache.invalidate(key)
-    }
-}
-
 class Environment(
     private val parent: Environment?,
     val variables: HashSet<Variable> = hashSetOf(),
     val isCoroutine: Boolean = false,
 ) {
-    val variablesCache: EnvironmentVariablesCache = EnvironmentVariablesCache(this)
 
     /**
      * Create a deep copy of this environment.
@@ -456,64 +541,31 @@ class Environment(
             isCoroutine
         )
 
-    private fun declareVarNoCache(name: String, value: RuntimeVal, constant: Boolean): Variable {
+    fun declareVar(name: String, value: RuntimeVal, constant: Boolean): Variable {
         if (this.resolve(name) != null) {
             if (isCoroutine) {
                 Error<Nothing>("Cannot redeclare variable $name. Try using the ScopeCopy annotation to make a copy of the outer scope.", "")
                     .raise()
             }
 
+            println(this.resolve(name)?.getVarOrNull(name)?.value?.value)
+
             Error<Nothing>("Cannot redeclare variable $name. Try using the mutable keyword to declare variables.", "")
                 .raise()
         }
 
-        this.variables.add(Variable(constant, name, value, ReentrantLock()))
+        val v = Variable(constant, name, value, ReentrantLock())
 
-        return getVarNoCache(name)
-    }
+        this.variables.add(v)
 
-    fun declareVar(name: String, value: RuntimeVal, constant: Boolean): RuntimeVal {
-        // Try to get the variable from the cache
-        val cachedVariable = variablesCache.cache.getIfPresent(name)
-        if (cachedVariable != null) {
-            // If the variable is already in the cache, throw an exception
-            throw IllegalArgumentException("Cannot redeclare variable $name.")
-        }
-
-        // Declare the variable in the environment
-        val newVariable = try {
-            declareVarNoCache(name, value, constant)
-        } catch (e: Exception) {
-            if (name in globalVars) {
-                getVarNoCache(name)
-            } else {
-                throw e
-            }
-        }
-
-        // Store the newly declared variable in the cache
-        variablesCache.cache.put(name, newVariable)
-
-        return newVariable.value
-    }
-
-    fun getVar(name: String): Variable {
-        return variablesCache[name] ?: run {
-            val v = getVarNoCache(name)
-
-            v.lock.lock()
-
-            variablesCache.cache.put(name, v)
-
-            v
-        }
+        return v
     }
 
     @Throws(IllegalAccessException::class)
-    fun getVarNoCache(name: String): Variable {
+    fun getVar(name: String): Variable {
         this.variables.forEach {
             if (it.name == name) {
-                return@getVarNoCache it
+                return@getVar it
             }
         }
 
@@ -532,12 +584,15 @@ class Environment(
         }
     }
 
+    fun clear() {
+        variables.clear()
+    }
+
     fun assignVar(name: String, value: RuntimeVal): RuntimeVal {
         this.resolve(name)
             ?: throw IllegalAccessException("Variable $name cannot be reassigned as it was never declared.")
 
         this.getVar(name).mutate(value, "")
-        this.variablesCache.cache.invalidate(name)
 
         return value
     }
