@@ -10,28 +10,34 @@ Param(
     [string]$from_jar
 )
 
-$tea_version = $(Invoke-RestMethod -FollowRelLink -Uri "https://api.github.com/repos/ljp-projects/teascript/tags")[0].name
+$tea_version = $(Invoke-RestMethod -Uri "https://api.github.com/repos/ljp-projects/teascript/tags")[0].name
 $message = "teaScript $tea_version has been installed successfully"
 $length = $message.Length
 $border = "-" * $length
 
-mkdir C:\Scripts
+if ( !(Test-Path -Path C:\Scripts) ) {
+    mkdir C:\Scripts
+}
+
 Set-Location C:\Scripts
 
 if ( $tag -ne $null ) {
-    Invoke-RestMethod -FollowRelLink -OutFile "TeaScript.jar" -Uri "https://github.com/ljp-projects/TeaScript/releases/download/$tag/TeaScript.jar"
+    Invoke-RestMethod -OutFile "TeaScript.jar" -Uri "https://github.com/ljp-projects/TeaScript/releases/download/$tag/TeaScript.jar"
 
     $message = "TeaScript $tag has been installed successfuly!"
     $length = $message.Length
     $border = $("-" * $length)
 } elseif ( $from_jar -eq $null ) {
-    Invoke-RestMethod -FollowRelLink -OutFile "TeaScript.jar" -Uri "https://github.com/ljp-projects/TeaScript/releases/download/$tag/TeaScript.jar"
+    Invoke-RestMethod -OutFile "TeaScript.jar" -Uri "https://github.com/ljp-projects/TeaScript/releases/download/$tag/TeaScript.jar"
 } else {
     Move-Item "$from_jar" "C:\Scripts"
 }
 
-New-Item -ItemType File -Path "C:\Scripts\tea.bat"
-Set-Content -Path "C:\Scripts\tea.bat" -Value "java -jar C:\Scripts\TeaScript.jar %*"
+if ( !(Test-Path -Path C:\Scripts\tea.bat) ) {
+    New-Item -ItemType File -Path C:\Scripts\tea.bat
+}
+
+Set-Content -Path C:\Scripts\tea.bat -Value "java -jar C:\Scripts\TeaScript.jar %*"
 
 Write-Host "$border"
 Write-Host "$message"
