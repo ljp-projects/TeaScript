@@ -10,7 +10,7 @@ Param(
     [string]$from_jar
 )
 
-$tea_version = $(Invoke-RestMethod -FollowRelLink -Uri "https://api.github.com/repos/ljp-projects/teascript/tags")[0].name
+$tea_version = $(Invoke-RestMethod -Uri "https://api.github.com/repos/ljp-projects/teascript/tags")[0].name
 $message = "teaScript $tea_version has been installed successfully"
 $length = $message.Length
 $border = "-" * $length
@@ -19,13 +19,13 @@ mkdir C:\Scripts
 Set-Location C:\Scripts
 
 if ( $tag -ne $null ) {
-    Invoke-RestMethod -FollowRelLink -OutFile "TeaScript.jar" -Uri "https://github.com/ljp-projects/TeaScript/releases/download/$tag/TeaScript.jar"
+    Invoke-RestMethod -OutFile "TeaScript.jar" -Uri "https://github.com/ljp-projects/TeaScript/releases/download/$tag/TeaScript.jar"
 
     $message = "TeaScript $tag has been installed successfuly!"
     $length = $message.Length
     $border = $("-" * $length)
 } elseif ( $from_jar -eq $null ) {
-    Invoke-RestMethod -FollowRelLink -OutFile "TeaScript.jar" -Uri "https://github.com/ljp-projects/TeaScript/releases/download/$tag/TeaScript.jar"
+    Invoke-RestMethod -OutFile "TeaScript.jar" -Uri "https://github.com/ljp-projects/TeaScript/releases/download/$tag/TeaScript.jar"
 } else {
     Move-Item "$from_jar" "C:\Scripts"
 }
