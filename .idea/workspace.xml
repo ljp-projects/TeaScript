@@ -9,8 +9,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="157f05c8-c06f-40a7-960c-0f5c4e09291a" name="Changes" comment="yeah the installer didn't work">
+    <list default="true" id="157f05c8-c06f-40a7-960c-0f5c4e09291a" name="Changes" comment="Windows is a flawed OS. Just use the Windows Subsystem for Linux instead. Or you can install it manually.">
+      <change afterPath="$PROJECT_DIR$/src/TeaScript.svg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -222,7 +224,23 @@
       <option name="project" value="LOCAL" />
       <updated>1720664619834</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="pls let the installer.ps1 work">
+      <option name="closed" value="true" />
+      <created>1720668515711</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1720668515711</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Windows is a flawed OS. Just use the Windows Subsystem for Linux instead. Or you can install it manually.">
+      <option name="closed" value="true" />
+      <created>1720669426356</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1720669426357</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -244,6 +262,8 @@
     <MESSAGE value="Change README.md" />
     <MESSAGE value="Add experimental installer.ps1, it is not listed in README because it has not been tested." />
     <MESSAGE value="yeah the installer didn't work" />
-    <option name="LAST_COMMIT_MESSAGE" value="yeah the installer didn't work" />
+    <MESSAGE value="pls let the installer.ps1 work" />
+    <MESSAGE value="Windows is a flawed OS. Just use the Windows Subsystem for Linux instead. Or you can install it manually." />
+    <option name="LAST_COMMIT_MESSAGE" value="Windows is a flawed OS. Just use the Windows Subsystem for Linux instead. Or you can install it manually." />
   </component>
 </project>

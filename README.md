@@ -4,7 +4,8 @@
 
 ### Requirements
 
-- Java SE 8+
+- Any JDK that supports Java SE 8+
+- Standard Unix command-line tools
 
 ### Instructions
 

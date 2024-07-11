@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg height="100%" stroke-miterlimit="10" style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;" version="1.1" viewBox="0 0 512 512" width="100%" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:vectornator="http://vectornator.io" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs>
+<linearGradient gradientTransform="matrix(512 0 0 512 0 256)" gradientUnits="userSpaceOnUse" id="LinearGradient" x1="0" x2="1" y1="0" y2="0">
+<stop offset="0" stop-color="#5dc6f1"/>
+<stop offset="1" stop-color="#668aea"/>
+</linearGradient>
+<filter color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse" height="122.957" id="Filter" width="386.845" x="62.5613" y="53.355">
+<feGaussianBlur in="SourceGraphic" result="Blur" stdDeviation="1.73269"/>
+</filter>
+<filter color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse" height="264.855" id="Filter_2" width="145.432" x="64.0168" y="193.79">
+<feGaussianBlur in="SourceGraphic" result="Blur" stdDeviation="1.73269"/>
+</filter>
+<filter color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse" height="264.855" id="Filter_3" width="145.432" x="304.007" y="193.652">
+<feGaussianBlur in="SourceGraphic" result="Blur" stdDeviation="1.73269"/>
+</filter>
+</defs>
+<path d="M0 0L512 0L512 512L0 512L0 0Z" fill="url(#LinearGradient)" fill-rule="nonzero" opacity="1" stroke="none" vectornator:artboardBackground="true"/>
+<g id="Layer-1" vectornator:layerName="Layer 1">
+<g filter="url(#Filter)" opacity="0.849163" vectornator:blur="3.46538" vectornator:layerName="Group 1">
+<path d="M444.269 57.6867L445.075 169.698L403.308 169.998L402.502 57.9873L444.269 57.6867Z" fill="#dadada" fill-rule="nonzero" opacity="1" stroke="none" vectornator:layerName="Rectangle 4"/>
+<path d="M108.66 59.6686L109.466 171.68L67.6993 171.98L66.893 59.9692L108.66 59.6686Z" fill="#dadada" fill-rule="nonzero" opacity="1" stroke="none" vectornator:layerName="Rectangle 6"/>
+<path d="M104.697 59.6668L444.26 57.69L444.503 99.4569L104.94 101.434L104.697 59.6668Z" fill="#dadada" fill-rule="nonzero" opacity="1" stroke="none" vectornator:layerName="Rectangle 5"/>
+</g>
+<g filter="url(#Filter_2)" opacity="0.849163" vectornator:blur="3.46538" vectornator:layerName="Group 2">
+<path d="M203.275 198.122L205.117 454.013L163.35 454.313L161.508 198.422L203.275 198.122Z" fill="#dadada" fill-rule="nonzero" opacity="1" stroke="none" vectornator:layerName="Rectangle 7"/>
+<path d="M68.3486 198.964L162 198.419L162.243 240.228L68.5919 240.773L68.3486 198.964Z" fill="#dadada" fill-rule="nonzero" opacity="1" stroke="none" vectornator:layerName="Rectangle 9"/>
+</g>
+<g filter="url(#Filter_3)" opacity="0.849163" vectornator:blur="3.46538" vectornator:layerName="Group 3">
+<path d="M310.181 197.984L308.339 453.875L350.105 454.176L351.649 239.775L351.947 198.285L310.181 197.984Z" fill="#dadada" fill-rule="nonzero" opacity="1" stroke="none" vectornator:layerName="Rectangle 10"/>
+<path d="M445.107 198.827L351.456 198.282L351.213 240.09L444.864 240.636L445.107 198.827Z" fill="#dadada" fill-rule="nonzero" opacity="1" stroke="none" vectornator:layerName="Rectangle 11"/>
+</g>
+<g opacity="1" vectornator:layerName="Group 4">
+<path d="M143.716 128.231L370.394 128.231L370.394 169.998L143.716 169.998L143.716 128.231Z" fill="#dadada" fill-rule="nonzero" opacity="1" stroke="none" vectornator:layerName="Rectangle 1"/>
+<path d="M278.258 166.764L277.619 454.176L235.852 454.083L236.491 166.671L278.258 166.764Z" fill="#dadada" fill-rule="nonzero" opacity="1" stroke="none" vectornator:layerName="Rectangle 2"/>
+</g>
+</g>
+</svg>
