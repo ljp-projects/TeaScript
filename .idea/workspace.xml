@@ -11,7 +11,6 @@
   <component name="ChangeListManager">
     <list default="true" id="157f05c8-c06f-40a7-960c-0f5c4e09291a" name="Changes" comment="yeah the installer didn't work">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/installer.ps1" beforeDir="false" afterPath="$PROJECT_DIR$/src/installer.ps1" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
