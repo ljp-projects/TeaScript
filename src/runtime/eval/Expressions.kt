@@ -380,23 +380,32 @@ fun evalAwaitDecl(decl: AwaitDecl, env: Environment): RuntimeVal {
     val fn = object : AwaitValue(
         param = decl.parameter,
         declEnv = env,
-        obj = evaluate(decl.obj, env) as PromiseVal,
+        obj = evaluate(decl.obj, env) as AwaitableVal,
         value = decl.body,
         async = decl.modifiers.none { it.type == ModifierType.Synchronised }
     ) {}
 
-    val scope = Environment(fn.declEnv)
-    var result: RuntimeVal = makeNull()
+    when (fn.obj) {
+        is PromiseVal -> {
+            val scope = Environment(fn.declEnv)
+            var result: RuntimeVal = makeNull()
 
-    val res = fn.obj.value.join()
+            val res = fn.obj.value.join()
 
-    scope.declareVar(fn.param.symbol, res, true)
+            scope.declareVar(fn.param.symbol, res, true)
 
-    for (statement in fn.value) {
-        result = evaluate(statement, scope)
+            for (statement in fn.value) {
+                result = evaluate(statement, scope)
+            }
+
+            return result
+        }
+        is StreamedPromiseVal -> {
+            TODO("idk")
+        }
     }
 
-    return result
+    Error<Nothing>("", "").raise()
 }
 
 @OptIn(ExperimentalTime::class)

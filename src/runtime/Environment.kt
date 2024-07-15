@@ -23,6 +23,8 @@ import java.io.File
 import java.io.IOException
 import java.io.OutputStream
 import java.net.InetSocketAddress
+import java.net.URI
+import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
@@ -37,6 +39,15 @@ import kotlin.time.ExperimentalTime
 
 val nativeFuncType = object : Type {
     override fun matches(v: RuntimeVal): Boolean = v is NativeFnValue
+}
+
+fun URI.findParameterValue(key: String): String? {
+    return rawQuery.split('&').map {
+        val parts = it.split('=')
+        val name = parts.firstOrNull() ?: ""
+        val value = parts.drop(1).firstOrNull() ?: ""
+        Pair(name, value)
+    }.firstOrNull { it.first == key }?.second
 }
 
 @OptIn(ExperimentalTime::class)
@@ -57,6 +68,9 @@ fun makeGlobalEnv(argv: Array<StringVal>): Environment {
                 "readString" to makeNativeFnWithType("__std.not_supported_js", arity = 0) { _, _ ->
                     val future = CompletableFuture<RuntimeVal>()
 
+                    val stream = ValueStream()
+                    var acc = ""
+
                     runBlocking {
                         withContext(Dispatchers.IO) {
                             future.complete(
@@ -65,7 +79,16 @@ fun makeGlobalEnv(argv: Array<StringVal>): Environment {
                         }
                     }
 
-                    return@makeNativeFnWithType makePromise(future)
+                    globalCoroutineScope.launch {
+                        f.bufferedReader().useLines {
+                            lines->lines.forEach{
+                                var line = "> (" + it.length + ") " + it;
+                                acc += "$line\n"
+                            }
+                        }
+                    }
+
+                    return@makeNativeFnWithType makeStreamedPromise(stream)
                 },
                 "readBytes" to makeNativeFnWithType("__std.not_supported_js", arity = 0) {_, _ ->
                     return@makeNativeFnWithType makeNull()
@@ -130,13 +153,7 @@ fun makeGlobalEnv(argv: Array<StringVal>): Environment {
         }
     )
 
-    val data: HashMap<String, Pair<RuntimeVal, Type>> = hashMapOf(
-        "joinPromise" to makeNativeFnWithType("__std.not_supported_js") { args, _ ->
-            val promise = args[0] as PromiseVal
-
-            promise.value.get()
-        },
-        "join" to makeNativeFnWithType("__std.join_obj", 2) { args, _ ->
+    val data: HashMap<String, Pair<RuntimeVal, Type>> = hashMapOf("join" to makeNativeFnWithType("__std.join_obj", 2) { args, _ ->
             makeString(
                 (args[0] as ObjectVal).value.values.joinToString((args[1] as StringVal).value)
             )
@@ -147,6 +164,18 @@ fun makeGlobalEnv(argv: Array<StringVal>): Environment {
 
             of.value.entries.forEachIndexed { index, (key, _) ->
                 paired.add("$index" to (makeString(key) to StringType()))
+            }
+
+            val obj: HashMap<String, Pair<RuntimeVal, Type>> = hashMapOf(*paired.toTypedArray())
+
+            return@makeNativeFnWithType makeObject(obj)
+        },
+        "valuesOf" to makeNativeFnWithType("Object.values", 1) { args, _ ->
+            val of = args[0] as ObjectVal
+            val paired = mutableListOf<Pair<String, Pair<RuntimeVal, Type>>>()
+
+            of.value.entries.forEachIndexed { index, (_, value) ->
+                paired.add("$index" to value)
             }
 
             val obj: HashMap<String, Pair<RuntimeVal, Type>> = hashMapOf(*paired.toTypedArray())
@@ -331,7 +360,10 @@ fun makeGlobalEnv(argv: Array<StringVal>): Environment {
             "localHostname" to (makeString(exchange.localAddress.hostName) to StringType()),
             "body" to (makeString(String(exchange.requestBody.readAllBytes())) to StringType()),
             "method" to (makeString(exchange.requestMethod) to StringType()),
-            "path" to (makeString(exchange.requestURI.path) to StringType())
+            "path" to (makeString(exchange.requestURI.path) to StringType()),
+            "param" to makeNativeFnWithType("__std.not_supported_js", 1) { args, _ ->
+                return@makeNativeFnWithType makeString(exchange.requestURI.findParameterValue((args[0] as StringVal).value) ?: "")
+            }
         )
 
         val handlerArgs = listOf(makeObject(requestInfo))

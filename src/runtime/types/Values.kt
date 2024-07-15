@@ -1,5 +1,6 @@
 package runtime.types
 
+import com.sun.jdi.connect.spi.ClosedConnectionException
 import frontend.*
 import runtime.Environment
 import runtime.evaluate
@@ -7,16 +8,45 @@ import runtime.nativeFuncType
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.locks.ReentrantLock
-import java.util.function.*
-import java.util.stream.*
 import kotlin.time.ExperimentalTime
+
+/*
+@Streamed -> implies @Concurrent
+func
+    -> start coroutine
+        -> does operations
+        -> uses 'yield' to add a value to a ValueStream
+        -> repeat until we reach the end of func
+        -> close ValueStream
+
+    -> return a StreamedPromise
+*/
 
 class ValueStream {
     private val dataQueue: Queue<RuntimeVal> = ArrayDeque()
     private val lock = ReentrantLock()
+    private var _closed = false
+
+    var closed: Boolean
+        get() = _closed
+        private set(n) {
+            _closed = n
+        }
+
+    fun isEmpty(): Boolean = dataQueue.isEmpty()
+    fun isNotEmpty(): Boolean = !isEmpty()
+
+    fun close() {
+        lock.lock()
+        closed = true
+    }
 
     // Read the first item in the dataQueue or wait until it is not empty
     fun readBlocking(): RuntimeVal {
+        if (closed && dataQueue.isEmpty()) {
+            throw ClosedConnectionException("This stream has been closed and is empty.")
+        }
+
         if (dataQueue.isEmpty()) {
             readBlocking()
         }
@@ -27,8 +57,16 @@ class ValueStream {
     }
 
     /*
-    yield func fib(term: number) {
+    io -> File
+    yield func read() {
+        # ... start reading line-by-line
+        yield line
+    }
 
+    yield func sum(array: [number]) {
+        foreach value from array {
+            yield value
+        }
     }
     */
 
@@ -55,11 +93,8 @@ interface RuntimeVal {
     val value: Any
 }
 
-interface IterableVal {
-    val kind: String
-    val value: List<RuntimeVal>
-    val type: Type
-}
+interface IterableVal : RuntimeVal
+interface AwaitableVal : RuntimeVal
 
 fun RuntimeVal.toCommon(): String {
     return if (this is StringVal && this.value.toIntOrNull() != null) {
@@ -134,22 +169,23 @@ fun makeBool(b: Boolean = true) = object : BoolVal(value = b) {}
 abstract class PromiseVal(
     final override val kind: String = "promise",
     override val value: CompletableFuture<RuntimeVal>
-) : RuntimeVal {
+) : RuntimeVal, AwaitableVal {
     init {
         require(this.kind == "promise") { "Key can't be ${this.kind}." }
     }
 }
 
-abstract class BufferedPromiseVal(
-    final override val kind: String = "promise",
-    override val value: CompletableFuture<RuntimeVal>
-) : RuntimeVal {
+abstract class StreamedPromiseVal(
+    final override val kind: String = "streamed-promise",
+    override val value: ValueStream
+) : IterableVal, AwaitableVal {
     init {
-        require(this.kind == "promise") { "Key can't be ${this.kind}." }
+        require(this.kind == "streamed-promise") { "Key can't be ${this.kind}." }
     }
 }
 
 fun makePromise(f: CompletableFuture<RuntimeVal>) = object : PromiseVal(value = f) {}
+fun makeStreamedPromise(s: ValueStream) = object : StreamedPromiseVal(value = s) {}
 
 abstract class NumberVal(
     final override val kind: String = "number",
@@ -181,7 +217,7 @@ fun makeString(s: String, env: Environment = Environment(null)): StringVal {
             "\\" -> {
                 when (str.firstOrNull()) {
                     "{" -> {
-                        str.removeFirst()
+                        str.removeAt(0)
 
                         var expr = ""
 
@@ -209,7 +245,7 @@ fun makeString(s: String, env: Environment = Environment(null)): StringVal {
 open class ObjectVal(
     final override val kind: String = "object",
     override val value: HashMap<String, Pair<RuntimeVal, Type>>
-) : RuntimeVal {
+) : IterableVal {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is ObjectVal) return false
@@ -308,7 +344,7 @@ open class FunctionValue(
 
 open class ArrayValue(
     final override val kind: String,
-    final override val type: Type,
+    val type: Type,
     override val value: List<RuntimeVal>,
 ): IterableVal {
     init {
@@ -322,7 +358,7 @@ fun makeArray(type: Type, values: List<RuntimeVal>): ArrayValue =
 open class ForValue(
     final override val kind: String = "for",
     val param: Identifier,
-    val obj: RuntimeVal,
+    val obj: IterableVal,
     val declEnv: Environment,
     override val value: Block,
     val modifiers: Set<Modifier>,
@@ -338,7 +374,7 @@ open class ForValue(
 abstract class AwaitValue(
     final override val kind: String = "await",
     val param: Identifier,
-    val obj: PromiseVal,
+    val obj: AwaitableVal,
     val declEnv: Environment,
     override val value: Block,
     val async: Boolean,

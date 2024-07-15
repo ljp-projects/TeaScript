@@ -92,31 +92,34 @@ fun evalForDecl(decl: ForDecl, env: Environment): RuntimeVal {
     val fn = object : ForValue(
         param = decl.parameter,
         declEnv = env,
-        obj = evaluate(decl.obj, env),
+        obj = evaluate(decl.obj, env) as IterableVal,
         value = decl.body,
         modifiers = decl.modifiers
     ) {}
 
-    if (fn.async) {
-       for ((_, value) in (fn.obj as ObjectVal).value) {
-           globalCoroutineScope.launch {
-               val scope = Environment(fn.declEnv)
+    when (fn.obj) {
+        is ObjectVal -> {
+            for ((_, value) in fn.obj.value) {
+                val scope = Environment(fn.declEnv)
 
-               scope.declareVar(fn.param.symbol, value.first, true)
+                scope.declareVar(fn.param.symbol, value.first, true)
 
-               for (statement in fn.value) {
-                   evaluate(statement, scope)
-               }
-           }
-       }
-    } else {
-        for ((_, value) in (fn.obj as ObjectVal).value) {
-            val scope = Environment(fn.declEnv)
+                for (statement in fn.value) {
+                    evaluate(statement, scope)
+                }
+            }
+        }
+        is StreamedPromiseVal -> {
+            val stream = fn.obj.value
 
-            scope.declareVar(fn.param.symbol, value.first, true)
+            while (!stream.closed && stream.isNotEmpty()) {
+                val scope = Environment(fn.declEnv)
 
-            for (statement in fn.value) {
-                evaluate(statement, scope)
+                scope.declareVar(fn.param.symbol, stream.readBlocking(), true)
+
+                for (statement in fn.value) {
+                    evaluate(statement, scope)
+                }
             }
         }
     }
