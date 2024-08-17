@@ -1,0 +1,26 @@
+func fibonacci(terms: number) -> number {
+    if terms < 1 {
+        return 0
+    } or terms is 1 {
+        return 0
+    } or terms is 2 {
+        return 1
+    } otherwise {
+        mutable num1: number = 0
+        mutable num2: number = 1
+
+        foreach term from 2 to terms {
+            constant nextTerm = num1 + num2
+
+            num1 = num2
+            num2 = nextTerm
+        }
+
+        return num2
+    }
+}
+
+constant start = time()
+io.println(fibonacci(30000))
+constant finish = time()
+io.println("Completed in \{finish - start}ms (excluding lexing and parsing)")

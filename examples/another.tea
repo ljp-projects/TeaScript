@@ -1,0 +1,13 @@
+type Sized {
+    constant size: number
+}
+
+type Data {
+    constant data: any
+}
+
+# can also be typed Data
+constant sizedSomething: Sized = Sized, Data -> {
+    constant size = 1
+    constant data = "I do not know"
+}

@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="TeaScript:jar" />
+    </artifacts-to-build>
+  </component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="157f05c8-c06f-40a7-960c-0f5c4e09291a" name="Changes" comment="Add a 'couple' of stuff">
+      <change afterPath="$PROJECT_DIR$/META-INF/MANIFEST.MF" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/META-INF/maven/com.google.code.gson/gson/pom.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/META-INF/maven/com.google.code.gson/gson/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/META-INF/proguard/gson.pro" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/archives/gpg-keystore.p12" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/archives/jar-cert.cert" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/archives/jar-key.pem" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/archives/jar-keystore.p12" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/archives/jar-keystore.pem" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/archives/key.pgp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examples/Main.tscript" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examples/another.tea" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examples/fib.tea" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examples/tbags.tscript" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examples/test.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examples/test.tea" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gradle/libs.versions.toml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gradlew.bat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/settings.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitattributes" beforeDir="false" afterPath="$PROJECT_DIR$/.gitattributes" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/TeaScript_jar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/TeaScript_jar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/kotlinc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/kotlinc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SECURITY.md" beforeDir="false" afterPath="$PROJECT_DIR$/SECURITY.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TeaScript.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Config.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Main.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/TeaScript.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/errors/Error.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/errors/ImmutabilityError.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/errors/IncorrectTypeError.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/errors/MalpracticeError.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/errors/Warning.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/frontend/AST.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/frontend/Lexer.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/frontend/Parser.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/frontend/Token.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/installer.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/runtime/Environment.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/runtime/Interpreter.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/runtime/Transpile.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/runtime/eval/Expressions.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/runtime/eval/Statement.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/runtime/eval/transpile/BinaryExpressions.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/runtime/eval/transpile/Decls.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/runtime/eval/transpile/Identifiers.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/runtime/eval/transpile/Objects.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/runtime/eval/transpile/Statements.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/runtime/types/CompilationValues.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/runtime/types/Type.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/runtime/types/Values.kt" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="TeaScript" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Kotlin File" />
+        <option value="Kotlin Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="PUSH_AUTO_UPDATE" value="true" />
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="v1beta2-legacy-fixes" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;ljp-projects&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;git@github.com:ljp-projects/TeaScript.git&quot;,
+    &quot;accountId&quot;: &quot;4f70c07d-8072-4241-9c78-d608ade19dff&quot;
+  }
+}</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="jar://$PROJECT_DIR$/../../../Java/JavaVirtualMachines/graalvm-jdk-22.0.1-1/Contents/Home/lib/src.zip!/java.base/java/math/BigDecimal.java" root0="SKIP_INSPECTION" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 6
+}</component>
+  <component name="ProjectId" id="2gx6vcilvd7AJ1QvSKCJ5CqmXM8" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;Downloaded.Files.Path.Enabled&quot;: &quot;true&quot;,
+    &quot;Gradle.Build TeaScript.executor&quot;: &quot;Run&quot;,
+    &quot;JAR Application.TeaScript.jar.executor&quot;: &quot;Run&quot;,
+    &quot;Kotlin.MainKt (1).executor&quot;: &quot;Run&quot;,
+    &quot;Kotlin.MainKt.executor&quot;: &quot;Run&quot;,
+    &quot;Kotlin.TupleKt.executor&quot;: &quot;Run&quot;,
+    &quot;Kotlin.TypeParserKt.executor&quot;: &quot;Run&quot;,
+    &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.JavaDocs&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.Sources&quot;: &quot;false&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/geez/Library/Mobile Documents/com~apple~CloudDocs/TeaScript&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.33955225&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.5103448&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;aDefault&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;kotlin-gradle-user-dirs&quot;: [
+      &quot;/Users/geez/.gradle&quot;
+    ]
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/kotlin/org/ljpprojects/teascript" />
+      <recent name="$PROJECT_DIR$/archives" />
+    </key>
+    <key name="CreateKotlinClassDialog.RecentsKey">
+      <recent name="org.ljpprojects.teascript.utils" />
+    </key>
+  </component>
+  <component name="RunManager" selected="JAR Application.TeaScript.jar">
+    <configuration name="TeaScript.jar" type="JarApplication" temporary="true">
+      <option name="JAR_PATH" value="$PROJECT_DIR$/archives/TeaScript.jar" />
+      <option name="PROGRAM_PARAMETERS" value="run examples/Main.tscript" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <method v="2">
+        <option name="com.soywiz.korge.intellij.UpdateResourceBeforeRunTask" enabled="false" />
+      </method>
+    </configuration>
+    <configuration name="MainKt (1)" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.ljpprojects.teascript.MainKt" />
+      <module name="Documents.TeaScript.lib.main" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+        <option name="com.soywiz.korge.intellij.UpdateResourceBeforeRunTask" enabled="false" />
+      </method>
+    </configuration>
+    <configuration name="MainKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="MainKt" />
+      <module name="TeaScript" />
+      <option name="PROGRAM_PARAMETERS" value="run examples/Main.tscript examples/Main.jar" />
+      <shortenClasspath name="NONE" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+        <option name="com.soywiz.korge.intellij.UpdateResourceBeforeRunTask" enabled="false" />
+      </method>
+    </configuration>
+    <configuration name="TupleKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.ljpprojects.teascript.utils.TupleKt" />
+      <module name="Documents.TeaScript.lib.main" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+        <option name="com.soywiz.korge.intellij.UpdateResourceBeforeRunTask" enabled="false" />
+      </method>
+    </configuration>
+    <configuration name="TypeParserKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="frontend.TypeParserKt" />
+      <module name="TeaScript" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+        <option name="com.soywiz.korge.intellij.UpdateResourceBeforeRunTask" enabled="false" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="JAR Application.TeaScript.jar" />
+      <item itemvalue="Kotlin.MainKt (1)" />
+      <item itemvalue="Kotlin.TupleKt" />
+      <item itemvalue="Kotlin.TypeParserKt" />
+      <item itemvalue="Kotlin.MainKt" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JAR Application.TeaScript.jar" />
+        <item itemvalue="Kotlin.TupleKt" />
+        <item itemvalue="Kotlin.MainKt (1)" />
+        <item itemvalue="Kotlin.MainKt" />
+        <item itemvalue="Kotlin.TypeParserKt" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="157f05c8-c06f-40a7-960c-0f5c4e09291a" name="Changes" comment="" />
+      <created>1716627113852</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1716627113852</updated>
+    </task>
+    <task id="LOCAL-00001" summary=":)">
+      <option name="closed" value="true" />
+      <created>1717016348611</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1717016348611</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Remove .jar to make the installer work">
+      <option name="closed" value="true" />
+      <created>1720620573974</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1720620573974</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Change README.md">
+      <option name="closed" value="true" />
+      <created>1720621698344</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1720621698344</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Add experimental installer.ps1, it is not listed in README because it has not been tested.">
+      <option name="closed" value="true" />
+      <created>1720664343017</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1720664343017</updated>
+    </task>
+    <task id="LOCAL-00005" summary="yeah the installer didn't work">
+      <option name="closed" value="true" />
+      <created>1720664619834</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1720664619834</updated>
+    </task>
+    <task id="LOCAL-00006" summary="pls let the installer.ps1 work">
+      <option name="closed" value="true" />
+      <created>1720668515711</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1720668515711</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Windows is a flawed OS. Just use the Windows Subsystem for Linux instead. Or you can install it manually.">
+      <option name="closed" value="true" />
+      <created>1720669426356</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1720669426357</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Update README requirements and add logo">
+      <option name="closed" value="true" />
+      <created>1720670520209</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1720670520209</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Update README requirements and add logo">
+      <option name="closed" value="true" />
+      <created>1720838579637</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1720838579637</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Merge remote-tracking branch 'origin/main'&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml&#10;#&#9;README.md">
+      <option name="closed" value="true" />
+      <created>1720838989493</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1720838989493</updated>
+    </task>
+    <task id="LOCAL-00011" summary="REVERT TO THIS POINT IF better-parser IMPLEMENTATION GOES BAD">
+      <option name="closed" value="true" />
+      <created>1721019457152</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1721019457152</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="Uh oh" />
+    <MESSAGE value=":)" />
+    <MESSAGE value="Remove .jar to make the installer work" />
+    <MESSAGE value="Change README.md" />
+    <MESSAGE value="Add experimental installer.ps1, it is not listed in README because it has not been tested." />
+    <MESSAGE value="yeah the installer didn't work" />
+    <MESSAGE value="pls let the installer.ps1 work" />
+    <MESSAGE value="Windows is a flawed OS. Just use the Windows Subsystem for Linux instead. Or you can install it manually." />
+    <MESSAGE value="That many!?" />
+    <MESSAGE value="Update README requirements and add logo" />
+    <MESSAGE value="Merge remote-tracking branch 'origin/main'&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml&#10;#&#9;README.md" />
+    <MESSAGE value="REVERT TO THIS POINT IF better-parser IMPLEMENTATION GOES BAD" />
+    <MESSAGE value="Add a 'couple' of stuff" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add a 'couple' of stuff" />
+  </component>
+</project>
