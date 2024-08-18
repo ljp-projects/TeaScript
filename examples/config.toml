@@ -1,0 +1,49 @@
+[[imports]]
+file = "~/make.toml"
+items = [ "make" ] # If items is empty all items are imported
+
+[[aliases]]
+name = "make"
+
+[[aliases.commands]]
+name = "transpile"
+args = [ "index.tea", "index.js" ]
+type = "tea"
+
+[[aliases.commands]]
+name = "uglify-js"
+args = [ "index.js", "-cm", "-o", "index.js.min" ]
+type = "shell"
+
+[[actions]]
+name = "watch config"
+desc = "Watch the config for changes and apply them."
+
+[actions.meta]
+trigger = "file change"
+args = [ "~/config.toml" ]
+
+[[actions.commands]]
+name = "config"
+args = [ "~/config.toml" ]
+type = "tea"
+
+[[privileges.shell]]
+name = "echo"
+sandboxed = true
+timeout = 100
+
+[privileges.net]
+get = [ "https://this.is.a/whitelisted/url/to/GET" ]
+write = [ "https://this.is.a/whitelisted/url/to/POST/PUT/DELETE" ]
+
+[[privileges.net.serve]]
+hostname = "localhost"
+port = 8080
+
+[privileges.file]
+read = [ "/this/is/a/whitelisted-file/to/read" ]
+write = [ "/this/is/a/whitelisted-file/to/edit" ]
+
+[privileges.print]
+numOfDocuments = 1

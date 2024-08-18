@@ -1,0 +1,156 @@
+#file {
+    #title Yes, this is a real part of the TeaScript Standard Library.
+    #body Yes, this is a joke.
+    #important Yes, I am making fun of (Objective-)C(++), C#, Zig (specially Zig, maybe it is a skill issue), etc.
+    #bold Yes, it is documented (see https://ljp-projects.gitbook.io/teascript/impractical-stuff-you-should-not-use-literally-ever-when-programming-in-the-teascript-programming-la/, yes my URL was cut off by GitBook).
+    #body No, it isn't meant for actual use (although having an actual Array would be nice, just wait for a couple versions).
+    #italic Macros will be coming soon enough, I am coming for you Rust :).
+    #heading Yes, these are doc comments if any program wants to use them (BORECODE).
+    #docnotation OfficialStdLib
+    #sub Yes, that Docnotation is reserved for officially certified TeaScript Standard Library files.
+    #important Yes, this is a bootstrapped version of markdown (sort of).
+    #body Yes, I did make BORECODE (for MacOS only).
+    #sub Yes, below is a continued-paragraph doc-block.
+    #cont para {
+        #unimportant I am just showing of the features of my doc comments now.
+        #bold Yes if these do not end in full-stops they will joined together horridly in a doc-block.
+    #}
+    #very-important ⚠️ TeaScript Doc-Blocks can get verbose at times ⚠️
+#}
+
+#this {
+    #title A chunk of {
+        #code size
+    }
+    #docnotation Param size: number The size of the chunk
+#}
+class Chunk: object (
+	size: number
+) {
+	constant bits: object = data.arr()
+
+    #this {
+        #title Fill the chunk with zeroes.
+        #docnotation Param c: number The loop counter
+    #}
+	mutating func fill: null (c: number) {
+		bits[data.len(bytes)] = false
+		if c < size - 1 {
+			fill(c + 1)
+		} else {
+			null
+		}
+	}
+
+    #this {
+        #title read the bit at {
+            #code index
+        }.
+        #docnotation Param idx: number The index of the bit
+    #}
+	func readBit: bool (idx: number) {
+        bits[idx]
+	}
+}
+
+#this {
+    #title An iterator that iterates over bits.
+    #docnotation Param data: object The data to iterate over
+#}
+class BitIterator: object (data: object) {
+    mutable pointer: number = 0
+
+    #this {
+        #title Get the next item from the data
+        #docnotation Returns A { #code nullable(bool) } containing the next item in { #code data } or { #code null } if there is no more data.
+    }
+    mutating func next: nullable(bool) () {
+        pointer = pointer + 1
+        if pointer >= data.len(data) {
+             null
+        } otherwise {
+            data[pointer - 1]
+        }
+    }
+}
+
+#this {
+    #title The Virtual Heap itself!!!!
+    #body A very hyped up feature in the docs (see https://ljp-projects.gitbook.io/teascript/impractical-stuff-you-should-not-use-literally-ever-when-programming-in-the-teascript-programming-la/the-wildly-impractical-virtual-heap-for-when-you-need-to-mimic-low-level-programming-languages)
+    #cont para {
+        #bold We do not implement smart chunk allocation here.
+        #body Instead, we do it in the { #link SmartMemoryManager }.
+    #}
+    #docnotation Param chunkSize: number The size of every chunk in the heap
+#}
+class VirtualHeap: object (
+	chunkSize: number
+) {
+	mutable length: number = 0
+	mutable chunks: object = data.arr()
+
+    #this {
+        #title Allocate a chunk in the virtual heap
+        #docnotation Returns { #code null }
+    #}
+	func allocChunk: null () {
+		constant chunk =  Chunk(chunkSize)
+		chunk.fill(0)
+
+		chunks[data.len(chunks)] = chunk
+	}
+
+	private func readBitsBacking: object (chunk: Chunk, bitIndex: number, lim: number, arr: object) {
+	    arr[data.len(arr)] = chunk.readBit(bitIndex)
+
+	    if bitIndex < lim {
+	        readBitBacking(chunk, bitIndex + 1, lim, arr)
+	    } otherwise {
+	        null
+	    }
+	}
+
+    #this {
+        #title Reads { #this-link numBits } { #this-link from } a starting address (specified by a { #link VirtualPointer })
+        #docnotation Returns A BitIterator containing the bits that were read
+    #}
+	func readBits: BitIterator (from: VirtualPointer, numBits: number) {
+	    constant updatedIdx: number = if pointer.index <= 0 {
+	        1
+	    } otherwise {
+	        pointer.index
+	    }
+
+        constant chunkIndex: number = (updatedIdx / chunkSize).toInt()
+        constant chunk: Chunk = chunks[chunkIndex]
+        constant firstBitIndex: number = updatedIdx - (VIRTUAL_CHUNK_SIZE * chunkIndex)
+        constant bits: object = data.arr()
+
+        readBitsBacking(chunk, firstBitIndex, numBits, bits)
+
+        BitIterator(bits)
+	}
+}
+
+class VirtualPointer: object (
+    byteIndex: number,
+    offset: number
+) {
+    # In future versions this would become a getter for the property "byteIndex"
+    # Not in v1.0.0-beta.3 though!
+    @Getter("byteIndex")
+    func getByteIndex: number () {
+        byteIndex
+    }
+}
+
+constant theWildlyImpracticalVirtualHeapForWhenYouNeedToMimicLowLevelProgrammingLanguages = {
+	cloneToMakeANewInstanceOfTheWildlyImpracticalVirtualHeapForWhenYouNeedToMimicLowLevelProgrammingLanguages: func = VirtualHeap
+}
+
+### Testing the virtual heap ###
+
+const heap = theWildlyImpracticalVirtualHeapForWhenYouNeedToMimicLowLevelProgrammingLanguages
+             .cloneToMakeANewInstanceOfTheWildlyImpracticalVirtualHeapForWhenYouNeedToMimicLowLevelProgrammingLanguages()
+
+heap.allocChunk() # Allocate a chunk for the heap
