@@ -10,65 +10,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="157f05c8-c06f-40a7-960c-0f5c4e09291a" name="Changes" comment="Add a 'couple' of stuff">
-      <change afterPath="$PROJECT_DIR$/META-INF/MANIFEST.MF" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/META-INF/maven/com.google.code.gson/gson/pom.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/META-INF/maven/com.google.code.gson/gson/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/META-INF/proguard/gson.pro" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/archives/gpg-keystore.p12" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/archives/jar-cert.cert" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/archives/jar-key.pem" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/archives/jar-keystore.p12" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/archives/jar-keystore.pem" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/archives/key.pgp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/examples/Main.tscript" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/examples/another.tea" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/examples/fib.tea" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/examples/tbags.tscript" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/examples/test.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/examples/test.tea" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle/libs.versions.toml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradlew.bat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/settings.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitattributes" beforeDir="false" afterPath="$PROJECT_DIR$/.gitattributes" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/artifacts/TeaScript_jar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/TeaScript_jar.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/kotlinc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/kotlinc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SECURITY.md" beforeDir="false" afterPath="$PROJECT_DIR$/SECURITY.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TeaScript.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Config.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Main.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TeaScript.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/errors/Error.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/errors/ImmutabilityError.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/errors/IncorrectTypeError.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/errors/MalpracticeError.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/errors/Warning.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/AST.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/Lexer.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/Parser.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/Token.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/installer.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/Environment.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/Interpreter.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/Transpile.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/eval/Expressions.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/eval/Statement.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/eval/transpile/BinaryExpressions.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/eval/transpile/Decls.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/eval/transpile/Identifiers.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/eval/transpile/Objects.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/eval/transpile/Statements.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/types/CompilationValues.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/types/Type.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/runtime/types/Values.kt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -340,7 +282,15 @@
       <option name="project" value="LOCAL" />
       <updated>1721019457152</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Add a 'couple' of stuff">
+      <option name="closed" value="true" />
+      <created>1723939125438</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1723939125438</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
