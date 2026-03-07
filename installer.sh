@@ -60,22 +60,22 @@ cd /usr/local/bin/ || exit
 echo "You may be asked to authenticate. This is to maintain compatibility with Linux when completing the installation."
 
 if [[ $TAG != "NONE" ]]; then
-  curl -sSOL "https://github.com/ljp-projects/TeaScript/releases/download/${TAG}/TeaScript.jar"
+  curl -sSOL "https://github.com/ljpprojects/TeaScript/releases/download/${TAG}/TeaScript.jar"
 
   message="TeaScript ${TAG} has been installed successfully!"
   length=${#message}
   border=$(yes "-" | tr -d '\n' | head -c "$length")
 elif [[ $BRANCH != "NONE" ]]; then
-  curl -sS "https://raw.githubusercontent.com/ljp-projects/TeaScript/${BRANCH}/src/installer.sh" | sudo bash
+  curl -sS "https://raw.githubusercontent.com/ljpprojects/TeaScript/${BRANCH}/src/installer.sh" | sudo bash
 
   message="TeaScript from branch ${BRANCH} has been installed successfully!"
   length=${#message}
   border=$(yes "-" | tr -d '\n' | head -c "$length")
 elif [[ $COMMIT != "NONE" ]]; then
   if [[ $COMMIT == "latest" ]]; then
-    curl -sSOL "https://raw.githubusercontent.com/ljp-projects/TeaScript/main/src/installer.sh" | sudo bash
+    curl -sSOL "https://raw.githubusercontent.com/ljpprojects/TeaScript/main/src/installer.sh" | sudo bash
   else
-    url="https://raw.githubusercontent.com/ljp-projects/TeaScript/$COMMIT/src/installer.sh"
+    url="https://raw.githubusercontent.com/ljpprojects/TeaScript/$COMMIT/src/installer.sh"
     echo "Installing from $url..."
     curl -sSL "$url" | sudo bash
   fi
@@ -85,7 +85,7 @@ elif [[ $COMMIT != "NONE" ]]; then
   border=$(yes "-" | tr -d '\n' | head -c "$length")
   tea_version="from commit $COMMIT"
 elif [[ $FROM == "NONE" ]]; then
-  curl -sSOL "https://github.com/ljp-projects/TeaScript/releases/download/$tea_version/TeaScript.jar"
+  curl -sSOL "https://github.com/ljpprojects/TeaScript/releases/download/$tea_version/TeaScript.jar"
 elif [[ $KEEP -eq 1 ]]; then
   message="TeaScript from JAR at $FROM has been installed successfully!"
   length=${#message}
