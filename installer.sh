@@ -1,4 +1,4 @@
-tea_version=$(curl -sS "https://api.github.com/repos/ljp-projects/teascript/tags" | jq -r '.[0].name')
+tea_version=$(curl -sS "https://api.github.com/repos/ljpprojects/teascript/tags" | jq -r '.[0].name')
 
 message="TeaScript $tea_version has been installed successfully!"
 length=${#message}
